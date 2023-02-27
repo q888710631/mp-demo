@@ -16,13 +16,16 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterceptor {
-    // 拥有InterceptorIgnore注解
-    public static final Set<String> HAS_IGNORE_ANN_TABLE_NAME = new HashSet<>();
+    // 忽略租户注入的表名
+    public static final Set<String> IGNORE_TABLE_NAME = new HashSet<>();
 
     public MybatisPlusTenantLineInnerInterceptor() {
         setTenantLineHandler(new MybatisPlusTenantHandler());
+
+        // 通过实体上的注解添加 @InterceptorIgnore(tenantLine = "true")
         initIgnoreAnnTableName();
-        HAS_IGNORE_ANN_TABLE_NAME.add("user");
+        // 手动添加
+        IGNORE_TABLE_NAME.add("user");
     }
 
     /**
@@ -36,7 +39,7 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
             if (tableNameAnn != null) {
                 String tableName = tableNameAnn.value();
                 if (StringUtils.isNotBlank(tableName)) {
-                    HAS_IGNORE_ANN_TABLE_NAME.add(tableName);
+                    IGNORE_TABLE_NAME.add(tableName);
                 }
             }
         }
@@ -47,7 +50,7 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
      */
     @Override
     public Expression buildTableExpression(Table table, Expression where, String whereSegment) {
-        if (HAS_IGNORE_ANN_TABLE_NAME.contains(table.getName())) {
+        if (IGNORE_TABLE_NAME.contains(table.getName())) {
             return null;
         }
         boolean match = Stream.of(Thread.currentThread().getStackTrace())

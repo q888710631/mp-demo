@@ -43,6 +43,6 @@ public class MybatisPlusTenantHandler implements TenantLineHandler {
      */
     @Override
     public boolean ignoreTable(String tableName) {
-        return MybatisPlusTenantLineInnerInterceptor.HAS_IGNORE_ANN_TABLE_NAME.contains(tableName.toLowerCase());
+        return MybatisPlusTenantLineInnerInterceptor.IGNORE_TABLE_NAME.contains(tableName.toLowerCase());
     }
 }
