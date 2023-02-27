@@ -1,6 +1,5 @@
 package com.mp;
 
-import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -27,7 +26,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @SpringBootTest
-@InterceptorIgnore(tenantLine = "true")
+//@InterceptorIgnore(tenantLine = "true")
 class MpApplicationTests {
     private final Logger log = LoggerFactory.getLogger(MpApplicationTests.class);
 

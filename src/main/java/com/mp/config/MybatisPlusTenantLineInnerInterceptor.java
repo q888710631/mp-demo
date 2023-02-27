@@ -50,9 +50,6 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
      */
     @Override
     public Expression buildTableExpression(Table table, Expression where, String whereSegment) {
-        if (IGNORE_TABLE_NAME.contains(table.getName())) {
-            return null;
-        }
         boolean match = Stream.of(Thread.currentThread().getStackTrace())
             .filter(s -> s.toString().startsWith(Constants.BASE_PACKAGE))
             .anyMatch(s -> {
