@@ -17,11 +17,12 @@ import java.util.stream.Stream;
 
 public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterceptor {
     // 拥有InterceptorIgnore注解
-    private static final Set<String> HAS_IGNORE_ANN_TABLE_NAME = new HashSet<>();
+    public static final Set<String> HAS_IGNORE_ANN_TABLE_NAME = new HashSet<>();
 
     public MybatisPlusTenantLineInnerInterceptor() {
         setTenantLineHandler(new MybatisPlusTenantHandler());
         initIgnoreAnnTableName();
+        HAS_IGNORE_ANN_TABLE_NAME.add("user");
     }
 
     /**

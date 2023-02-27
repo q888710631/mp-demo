@@ -4,13 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 
-import java.util.Set;
-
 public class MybatisPlusTenantHandler implements TenantLineHandler {
-
-
-    // 表名，全小写
-    private static final Set<String> IGNORE_TABLE = Set.of("user");
 
     private static final ThreadLocal<Long> TENANT_LOCAL = new ThreadLocal<>();
 
@@ -49,6 +43,6 @@ public class MybatisPlusTenantHandler implements TenantLineHandler {
      */
     @Override
     public boolean ignoreTable(String tableName) {
-        return IGNORE_TABLE.contains(tableName.toLowerCase());
+        return MybatisPlusTenantLineInnerInterceptor.HAS_IGNORE_ANN_TABLE_NAME.contains(tableName.toLowerCase());
     }
 }

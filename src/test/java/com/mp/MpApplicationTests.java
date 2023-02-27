@@ -1,5 +1,6 @@
 package com.mp;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -26,8 +27,9 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @SpringBootTest
+@InterceptorIgnore(tenantLine = "true")
 class MpApplicationTests {
-    private Logger log = LoggerFactory.getLogger(MpApplicationTests.class);
+    private final Logger log = LoggerFactory.getLogger(MpApplicationTests.class);
 
     // PageHelper 分页起始
     static final int PAGE_HELPER_START = 1;
@@ -56,13 +58,18 @@ class MpApplicationTests {
 
     @Test
     public void emptyInit() {
-
         log.info(() -> "emptyInit");
     }
 
     @Test
     void queryTenant() {
-        List<Tenant> tenants = tenantMapper.selectList(new QueryWrapper<>());
+        List<Tenant> tenants = tenantMapper.selectList(new QueryWrapper<Tenant>().eq("id", 1L));
+        if (tenants.isEmpty()) {
+            Tenant entity = new Tenant();
+            entity.setId(1L);
+            entity.setNickName("Honyee");
+            tenantMapper.insert(entity);
+        }
         log.info(() -> "queryTenant");
     }
 
