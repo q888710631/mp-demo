@@ -5,5 +5,5 @@ import com.mp.model.Tenant;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface MerchantMapper extends BaseMapper<Tenant> {
+public interface TenantMapper extends BaseMapper<Tenant> {
 }
