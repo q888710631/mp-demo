@@ -1,9 +1,10 @@
-package com.mp.config;
+package com.mp.config.mybatis;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.mp.config.Constants;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -13,8 +14,7 @@ import java.util.Date;
 
 @Configuration
 @MapperScan(Constants.MAPPER_PACKAGE)
-public class MybatisPlusFillConfig implements MetaObjectHandler {
-
+public class MybatisPlusConfiguration implements MetaObjectHandler {
 
     /**
      * insert时注入字段内容

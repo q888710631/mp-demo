@@ -13,6 +13,8 @@ spring:
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
+
+
 mybatis-plus:
   # 指定 mapper.xml 的位置
   mapper-locations: classpath:mybatis/mapper/*.xml
@@ -30,3 +32,5 @@ pagehelper:
   reasonable: false
   # 分页插件默认参数支持 default-count 形式，自定义扩展的参数，必须大小写一致
   defaultCount: true
+
+token-secret: Y2M3MTZmNTllMTMyMGQzNmQ5MjNhZTNjYWY2MmFmMDFiMWFkYjMwMWE0MjhiMDI3MWZhY2JiZGFkZDlhNDcwZTI3M2M0Mjg5MDdjY2E2YWMzMDEwMzkwYTQ0MzczN2NjODVhZmJmNDUzODdmNDBmODFiZDU4M2I1YjQwNjBlMTA=

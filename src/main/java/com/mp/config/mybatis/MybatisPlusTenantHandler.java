@@ -1,6 +1,7 @@
-package com.mp.config;
+package com.mp.config.mybatis;
 
 import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
+import com.mp.config.Constants;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
 

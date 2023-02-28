@@ -5,7 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mp.config.MybatisPlusTenantHandler;
+import com.mp.config.jwt.JwtConstants;
+import com.mp.config.jwt.LoginTypeEnum;
+import com.mp.config.jwt.TokenProvider;
+import com.mp.config.jwt.applet.AppletAuthenticationToken;
+import com.mp.config.mybatis.MybatisPlusTenantHandler;
 import com.mp.dto.CitySimpleDTO;
 import com.mp.enums.StateEnum;
 import com.mp.mapper.CityMapper;
@@ -23,7 +27,10 @@ import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 //@InterceptorIgnore(tenantLine = "true")
@@ -118,5 +125,25 @@ class MpApplicationTests {
     public void deleteProduct() {
         productMapper.deleteById(999);
         log.info(() -> "deleteProduct");
+    }
+
+    @Test
+    public void useToken() {
+        AppletAuthenticationToken authenticationToken = new AppletAuthenticationToken(Collections.emptyList(), 1L);
+        String jwt = TokenProvider.createToken(
+            authenticationToken,
+            false,
+            LoginTypeEnum.APPLET.toString(),
+            authenticationToken.getAccountId(),
+            data -> {
+                if ("dev".equals("环境")) {
+                    return data.claim("a", "b");
+                }
+                return data;
+            }
+        );
+        Map<String, String> map = new HashMap<>();
+        map.put(JwtConstants.AUTHORIZATION_HEADER, JwtConstants.BEARER + " " + jwt);
+
     }
 }
