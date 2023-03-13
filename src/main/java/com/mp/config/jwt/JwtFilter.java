@@ -1,7 +1,7 @@
 package com.mp.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mp.config.MyHttpRequestWrapper;
+import com.mp.config.InputStreamHttpServletRequestWrapper;
 import com.mp.config.MyResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -73,9 +73,10 @@ public class JwtFilter extends GenericFilter {
                 return;
             }
         }
-        chain.doFilter(request, response);
+//        chain.doFilter(request, response);
         // 装饰Request，用来反复获取body
-        // chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
+//         chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
+        chain.doFilter(new InputStreamHttpServletRequestWrapper(httpServletRequest), response);
     }
 
     private String resolveToken(HttpServletRequest request) {

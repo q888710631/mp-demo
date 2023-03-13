@@ -6,11 +6,17 @@ import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.LoginTypeEnum;
 import com.mp.config.jwt.TokenProvider;
 import com.mp.config.jwt.applet.AppletAuthenticationToken;
+import com.mp.dto.CitySimpleDTO;
+import org.apache.catalina.connector.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,9 +46,20 @@ public class GenericController {
         return MyResponse.ok(map);
     }
 
+    @GetMapping("/test")
+    public void testGet(HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        writer.write("close");
+        writer.flush();
+        writer.close();
+        System.out.println("最终");
+    }
+
     @PostMapping("/test")
     public ResponseEntity<?> test(@RequestBody Object obj) {
-        return ResponseEntity.ok("成功");
+        CitySimpleDTO citySimpleDTO = new CitySimpleDTO();
+        citySimpleDTO.setName("abc");
+        return ResponseEntity.ok(citySimpleDTO);
     }
 
 }

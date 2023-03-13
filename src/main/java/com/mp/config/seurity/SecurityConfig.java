@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // 设置 OPTIONS 尝试请求直接通过
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .antMatchers("/api/login").permitAll()
-            .antMatchers("/api/test").authenticated()
+            .antMatchers( "/api/test/**").permitAll()
             .and()
             .apply(securityConfigurerAdapter())
         ;

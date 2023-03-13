@@ -81,7 +81,6 @@
         </dependency>
 
 
-
         <!--  解决mybatis plus 使用多租户插件时，执行insert出现的强转错误
 
             class TenantLineInnerInterceptor{
@@ -114,6 +113,12 @@
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.10.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
 
     </dependencies>
