@@ -3,55 +3,66 @@ package com.mp.config.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.InputStreamHttpServletRequestWrapper;
 import com.mp.config.MyResponse;
+import com.mp.config.jwt.my.MyAuthenticationToken;
+import com.mp.config.mybatis.MybatisPlusTenantHandler;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
+@Component
 public class JwtFilter extends GenericFilter {
     private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
-    final ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    final List<AuthenticationResolver> resolvers;
-
-    public JwtFilter(ObjectMapper objectMapper, List<AuthenticationResolver> resolvers) {
-        this.objectMapper = objectMapper;
-        this.resolvers = resolvers;
-    }
+    @Autowired
+    @Lazy
+    private AuthenticationManager authenticationManager;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         log.info("method = {}, url = {} ", httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
         String jwt = resolveToken(httpServletRequest);
+        // 存储authentication
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        SecurityContextHolder.setContext(securityContext);
         if (StringUtils.hasText(jwt)) {
             try {
                 // getClaims 不报错表示jwt格式正确
-                Claims claims = TokenProvider.getClaims(jwt);
                 Authentication authentication = null;
-                for (AuthenticationResolver resolver : resolvers) {
-                    if (resolver.supports(jwt)) {
-                        authentication = resolver.getAuthentication(jwt);
-                        break;
-                    }
+                Claims claims = TokenProvider.getClaims(jwt);
+                Object loginType = claims.get(JwtConstants.LOGIN_TYPE);
+                Object loginKey = claims.get(JwtConstants.LOGIN_KEY);
+                if (Objects.equals(loginType, LoginTypeEnum.COMMON.name())) {
+                    authentication = new MyAuthenticationToken(Long.valueOf(loginKey.toString()));
                 }
+                authentication = authenticationManager.authenticate(authentication);
+
                 if (null == authentication) {
                     log.error("token认证失败,未找到合适的认证类型");
                     throw new AuthenticationCredentialsNotFoundException("token认证失败,未找到合适的认证类型");
@@ -60,10 +71,7 @@ public class JwtFilter extends GenericFilter {
                     log.error("授权认证失败");
                     throw new BadCredentialsException("token认证失败");
                 }
-                // 存储token
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
                 securityContext.setAuthentication(authentication);
-                SecurityContextHolder.setContext(securityContext);
 
             } catch (JwtException | IllegalArgumentException e) {
                 log.info("Invalid JWT token.");
@@ -76,7 +84,11 @@ public class JwtFilter extends GenericFilter {
 //        chain.doFilter(request, response);
         // 装饰Request，用来反复获取body
 //         chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
-        chain.doFilter(new InputStreamHttpServletRequestWrapper(httpServletRequest), response);
+        try {
+            chain.doFilter(new InputStreamHttpServletRequestWrapper(httpServletRequest), response);
+        } finally {
+            MybatisPlusTenantHandler.removeTenantValue();
+        }
     }
 
     private String resolveToken(HttpServletRequest request) {

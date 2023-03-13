@@ -1,3 +1,5 @@
+server:
+  port: 1222
 # DataSource Config
 spring:
   datasource:
@@ -34,3 +36,8 @@ pagehelper:
   defaultCount: true
 
 token-secret: Y2M3MTZmNTllMTMyMGQzNmQ5MjNhZTNjYWY2MmFmMDFiMWFkYjMwMWE0MjhiMDI3MWZhY2JiZGFkZDlhNDcwZTI3M2M0Mjg5MDdjY2E2YWMzMDEwMzkwYTQ0MzczN2NjODVhZmJmNDUzODdmNDBmODFiZDU4M2I1YjQwNjBlMTA=
+
+
+
+
+

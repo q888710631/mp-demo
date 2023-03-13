@@ -1,28 +1,32 @@
-package com.mp.config.jwt.applet;
+package com.mp.config.jwt.my;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.List;
 
-/**
- * @author wu.dunhong
- */
-public class AppletAuthenticationToken extends AbstractAuthenticationToken {
+public class MyAuthenticationToken extends AbstractAuthenticationToken {
 
-    private Long accountId;
+    private Long userId;
 
-    public AppletAuthenticationToken(Collection<? extends GrantedAuthority> authorities, Long accountId) {
+    public MyAuthenticationToken(Long userId) {
+        super(List.of());
+        this.userId = userId;
+    }
+
+    public MyAuthenticationToken(Long userId, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
-        this.accountId = accountId;
+        this.userId = userId;
+        setAuthenticated(true);
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.github.pagehelper.PageInfo;
 import com.mp.config.jwt.JwtConstants;
 import com.mp.config.jwt.LoginTypeEnum;
 import com.mp.config.jwt.TokenProvider;
-import com.mp.config.jwt.applet.AppletAuthenticationToken;
+import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.config.mybatis.MybatisPlusTenantHandler;
 import com.mp.dto.CitySimpleDTO;
 import com.mp.enums.StateEnum;
@@ -129,12 +129,12 @@ class MpApplicationTests {
 
     @Test
     public void useToken() {
-        AppletAuthenticationToken authenticationToken = new AppletAuthenticationToken(Collections.emptyList(), 1L);
+        MyAuthenticationToken authenticationToken = new MyAuthenticationToken(Collections.emptyList(), 1L);
         String jwt = TokenProvider.createToken(
             authenticationToken,
             false,
-            LoginTypeEnum.APPLET.toString(),
-            authenticationToken.getAccountId(),
+            LoginTypeEnum.COMMON.toString(),
+            authenticationToken.getUserId(),
             data -> {
                 if ("dev".equals("环境")) {
                     return data.claim("a", "b");

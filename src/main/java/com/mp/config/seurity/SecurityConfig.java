@@ -1,13 +1,14 @@
 package com.mp.config.seurity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mp.config.jwt.AuthenticationResolver;
 import com.mp.config.jwt.JwtFilter;
-import com.mp.config.jwt.applet.AppletsAuthenticationProvider;
-import org.springframework.beans.factory.ObjectProvider;
+import com.mp.config.jwt.my.MyAuthenticationProvider;
+import com.mp.service.MyUserDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,13 +17,12 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebSecurity
@@ -30,27 +30,33 @@ import java.util.stream.Collectors;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    public static final BCryptPasswordEncoder BCRYPT = new BCryptPasswordEncoder();
-
-    @Resource
-    AppletsAuthenticationProvider appletsAuthenticationProvider;
-
-    @Resource
+    @Autowired
     SecurityProblemSupport problemSupport;
 
-    @Resource
-    ObjectMapper objectMapper;
+    @Autowired
+    private MyUserDetailService myUserDetailService;
 
-    List<AuthenticationResolver> resolvers;
+    @Autowired
+    private JwtFilter jwtFilter;
 
-    public SecurityConfig(ObjectProvider<AuthenticationResolver> resolvers) {
-         this.resolvers = resolvers.stream().collect(Collectors.toList());
+    @Autowired
+    private MyAuthenticationProvider myAuthenticationProvider;
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     // 配置认证管理器
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(appletsAuthenticationProvider);
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(myUserDetailService).passwordEncoder(passwordEncoder());
+        auth.authenticationProvider(myAuthenticationProvider);
     }
 
     // 配置安全策略
@@ -68,13 +74,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             // 设置 OPTIONS 尝试请求直接通过
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+            .antMatchers("/api/authenticate").permitAll()
             .antMatchers("/api/login").permitAll()
-            .antMatchers( "/api/test/**").permitAll()
+            .antMatchers("/api/test/**").permitAll()
             .and()
-            .apply(securityConfigurerAdapter())
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//            .and()
+//            .apply(securityConfigurerAdapter())
         ;
 
     }
+
     private JwtConfigurer securityConfigurerAdapter() {
         return new JwtConfigurer();
     }
@@ -82,8 +93,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public class JwtConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
         @Override
         public void configure(HttpSecurity http) {
-            JwtFilter customFilter = new JwtFilter(objectMapper, resolvers);
-            http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
+            http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         }
     }
 }

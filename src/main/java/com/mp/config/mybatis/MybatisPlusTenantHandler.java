@@ -17,6 +17,9 @@ public class MybatisPlusTenantHandler implements TenantLineHandler {
         return TENANT_LOCAL.get();
     }
 
+    public static void removeTenantValue() {
+        TENANT_LOCAL.remove();
+    }
     /**
      * 获取租户ID 实际应该从用户信息中获取
      */
