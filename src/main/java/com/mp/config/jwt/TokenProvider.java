@@ -1,6 +1,5 @@
 package com.mp.config.jwt;
 
-import com.esotericsoftware.yamlbeans.YamlReader;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -9,8 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
@@ -29,8 +30,9 @@ public class TokenProvider {
     private TokenProvider() {
         try {
             ClassPathResource application = new ClassPathResource("application.yml");
-            YamlReader reader = new YamlReader(new FileReader(application.getFile()));
-            Map map = (Map) reader.read();
+            InputStream inputStream = new FileInputStream(application.getFile());
+            Yaml yaml = new Yaml();
+            Map<String, Object> map = yaml.load(inputStream);
             String baseSecret = map.getOrDefault("token-secret", "undefined token-secret").toString();
             byte[] keyBytes = Decoders.BASE64.decode(baseSecret);
             key = Keys.hmacShaKeyFor(keyBytes);

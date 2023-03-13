@@ -1,0 +1,9 @@
+authenticate-matchers:
+  - path-matchers:
+      - /api/test/**
+    authenticated: false
+    has-any-role:
+  - path-matchers:
+    - /api/authenticate
+    authenticated: false
+    has-any-role:

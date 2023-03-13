@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -19,16 +20,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
+import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
-
-import javax.annotation.Resource;
 
 @Configuration
 @EnableWebSecurity
 @Import(SecurityProblemSupport.class)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     SecurityProblemSupport problemSupport;
@@ -74,9 +75,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             // 设置 OPTIONS 尝试请求直接通过
             .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .antMatchers("/api/authenticate").permitAll()
-            .antMatchers("/api/login").permitAll()
-            .antMatchers("/api/test/**").permitAll()
+            .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+                @Override
+                public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+                    FilterInvocationSecurityMetadataSource securityMetadataSource = object.getSecurityMetadataSource();
+                    object.setSecurityMetadataSource(
+                        new MyFilterInvocationSecurityMetadataSource(securityMetadataSource));
+                    object.setAccessDecisionManager(new MyFilterAccessDecisionManager());
+                    return object;
+                }
+            })
+//            .antMatchers("/api/authenticate").permitAll()
+//            .antMatchers("/api/test/**").permitAll()
+            .and()
+            .authorizeRequests()
+            .anyRequest()
+            .authenticated()
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
