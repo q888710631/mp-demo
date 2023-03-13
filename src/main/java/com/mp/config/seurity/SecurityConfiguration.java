@@ -1,5 +1,6 @@
 package com.mp.config.seurity;
 
+import com.mp.config.ResponseAdviceHandler;
 import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.my.MyAuthenticationProvider;
 import com.mp.service.MyUserDetailService;
@@ -32,9 +33,6 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    SecurityProblemSupport problemSupport;
-
-    @Autowired
     private MyUserDetailService myUserDetailService;
 
     @Autowired
@@ -42,6 +40,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MyAuthenticationProvider myAuthenticationProvider;
+
+    @Autowired
+    private MySecurityProblemSupport problemSupport;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -66,11 +67,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // 设置路径及要求的权限，支持 ant 风格路径写法
         http.csrf().disable()
             .exceptionHandling()
+            .authenticationEntryPoint(problemSupport)
             .and()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//            .authenticationEntryPoint(problemSupport)
-//            .accessDeniedHandler(problemSupport)
             .and()
             .authorizeRequests()
             // 设置 OPTIONS 尝试请求直接通过
@@ -91,9 +91,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .anyRequest()
             .authenticated()
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .apply(securityConfigurerAdapter())
         ;

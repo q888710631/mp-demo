@@ -54,4 +54,5 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         }
         return new MyResponse<>(statusCode, msg, body);
     }
+
 }

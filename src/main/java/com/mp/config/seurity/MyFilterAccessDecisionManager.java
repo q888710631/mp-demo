@@ -28,7 +28,7 @@ public class MyFilterAccessDecisionManager implements AccessDecisionManager {
         // 匿名不允许访问，可能是没token、token失效
         if (authorities.stream().map(GrantedAuthority::getAuthority)
             .anyMatch(Predicate.isEqual(SecurityConstants.ROLE_ANONYMOUS))) {
-            throw new CredentialsExpiredException("无权限访问");
+            throw new CredentialsExpiredException("尚未登陆");
         }
         for (ConfigAttribute configAttribute : configAttributes) {
             String attribute = configAttribute.getAttribute();
@@ -43,7 +43,7 @@ public class MyFilterAccessDecisionManager implements AccessDecisionManager {
             }
         }
 
-        throw new AccessDeniedException("无权限访问");
+        throw new AccessForbiddenException("无权限访问");
     }
 
     @Override
