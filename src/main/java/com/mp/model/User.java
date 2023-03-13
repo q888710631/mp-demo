@@ -1,20 +1,24 @@
 package com.mp.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.util.Collection;
 
 @TableName("user")
-public class User {
+@InterceptorIgnore(tenantLine = "true")
+public class User extends BaseEntity{
     @TableId(type = IdType.AUTO)
     private Long id;
+
+    @TableField("nickname")
+    private String nickname;
 
     @TableField("username")
     private String username;
 
+    /**
+     * bcrypt password
+     */
     @TableField("password")
     private String password;
 
@@ -27,6 +31,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
     public String getUsername() {

@@ -14,10 +14,12 @@ import com.mp.dto.CitySimpleDTO;
 import com.mp.enums.StateEnum;
 import com.mp.mapper.CityMapper;
 import com.mp.mapper.ProductMapper;
-import com.mp.mapper.TenantMapper;
+import com.mp.mapper.RoleMapper;
+import com.mp.mapper.UserMapper;
 import com.mp.model.City;
 import com.mp.model.Product;
-import com.mp.model.Tenant;
+import com.mp.model.Role;
+import com.mp.model.User;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,7 +56,10 @@ class MpApplicationTests {
     ProductMapper productMapper;
 
     @Resource
-    TenantMapper tenantMapper;
+    UserMapper userMapper;
+
+    @Resource
+    RoleMapper roleMapper;
 
     @BeforeAll
     public static void beforeAll() {
@@ -68,18 +73,20 @@ class MpApplicationTests {
     }
 
     @Test
-    void queryTenant() {
-        List<Tenant> tenants = tenantMapper.selectList(new QueryWrapper<Tenant>().eq("id", 1L));
-        if (tenants.isEmpty()) {
-            Tenant entity = new Tenant();
+    void queryUser() {
+        User admin = userMapper.findByUsername("admin");
+        List<Role> roles = roleMapper.findRolesByUserId(admin.getId());
+        List<User> users = userMapper.selectList(new QueryWrapper<User>().eq("id", 1L));
+        if (users.isEmpty()) {
+            User entity = new User();
             entity.setId(1L);
-            entity.setNickName("Honyee");
-            tenantMapper.insert(entity);
+            entity.setNickname("Honyee");
+            userMapper.insert(entity);
         }
-        log.info(() -> "queryTenant");
+        log.info(() -> "queryUser");
     }
 
-    @Test
+    // @Test
     void queryCity() {
         com.github.pagehelper.Page<City> page = PageHelper.startPage(PAGE_HELPER_START, PAGE_SIZE).doSelectPage(() -> cityMapper.selectList(new QueryWrapper<>()));
         System.out.println();
@@ -99,7 +106,7 @@ class MpApplicationTests {
         log.info(() -> "queryCity");
     }
 
-    @Test
+//    @Test
     public void createProduct() {
         Product p = new Product();
         p.setTitle("产品" + System.currentTimeMillis());
@@ -108,7 +115,7 @@ class MpApplicationTests {
         log.info(() -> "createProduct");
     }
 
-    @Test
+//    @Test
     void queryProduct() {
         //
         LambdaQueryWrapper<Product> eq = new LambdaQueryWrapper<Product>().eq(Product::getId, "");
@@ -121,7 +128,7 @@ class MpApplicationTests {
         log.info(() -> "queryProduct");
     }
 
-    @Test
+//    @Test
     public void deleteProduct() {
         productMapper.deleteById(999);
         log.info(() -> "deleteProduct");
@@ -129,7 +136,7 @@ class MpApplicationTests {
 
     @Test
     public void useToken() {
-        MyAuthenticationToken authenticationToken = new MyAuthenticationToken(Collections.emptyList(), 1L);
+        MyAuthenticationToken authenticationToken = new MyAuthenticationToken(1L, Collections.emptyList());
         String jwt = TokenProvider.createToken(
             authenticationToken,
             false,

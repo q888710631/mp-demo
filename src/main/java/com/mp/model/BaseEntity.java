@@ -2,29 +2,52 @@ package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
 public class BaseEntity {
-    @TableField(value = "create_time",fill = FieldFill.INSERT)
-    protected Date createTime;
+    @TableField(value = "create_by", fill = FieldFill.INSERT)
+    protected String createBy;
 
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    protected Date updateTime;
+    @TableField(value = "create_date", fill = FieldFill.INSERT)
+    protected Date createDate;
 
-    public Date getCreateTime() {
-        return createTime;
+    @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
+    protected String updateBy;
+
+    @TableField(value = "update_date", fill = FieldFill.INSERT_UPDATE)
+    protected Date updateDate;
+
+    public String getCreateBy() {
+        return createBy;
     }
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public Date getCreateDate() {
+        return createDate;
     }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
     }
 }

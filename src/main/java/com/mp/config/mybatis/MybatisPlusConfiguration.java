@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.mp.config.Constants;
+import com.mp.config.TenantHelper;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,10 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName(Constants.FIELD_CREATE_TIME, new Date(), metaObject);
         this.setFieldValByName(Constants.FIELD_UPDATE_TIME, new Date(), metaObject);
+        Long tenantId = TenantHelper.getTenantId();
+        if (tenantId != null) {
+            // todo
+        }
     }
 
     /**

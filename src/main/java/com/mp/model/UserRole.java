@@ -1,10 +1,12 @@
 package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 @TableName("user_role")
+@InterceptorIgnore(tenantLine = "true")
 public class UserRole {
     @TableId(type = IdType.AUTO)
     private Long id;
