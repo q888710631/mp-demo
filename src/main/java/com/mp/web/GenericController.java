@@ -1,8 +1,10 @@
 package com.mp.web;
 
 import com.mp.dto.CitySimpleDTO;
+import com.mp.service.CacheService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +17,13 @@ import java.io.PrintWriter;
 public class GenericController {
     private final Logger log = LoggerFactory.getLogger(GenericController.class);
 
+    @Autowired
+    private CacheService cacheService;
+
     @GetMapping("/test")
     public void testGet(HttpServletResponse response) throws IOException {
+        cacheService.cache("123");
+
         PrintWriter writer = response.getWriter();
         writer.write("close");
         writer.flush();

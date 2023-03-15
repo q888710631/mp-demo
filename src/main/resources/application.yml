@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://127.0.0.1/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    url: jdbc:mysql://127.0.0.1/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: root
     hikari:
@@ -15,6 +15,12 @@ spring:
         prepStmtCacheSize: 250
         prepStmtCacheSqlLimit: 2048
         useServerPrepStmts: true
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
 
 
 mybatis-plus:
