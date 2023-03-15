@@ -21,7 +21,7 @@ public class GenericController {
     private CacheService cacheService;
 
     @GetMapping("/test")
-    public void testGet(HttpServletResponse response) throws IOException {
+    public void testGet(String abc, HttpServletResponse response) throws IOException {
         cacheService.cache("123");
 
         PrintWriter writer = response.getWriter();

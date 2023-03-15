@@ -90,7 +90,7 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
 
         FilterInvocation filterInvocation = (FilterInvocation) object;
         final HttpServletRequest request = filterInvocation.getRequest();
-        String requestUrl = filterInvocation.getRequestUrl();
+        String requestUrl = filterInvocation.getRequest().getRequestURI();
         String method = request.getMethod();
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         for (AuthenticateMatcher authenticateMatcher : matchers) {

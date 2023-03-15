@@ -1,6 +1,5 @@
 package com.mp.config.seurity;
 
-import com.mp.config.ResponseAdviceHandler;
 import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.my.MyAuthenticationProvider;
 import com.mp.service.MyUserDetailService;
