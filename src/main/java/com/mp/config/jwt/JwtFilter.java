@@ -47,7 +47,6 @@ public class JwtFilter extends GenericFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        log.info("method = {}, url = {} ", httpServletRequest.getMethod(), httpServletRequest.getRequestURI());
         String jwt = resolveToken(httpServletRequest);
         // 存储authentication
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

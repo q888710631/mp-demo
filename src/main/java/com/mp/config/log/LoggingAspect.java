@@ -16,14 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
-import org.springframework.security.web.header.HeaderWriterFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -41,23 +39,24 @@ public class LoggingAspect implements Ordered {
 
     @Pointcut(
         "within(@org.springframework.stereotype.Service *)" +
-        " || within(@org.springframework.web.bind.annotation.RestController *)"
+            " || within(@org.springframework.web.bind.annotation.RestController *)"
     )
     public void springBeanPointcut() {
         // Method is empty as this is just a Pointcut, the implementations are in the advices.
     }
+
     private Logger logger(JoinPoint joinPoint) {
         return LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringTypeName());
     }
 
     @AfterThrowing(pointcut = "springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-            logger(joinPoint)
-                .error(
-                    "Exception in {}() with cause = {}",
-                    joinPoint.getSignature().getName(),
-                    e.getCause() != null ? e.getCause() : "NULL"
-                );
+        logger(joinPoint)
+            .error(
+                "Exception in {}() with cause = {}",
+                joinPoint.getSignature().getName(),
+                e.getCause() != null ? e.getCause() : "NULL"
+            );
     }
 
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || within(@org.springframework.stereotype.Controller *)")
@@ -69,96 +68,39 @@ public class LoggingAspect implements Ordered {
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             //请求
-            Optional
-                .ofNullable(RequestContextHolder.getRequestAttributes())
-                .ifPresent(
-                    k -> {
-                        ServletRequestAttributes req = (ServletRequestAttributes) k;
-                        HttpServletRequest request = req.getRequest();
-                        logEntity.setRequestMethod(request.getMethod());
-                        logEntity.setContentType((StringUtils.isEmpty(request.getContentType())) ? "empty" : request.getContentType());
-                        logEntity.setRequestURI(StringUtils.abbreviate(request.getRequestURI(), 255));
-                        logEntity.setRequestURL(StringUtils.abbreviate(request.getRequestURL().toString(), 255));
-                        logEntity.setUserAgent(Optional.ofNullable(request.getHeader("user-agent")).orElse(""));
-                        logEntity.setIp(request.getRemoteAddr());
-                        logEntity.setHeaders(getHeadersInfo(request));
-                        logEntity.setRealIp(HttpUtils.getIpAddress(request));
-                        logEntity.setParams(getRequestParams(request));
-                    }
-                );
+            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+            if (requestAttributes != null) {
+                ServletRequestAttributes req = (ServletRequestAttributes) requestAttributes;
+                HttpServletRequest request = req.getRequest();
+                logEntity.requestMethod = request.getMethod();
+                logEntity.contentType = (StringUtils.isEmpty(request.getContentType())) ? "none" : request.getContentType();
+                logEntity.requestURI = StringUtils.abbreviate(request.getRequestURI(), 255);
+                logEntity.requestURL = StringUtils.abbreviate(request.getRequestURL().toString(), 255);
+                logEntity.userAgent = Optional.ofNullable(request.getHeader("user-agent")).orElse("");
+                logEntity.ip = request.getRemoteAddr();
+                logEntity.headers = getHeadersInfo(request);
+                logEntity.realIp = HttpUtils.getIpAddress(request);
+                logEntity.params = getRequestParams(request);
+            }
 
             //类名
-            String className = point.getTarget().getClass().getName();
-            logEntity.setClassName(className);
+            logEntity.className = point.getTarget().getClass().getName();
             //请求方法
-            String method = point.getSignature().getName() + "()";
-            logEntity.setMethod(method);
+            logEntity.method = point.getSignature().getName() + "()";
             //参数
-            String methodArgs = wrapArgs(point);
-            logEntity.setMethodArgs(methodArgs);
+            logEntity.methodArgs = wrapArgs(point);
             //调用结果
             result = point.proceed(args);
-            logEntity.setWithThrows(false);
+            logEntity.withThrows = false;
         } catch (Throwable throwable) {
-            logEntity.setWithThrows(true);
-            logEntity.setThrowable(throwable);
+            logEntity.withThrows = true;
+            throwable = throwable;
             throw throwable;
         } finally {
             stopWatch.split();
-            logEntity.setExecuteMs(stopWatch.getSplitTime());
+            logEntity.executeMs = stopWatch.getSplitTime();
             stopWatch.stop();
-            logger(point)
-                .info(
-                    "\r\n" +
-                    "\r\n" +
-                    "    Request URL : {}" +
-                    "\r\n" +
-                    "    Http Method : {}" +
-                    "\r\n" +
-                    "    Request URI : {}" +
-                    "\r\n" +
-                    "    Request Params : {}" +
-                    "\r\n" +
-                    "    Method Args : {}" +
-                    "\r\n" +
-                    "    Http Headers : {}" +
-                    "\r\n" +
-                    "    Content-Type : {}" +
-                    "\r\n" +
-                    "    Class name : {}" +
-                    "\r\n" +
-                    "    Method Name : {}" +
-                    "\r\n" +
-                    "    Request IP : {}" +
-                    "\r\n" +
-                    "    Real IP : {}" +
-                    "\r\n" +
-                    "    User Agent : {}" +
-                    "\r\n" +
-                    "    Execution Time : {}" +
-                    "ms" +
-                    "\r\n" +
-                    "    WithThrows : {}" +
-                    "\r\n" +
-                    "    Result : {}" +
-                    "\r\n" +
-                    "\r\n",
-                    logEntity.getRequestURL(),
-                    logEntity.getRequestMethod(),
-                    logEntity.getRequestURI(),
-                    logEntity.getParams(),
-                    logEntity.getMethodArgs(),
-                    logEntity.getHeaders(),
-                    logEntity.getContentType(),
-                    logEntity.getClassName(),
-                    logEntity.getMethod(),
-                    logEntity.getIp(),
-                    logEntity.getRealIp(),
-                    logEntity.getUserAgent(),
-                    logEntity.getExecuteMs(),
-                    wrapThrowMessage(logEntity),
-                    wrapResult(result)
-                );
+            logEntity.logPrint(logger(point));
         }
         return result;
     }
@@ -186,18 +128,6 @@ public class LoggingAspect implements Ordered {
         return "{" + message + "}";
     }
 
-    private String wrapResult(Object result) {
-        return result == null ? "<>" : StringUtils.abbreviate(result.toString(), 2000);
-    }
-
-    /**
-     * 获取异常信息
-     */
-    private String wrapThrowMessage(RestApiLog logEntity) {
-        return (logEntity.isWithThrows() && logEntity.getThrowable() != null)
-            ? (logEntity.getThrowable().getClass().getName() + "[" + logEntity.getThrowable().getMessage() + "]")
-            : "false";
-    }
 
     /**
      * 获取头部信息
@@ -216,5 +146,91 @@ public class LoggingAspect implements Ordered {
     @Override
     public int getOrder() {
         return LOWEST_PRECEDENCE;
+    }
+
+    /**
+     * 日志记录
+     */
+    public static class RestApiLog {
+        // 类名
+        private String className;
+        // 方法名
+        private String method;
+        // 请求参数
+        private String params;
+        // 请求参数
+        private String methodArgs;
+        // 响应参数
+        private String result;
+        // 请求方法
+        private String requestMethod;
+        // content-type
+        private String contentType;
+        // user-agent
+        private String userAgent;
+        // 执行时间(ms)
+        private long executeMs;
+        // 请求uri
+        private String requestURI;
+        // 请求URL
+        private String requestURL;
+        // 请求ip,如果
+        private String ip;
+        // 用户的真实ip
+        private String realIp;
+        // 头部
+        private Map<String, String> headers;
+        // 是否抛出异常
+        private boolean withThrows;
+        // 抛出的异常
+        private Throwable throwable;
+
+        /**
+         * 获取异常信息
+         */
+        private String wrapThrowMessage() {
+            return (withThrows && throwable != null) ? (throwable.getClass().getName() + "[" + throwable.getMessage() + "]") : "false";
+        }
+
+        private String wrapResult(Object result) {
+            return result == null ? "<>" : StringUtils.abbreviate(result.toString(), 2000);
+        }
+
+        private void logPrint(Logger logger) {
+            logger.info(
+                "\r\n" +
+                    "\r\n   Request URL : {}" +
+                    "\r\n   Http Method : {}" +
+                    "\r\n   Request URI : {}" +
+                    "\r\n   Request Params : {}" +
+                    "\r\n   Method Args : {}" +
+                    "\r\n   Http Headers : {}" +
+                    "\r\n   Content-Type : {}" +
+                    "\r\n   Class name : {}" +
+                    "\r\n   Method Name : {}" +
+                    "\r\n   Request IP : {}" +
+                    "\r\n   Real IP : {}" +
+                    "\r\n   User Agent : {}" +
+                    "\r\n   Execution Time : {}ms" +
+                    "\r\n   WithThrows : {}" +
+                    "\r\n   Result : {}" +
+                    "\r\n",
+                requestURL,
+                method,
+                requestURI,
+                params,
+                methodArgs,
+                headers,
+                contentType,
+                className,
+                method,
+                ip,
+                realIp,
+                userAgent,
+                executeMs,
+                wrapThrowMessage(),
+                wrapResult(result)
+            );
+        }
     }
 }
