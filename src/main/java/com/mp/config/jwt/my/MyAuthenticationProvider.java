@@ -1,9 +1,6 @@
 package com.mp.config.jwt.my;
 
-import com.mp.config.jwt.JwtConstants;
-import com.mp.config.jwt.TokenProvider;
 import com.mp.config.mybatis.MybatisPlusTenantHandler;
-import com.mp.model.ClientAccount;
 import com.mp.service.MyUserDetailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

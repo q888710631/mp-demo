@@ -32,16 +32,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 
-@Component
 public class JwtFilter extends GenericFilter {
     private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    @Lazy
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    public JwtFilter(ObjectMapper objectMapper, AuthenticationManager authenticationManager) {
+        this.objectMapper = objectMapper;
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {

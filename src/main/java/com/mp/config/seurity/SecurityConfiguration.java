@@ -1,5 +1,6 @@
 package com.mp.config.seurity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.my.MyAuthenticationProvider;
 import com.mp.service.MyUserDetailService;
@@ -31,11 +32,10 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private MyUserDetailService myUserDetailService;
+    private JwtFilter jwtFilter;
 
     @Autowired
-    private JwtFilter jwtFilter;
+    private MyUserDetailService myUserDetailService;
 
     @Autowired
     private MyAuthenticationProvider myAuthenticationProvider;
@@ -44,19 +44,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private MySecurityProblemSupport problemSupport;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManagerBean(ObjectMapper objectMapper) throws Exception {
+        AuthenticationManager authenticationManager = super.authenticationManagerBean();
+        this.jwtFilter = new JwtFilter(objectMapper, authenticationManager);
+        return authenticationManager;
     }
 
     // 配置认证管理器
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(myUserDetailService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(myUserDetailService).passwordEncoder(new BCryptPasswordEncoder());
         auth.authenticationProvider(myAuthenticationProvider);
     }
 
@@ -96,14 +93,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     }
 
-    private JwtConfigurer securityConfigurerAdapter() {
-        return new JwtConfigurer();
+    private SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> securityConfigurerAdapter() {
+        return new SecurityConfigurerAdapter<>() {
+            @Override
+            public void configure(HttpSecurity http) {
+                http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            }
+        };
     }
 
-    public class JwtConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
-        @Override
-        public void configure(HttpSecurity http) {
-            http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        }
-    }
 }
