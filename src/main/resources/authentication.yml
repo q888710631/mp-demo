@@ -3,19 +3,17 @@ authenticate-matchers:
   - path-matchers:
       - /api/test/**
     authenticated: false
-    has-any-role:
   # 登录授权
   - path-matchers:
     - /api/authenticate
     authenticated: false
-    has-any-role:
   # 通用接口
   - path-matchers:
       - /api/user-menu
       - /api/all-role
   # 管理员接口
   - path-matchers:
-      - /api/user-list
+      - /api/admin/**
     has-any-role:
       - admin
 

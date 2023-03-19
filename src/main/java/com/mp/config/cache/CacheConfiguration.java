@@ -34,11 +34,11 @@ public class CacheConfiguration {
      * 缓存到内存
      */
     @Bean
-    public CacheManager memoryCacheManager(RedisCacheManager redisCacheManager) {
+    public CacheManager memoryCacheManager() {
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
         Caffeine<Object, Object> caffeine = Caffeine.newBuilder()
             .maximumSize(1000)
-            .expireAfterAccess(10, TimeUnit.SECONDS)
+            .expireAfterWrite(10, TimeUnit.SECONDS)
             .recordStats();
         caffeineCacheManager.setCaffeine(caffeine);
         return caffeineCacheManager;
