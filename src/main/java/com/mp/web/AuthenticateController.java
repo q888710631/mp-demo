@@ -37,7 +37,7 @@ public class AuthenticateController {
     public MyResponse<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO dto) throws Exception {
         Authentication authenticate = authenticate(dto.getUsername(), dto.getPassword());
         UserPrincipal userPrincipal = (UserPrincipal) authenticate.getPrincipal();
-        MyAuthenticationToken authenticationToken = new MyAuthenticationToken(userPrincipal.getId(), userPrincipal.getAuthorities());
+        MyAuthenticationToken authenticationToken = new MyAuthenticationToken(userPrincipal.getId());
         String jwt = TokenProvider.createToken(
             authenticationToken,
             false,

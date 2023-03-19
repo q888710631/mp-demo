@@ -80,6 +80,12 @@
             <version>30.1.1-jre</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.5</version>
+        </dependency>
+
         <!--  解决mybatis plus 使用多租户插件时，执行insert出现的强转错误
 
             class TenantLineInnerInterceptor{
@@ -138,6 +144,17 @@
             <version>1.9.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.4.2.Final</version>
+        </dependency>
+        <!--  扫描交给spring管理的mapper  @Mapper(componentModel = "spring")    -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.4.2.Final</version>
+        </dependency>
 
     </dependencies>
 

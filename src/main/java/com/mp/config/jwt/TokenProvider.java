@@ -49,7 +49,6 @@ public class TokenProvider {
         Object loginKey,
         JwtHandler jwtHandler
     ) {
-        String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         long now = (new Date()).getTime();
         Date validity;
         if (rememberMe) {
@@ -65,7 +64,6 @@ public class TokenProvider {
         }
         JwtBuilder claim = builder
             .setSubject(authentication.getName())
-            .claim(JwtConstants.AUTHORITIES_KEY, authorities)
             .claim(JwtConstants.LOGIN_TYPE, loginType)
             .claim(JwtConstants.LOGIN_KEY, loginKey)
             .signWith(INSTANT.key, SignatureAlgorithm.HS512)

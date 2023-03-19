@@ -4,77 +4,29 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityConfig;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.util.AntPathMatcher;
-import org.yaml.snakeyaml.Yaml;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 public class MyFilterInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
     private static final Logger log = LoggerFactory.getLogger(MyFilterInvocationSecurityMetadataSource.class);
 
-    public List<AuthenticateMatcher> matchers;
-
     private final FilterInvocationSecurityMetadataSource securityMetadataSource;
+
+    private final AntPathMatcher antPathMatcher;
 
     public MyFilterInvocationSecurityMetadataSource(FilterInvocationSecurityMetadataSource securityMetadataSource) {
         this.securityMetadataSource = securityMetadataSource;
-        try {
-            initMatchers();
-        } catch (IOException e) {
-            log.error("权限文件初始化失败：{}", e.getMessage());
-        }
+        this.antPathMatcher = new AntPathMatcher();
     }
 
-    private void initMatchers() throws IOException {
-        ClassPathResource application = new ClassPathResource("authentication.yml");
-        InputStream inputStream = new FileInputStream(application.getFile());
-        Yaml yaml = new Yaml();
-        Map<String, Object> data = yaml.load(inputStream);
-        Object authenticateMatchers = data.get("authenticate-matchers");
-        List<AuthenticateMatcher> matchers = new ArrayList<>();
-        if (authenticateMatchers != null) {
-            for (Object authenticateMatcher : (Collection) authenticateMatchers) {
-                Map map = (Map) authenticateMatcher;
-                AuthenticateMatcher matcher = new AuthenticateMatcher();
-                matchers.add(matcher);
-                // pathMatchers
-                Object pathMatchers = map.get("path-matchers");
-                if (pathMatchers == null) {
-                    matcher.setPathMatchers(List.of());
-                } else if (pathMatchers instanceof String) {
-                    matcher.setPathMatchers(List.of(pathMatchers.toString()));
-                } else {
-                    matcher.setPathMatchers((List) pathMatchers);
-                }
-
-                // has-any-role
-                Object hasAnyRole = map.get("has-any-role");
-                if (hasAnyRole == null) {
-                    matcher.setHasAnyRole(List.of());
-                } else if (hasAnyRole instanceof String) {
-                    matcher.setHasAnyRole(List.of(hasAnyRole.toString()));
-                } else {
-                    matcher.setHasAnyRole((List) hasAnyRole);
-                }
-                // authenticated
-                matcher.setAuthenticated((Boolean) map.get("authenticated"));
-            }
-        }
-        this.matchers = matchers;
-    }
 
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
@@ -92,8 +44,7 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
         final HttpServletRequest request = filterInvocation.getRequest();
         String requestUrl = filterInvocation.getRequest().getRequestURI();
         String method = request.getMethod();
-        AntPathMatcher antPathMatcher = new AntPathMatcher();
-        for (AuthenticateMatcher authenticateMatcher : matchers) {
+        for (AuthenticateMatcher authenticateMatcher : AuthenticationConstants.AUTHENTICATE_MATCHERS) {
             // method不匹配
             if (authenticateMatcher.getHttpMethod() != null && !authenticateMatcher.getHttpMethod().matches(method)) {
                 continue;

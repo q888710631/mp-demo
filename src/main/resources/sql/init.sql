@@ -32,6 +32,7 @@ DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 
 insert into honyee.`role` (role_key,role_name,create_by,create_date) values('admin', '管理员', 'init', now());
+insert into honyee.`role` (role_key,role_name,create_by,create_date) values('tenant', '租户', 'init', now());
 
 drop table if exists honyee.`user_role`;
 
@@ -50,7 +51,15 @@ COLLATE=utf8mb4_0900_ai_ci;
 
 alter table honyee.`user_role` add unique `union_user_role`(user_id, role_id);
 
-insert into honyee.`user_role` (user_id,role_id,create_by,create_date) values(1, 1, 'init', now());
+insert into honyee.user_role (user_id, role_id,create_by,create_date)
+(
+    select
+        (select id from honyee.`user` where username = 'admin') as user_id,
+        (select id from honyee.`role` where role_key = 'admin') as role_id,
+        'init' as create_by,
+        now() as create_date
+    from dual
+);
 
 
 
