@@ -5,6 +5,7 @@ spring-boot + mybatis plus 多租户
 `@Cacheable`新增缓存配置`redisCacheManager`和`cacheManagerTwice`
 
 `redisCacheManager`缓存到redis，可自定义每个value的缓存时长
+
 `cacheManagerTwice`缓存到内存，固定时长
 
 ```java
