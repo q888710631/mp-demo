@@ -12,7 +12,7 @@ public class MyResponse<T> {
     private final static String SUCCESS = "success";
 
     private Integer code;
-    private String msg;
+    private String message;
     private T data;
 
     private String causeBy;
@@ -33,20 +33,20 @@ public class MyResponse<T> {
 
     public MyResponse() {}
 
-    public MyResponse(Integer code, String msg) {
+    public MyResponse(Integer code, String message) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
     }
 
-    public MyResponse(Integer code, String msg, T data) {
+    public MyResponse(Integer code, String message, T data) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
     }
 
-    public MyResponse(Integer code, String msg, T data, String causeBy) {
+    public MyResponse(Integer code, String message, T data, String causeBy) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
         this.data = data;
         this.causeBy = causeBy;
     }
@@ -97,7 +97,7 @@ public class MyResponse<T> {
     public String toString() {
         final StringBuilder sb = new StringBuilder("MyResponse{");
         sb.append("code=").append(code);
-        sb.append(", msg='").append(msg).append('\'');
+        sb.append(", msg='").append(message).append('\'');
         sb.append(", data=").append(data);
         sb.append('}');
         return sb.toString();
@@ -115,12 +115,12 @@ public class MyResponse<T> {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public T getData() {

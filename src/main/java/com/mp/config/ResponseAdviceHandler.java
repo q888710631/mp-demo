@@ -28,9 +28,12 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
+        if (selectedContentType.includes(MediaType.APPLICATION_JSON)) {
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        }
         if (body instanceof MyResponse
-        || body instanceof String
-        || body instanceof byte[]) {
+            || body instanceof String
+            || body instanceof byte[]) {
 
             return body;
         }

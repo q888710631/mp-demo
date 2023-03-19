@@ -5,6 +5,8 @@ import com.mp.config.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class MySecurityProblemSupport implements AuthenticationEntryPoint{
+public class MySecurityProblemSupport implements AuthenticationEntryPoint {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -22,16 +24,20 @@ public class MySecurityProblemSupport implements AuthenticationEntryPoint{
     @Override
     public void commence(final HttpServletRequest request, final HttpServletResponse response,
                          final AuthenticationException exception) throws IOException {
-        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-        if (exception instanceof AccessForbiddenException) {
-            httpStatus = HttpStatus.FORBIDDEN;
-        }
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setStatus(httpStatus.value());
-
         MyResponse<?> myResponse = new MyResponse<>();
-        myResponse.setCode(httpStatus.value());
-        myResponse.setMsg(exception.getMessage());
+        myResponse.setCode(HttpStatus.UNAUTHORIZED.value());
+        if (exception instanceof BadCredentialsException) {
+            myResponse.setMessage("账号或密码错误");
+        } else if (exception instanceof AccessForbiddenException) {
+            myResponse.setCode(HttpStatus.FORBIDDEN.value());
+            myResponse.setMessage("无权限访问");
+        } else if (exception instanceof DisabledException) {
+            myResponse.setCode(HttpStatus.FORBIDDEN.value());
+            myResponse.setMessage("账号已被禁用");
+        } else {
+            myResponse.setMessage(exception.getMessage());
+        }
         objectMapper.writeValue(response.getOutputStream(), myResponse);
     }
 

@@ -55,18 +55,19 @@ public class MyUserDetailService implements UserDetailsService {
 
     private static final BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
 
+    @Cacheable(value = "user-login", key = "#username", cacheManager = "memoryCacheManager")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = findWithRolesByUserName(username);
-        if (user != null) {
-            return new UserPrincipal(
-                user.getId(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getRoles().stream().map(Role::getRoleName).map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-            );
+        if (user == null) {
+            return new UserPrincipal(null, null, null, null);
         }
-        throw new UsernameNotFoundException("账号或密码错误");
+        return new UserPrincipal(
+            user.getId(),
+            user.getUsername(),
+            user.getPassword(),
+            user.getRoles().stream().map(Role::getRoleName).map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+        );
     }
 
     /**

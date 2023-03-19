@@ -8,6 +8,7 @@ import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.config.seurity.UserPrincipal;
 import com.mp.dto.LoginRequestDTO;
 import com.mp.dto.LoginResponseDTO;
+import com.mp.exp.CommonException;
 import com.mp.model.Role;
 import com.mp.service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,8 +35,9 @@ public class AuthenticateController {
     private MyUserDetailService userDetailService;
 
     @PostMapping("/authenticate")
-    public MyResponse<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO dto) throws Exception {
-        Authentication authenticate = authenticate(dto.getUsername(), dto.getPassword());
+    public MyResponse<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO dto) {
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+        Authentication authenticate = authenticationManager.authenticate(token);
         UserPrincipal userPrincipal = (UserPrincipal) authenticate.getPrincipal();
         MyAuthenticationToken authenticationToken = new MyAuthenticationToken(userPrincipal.getId());
         String jwt = TokenProvider.createToken(
@@ -46,16 +48,6 @@ public class AuthenticateController {
             data -> data
         );
         return MyResponse.ok(new LoginResponseDTO(jwt));
-    }
-
-    private Authentication authenticate(String username, String password) throws Exception {
-        try {
-            return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
-        } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
-        }
     }
 
     @GetMapping("/my-roles")
