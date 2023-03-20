@@ -8,30 +8,27 @@ import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.config.seurity.UserPrincipal;
 import com.mp.dto.LoginRequestDTO;
 import com.mp.dto.LoginResponseDTO;
-import com.mp.exp.CommonException;
 import com.mp.model.Role;
 import com.mp.service.MyUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @RestController
 @RequestMapping("/api")
 public class AuthenticateController {
 
-    @Autowired
+    @Resource
     private AuthenticationManager authenticationManager;
 
-    @Autowired
+    @Resource
     private MyUserDetailService userDetailService;
 
     @PostMapping("/authenticate")

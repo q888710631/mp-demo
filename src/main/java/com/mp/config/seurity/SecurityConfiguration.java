@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.my.MyAuthenticationProvider;
 import com.mp.service.MyUserDetailService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -19,12 +19,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.yaml.snakeyaml.Yaml;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -32,22 +36,38 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    public static AuthenticateProperties authenticateProperties;
+
     private JwtFilter jwtFilter;
 
-    @Autowired
-    private MyUserDetailService myUserDetailService;
+    private final MyUserDetailService myUserDetailService;
 
-    @Autowired
-    private MyAuthenticationProvider myAuthenticationProvider;
+    private final MyAuthenticationProvider myAuthenticationProvider;
 
-    @Autowired
-    private MySecurityProblemSupport problemSupport;
+    private final MySecurityProblemSupport problemSupport;
 
     @Bean
     public AuthenticationManager authenticationManagerBean(ObjectMapper objectMapper) throws Exception {
         AuthenticationManager authenticationManager = super.authenticationManagerBean();
         this.jwtFilter = new JwtFilter(objectMapper, authenticationManager);
         return authenticationManager;
+    }
+
+    public SecurityConfiguration(ObjectMapper objectMapper,
+                                 MyUserDetailService myUserDetailService,
+                                 MyAuthenticationProvider myAuthenticationProvider,
+                                 MySecurityProblemSupport problemSupport
+                                 ) throws IOException {
+        this.myUserDetailService = myUserDetailService;
+        this.myAuthenticationProvider = myAuthenticationProvider;
+        this.problemSupport = problemSupport;
+
+        // 读取权限配置文件
+        Yaml yaml = new Yaml();
+        ClassPathResource application = new ClassPathResource("authentication.yml");
+        Map<String, Object> data = yaml.load(new FileInputStream(application.getFile()));
+        String json = objectMapper.writeValueAsString(data);
+        authenticateProperties = objectMapper.readValue(json, AuthenticateProperties.class);
     }
 
     // 配置认证管理器
@@ -76,7 +96,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 public <O extends FilterSecurityInterceptor> O postProcess(O object) {
                     FilterInvocationSecurityMetadataSource securityMetadataSource = object.getSecurityMetadataSource();
                     object.setSecurityMetadataSource(
-                        new MyFilterInvocationSecurityMetadataSource(securityMetadataSource));
+                        new MyFilterInvocationSecurityMetadataSource(securityMetadataSource, authenticateProperties));
                     object.setAccessDecisionManager(new MyFilterAccessDecisionManager());
                     return object;
                 }

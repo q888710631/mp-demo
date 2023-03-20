@@ -2,7 +2,6 @@ package com.mp.config.seurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.MyResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -18,8 +17,11 @@ import java.io.IOException;
 @Component
 public class MySecurityProblemSupport implements AuthenticationEntryPoint {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
+
+    public MySecurityProblemSupport(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void commence(final HttpServletRequest request, final HttpServletResponse response,

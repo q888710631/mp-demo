@@ -22,11 +22,14 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
 
     private final AntPathMatcher antPathMatcher;
 
-    public MyFilterInvocationSecurityMetadataSource(FilterInvocationSecurityMetadataSource securityMetadataSource) {
+    // 权限配置
+    private final AuthenticateProperties authenticateProperties;
+
+    public MyFilterInvocationSecurityMetadataSource(FilterInvocationSecurityMetadataSource securityMetadataSource, AuthenticateProperties authenticateProperties) {
         this.securityMetadataSource = securityMetadataSource;
         this.antPathMatcher = new AntPathMatcher();
+        this.authenticateProperties = authenticateProperties;
     }
-
 
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
@@ -44,7 +47,7 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
         final HttpServletRequest request = filterInvocation.getRequest();
         String requestUrl = filterInvocation.getRequest().getRequestURI();
         String method = request.getMethod();
-        for (AuthenticateMatcher authenticateMatcher : AuthenticationConstants.AUTHENTICATE_MATCHERS) {
+        for (AuthenticateMatcher authenticateMatcher : authenticateProperties.getAuthenticateMatchers()) {
             // method不匹配
             if (authenticateMatcher.getHttpMethod() != null && !authenticateMatcher.getHttpMethod().matches(method)) {
                 continue;
