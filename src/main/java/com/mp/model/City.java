@@ -2,6 +2,9 @@ package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 
+/**
+ * 不存在的测试表
+ */
 @TableName("city")
 @InterceptorIgnore(tenantLine = "true")
 public class City {

@@ -1,12 +1,13 @@
 package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.mp.model.base.BaseEntity;
 
 import java.util.Collection;
 
 @TableName("user")
 @InterceptorIgnore(tenantLine = "true")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 

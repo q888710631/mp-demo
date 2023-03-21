@@ -1,4 +1,4 @@
-package com.mp.model;
+package com.mp.model.base;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 

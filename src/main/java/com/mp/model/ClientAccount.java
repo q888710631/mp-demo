@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.mp.model.base.BaseTenantEntity;
 
 @TableName("client_account")
-public class ClientAccount extends BaseTenantEntity{
+public class ClientAccount extends BaseTenantEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
