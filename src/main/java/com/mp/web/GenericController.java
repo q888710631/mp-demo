@@ -1,8 +1,6 @@
 package com.mp.web;
 
 import com.mp.config.TenantHelper;
-import com.mp.exp.CommonException;
-import com.mp.exp.DataNotExistsException;
 import com.mp.service.CacheService;
 import com.mp.service.GenericService;
 import org.slf4j.Logger;
@@ -43,8 +41,7 @@ public class GenericController {
 
     @PostMapping("/test")
     public ResponseEntity<?> test(@RequestBody Object obj) {
-        throw new DataNotExistsException();
-//        return ResponseEntity.ok(obj);
+        return ResponseEntity.ok(obj);
     }
 
     /**
