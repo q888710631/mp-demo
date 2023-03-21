@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
@@ -15,7 +14,6 @@ import java.io.InputStream;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class TokenProvider {
 

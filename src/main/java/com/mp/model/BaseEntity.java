@@ -2,7 +2,6 @@ package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 

@@ -3,7 +3,9 @@ package com.mp.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.mp.dto.UserDTO;
 import com.mp.model.User;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
