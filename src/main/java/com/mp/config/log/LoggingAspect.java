@@ -2,6 +2,8 @@ package com.mp.config.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mp.config.Constants;
+import com.mp.exp.CommonException;
 import com.mp.utils.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -51,12 +53,23 @@ public class LoggingAspect implements Ordered {
 
     @AfterThrowing(pointcut = "springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-        logger(joinPoint)
-            .error(
-                "Exception in {}() with cause = {}",
-                joinPoint.getSignature().getName(),
-                e.getCause() != null ? e.getCause() : "NULL"
-            );
+        Logger logger = logger(joinPoint);
+        if (e instanceof CommonException) {
+            for (StackTraceElement stack : e.getStackTrace()) {
+                if (stack.getClassName().startsWith(Constants.BASE_PACKAGE)) {
+                    logger.warn("自定义异常 {} => {}.{}(), line={}, message={}",
+                        e.getClass().getSimpleName(), stack.getClassName(), stack.getMethodName(), stack.getLineNumber(), e.getMessage());
+                    break;
+                }
+            }
+        } else {
+            logger
+                .error(
+                    "Exception in {}() with cause = {}",
+                    joinPoint.getSignature().getName(),
+                    e.getCause() != null ? e.getCause() :"NULL"
+                );
+        }
     }
 
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || within(@org.springframework.stereotype.Controller *)")
