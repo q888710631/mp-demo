@@ -5,6 +5,7 @@ import com.mp.config.TenantHelper;
 import com.mp.config.jwt.LoginTypeEnum;
 import com.mp.config.jwt.TokenProvider;
 import com.mp.config.jwt.my.MyAuthenticationToken;
+import com.mp.config.seurity.SecurityConfiguration;
 import com.mp.config.seurity.UserPrincipal;
 import com.mp.dto.LoginRequestDTO;
 import com.mp.dto.LoginResponseDTO;
@@ -26,13 +27,14 @@ import java.util.List;
 public class AuthenticateController {
 
     @Resource
-    private AuthenticationManager authenticationManager;
+    private SecurityConfiguration securityConfiguration;
 
     @Resource
     private MyUserDetailService userDetailService;
 
     @PostMapping("/authenticate")
     public MyResponse<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO dto) {
+        AuthenticationManager authenticationManager = securityConfiguration.getAuthenticationManager();
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
         Authentication authenticate = authenticationManager.authenticate(token);
         UserPrincipal userPrincipal = (UserPrincipal) authenticate.getPrincipal();

@@ -1,6 +1,7 @@
 package com.mp.web;
 
 import com.mp.config.TenantHelper;
+import com.mp.exp.CommonException;
 import com.mp.service.CacheService;
 import com.mp.service.GenericService;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class GenericController {
-    private final Logger log = LoggerFactory.getLogger(GenericController.class);
+    private static final Logger log = LoggerFactory.getLogger(GenericController.class);
 
     @Resource
     private CacheService cacheService;
@@ -41,7 +42,8 @@ public class GenericController {
 
     @PostMapping("/test")
     public ResponseEntity<?> test(@RequestBody Object obj) {
-        return ResponseEntity.ok(obj);
+        throw new CommonException("test");
+//        return ResponseEntity.ok(obj);
     }
 
     /**

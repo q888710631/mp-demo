@@ -11,7 +11,7 @@ public class MyResponse<T> {
 
     private final static String SUCCESS = "success";
 
-    private Integer code;
+    private Integer code = 200;
     private String message;
     private T data;
 

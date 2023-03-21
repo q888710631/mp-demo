@@ -37,7 +37,7 @@ import java.util.Map;
 @SpringBootTest
 //@InterceptorIgnore(tenantLine = "true")
 class MpApplicationTests {
-    private final Logger log = LoggerFactory.getLogger(MpApplicationTests.class);
+    private static final Logger log = LoggerFactory.getLogger(MpApplicationTests.class);
 
     // PageHelper 分页起始
     static final int PAGE_HELPER_START = 1;

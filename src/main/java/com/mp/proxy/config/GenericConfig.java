@@ -1,6 +1,5 @@
 package com.mp.proxy.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

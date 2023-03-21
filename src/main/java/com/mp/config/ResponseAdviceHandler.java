@@ -1,21 +1,28 @@
 package com.mp.config;
 
+import com.mp.exp.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import org.zalando.problem.Problem;
 
+import java.nio.charset.StandardCharsets;
+
 @ControllerAdvice
 public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
-    private final Logger log = LoggerFactory.getLogger(ResponseAdviceHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ResponseAdviceHandler.class);
 
+    private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -28,8 +35,8 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        if (selectedContentType.includes(MediaType.APPLICATION_JSON)) {
-            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        if (selectedContentType.includes(MEDIA_TYPE)) {
+            response.getHeaders().setContentType(MEDIA_TYPE);
         }
         if (body instanceof MyResponse
             || body instanceof String
@@ -57,5 +64,12 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         }
         return new MyResponse<>(statusCode, msg, body);
     }
+
+    @ExceptionHandler(value = CommonException.class)
+    @ResponseBody
+    public MyResponse<?> handler(CommonException e) {
+        return new MyResponse<>(500, e.getMessage());
+    }
+
 
 }

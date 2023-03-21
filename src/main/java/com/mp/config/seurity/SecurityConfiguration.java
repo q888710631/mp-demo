@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.my.MyAuthenticationProvider;
 import com.mp.service.MyUserDetailService;
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
@@ -27,14 +27,13 @@ import org.yaml.snakeyaml.Yaml;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
 @Import(SecurityProblemSupport.class)
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements InitializingBean {
 
     public static AuthenticateProperties authenticateProperties;
 
@@ -46,28 +45,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final MySecurityProblemSupport problemSupport;
 
-    @Bean
-    public AuthenticationManager authenticationManagerBean(ObjectMapper objectMapper) throws Exception {
-        AuthenticationManager authenticationManager = super.authenticationManagerBean();
-        this.jwtFilter = new JwtFilter(objectMapper, authenticationManager);
-        return authenticationManager;
-    }
+    private final ObjectMapper objectMapper;
+
+    private AuthenticationManager authenticationManager;
 
     public SecurityConfiguration(ObjectMapper objectMapper,
                                  MyUserDetailService myUserDetailService,
                                  MyAuthenticationProvider myAuthenticationProvider,
-                                 MySecurityProblemSupport problemSupport
-                                 ) throws IOException {
+                                 MySecurityProblemSupport problemSupport) throws Exception {
         this.myUserDetailService = myUserDetailService;
         this.myAuthenticationProvider = myAuthenticationProvider;
         this.problemSupport = problemSupport;
-
-        // 读取权限配置文件
-        Yaml yaml = new Yaml();
-        ClassPathResource application = new ClassPathResource("authentication.yml");
-        Map<String, Object> data = yaml.load(new FileInputStream(application.getFile()));
-        String json = objectMapper.writeValueAsString(data);
-        authenticateProperties = objectMapper.readValue(json, AuthenticateProperties.class);
+        this.objectMapper = objectMapper;
     }
 
     // 配置认证管理器
@@ -80,6 +69,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     // 配置安全策略
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
         // 设置路径及要求的权限，支持 ant 风格路径写法
         http.csrf().disable()
             .exceptionHandling()
@@ -122,4 +112,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         };
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        authenticationManager = super.authenticationManagerBean();
+        this.jwtFilter = new JwtFilter(objectMapper, super.authenticationManagerBean());
+
+        // 读取权限配置文件
+        Yaml yaml = new Yaml();
+        ClassPathResource application = new ClassPathResource("authentication.yml");
+        Map<String, Object> data = yaml.load(new FileInputStream(application.getFile()));
+        String json = objectMapper.writeValueAsString(data);
+        authenticateProperties = objectMapper.readValue(json, AuthenticateProperties.class);
+    }
+
+    public AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
+    }
 }

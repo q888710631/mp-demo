@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class MyAuthenticationProvider implements AuthenticationProvider {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger log = LoggerFactory.getLogger(MyAuthenticationProvider.class);
 
     private final MyUserDetailService myUserDetailService;
 

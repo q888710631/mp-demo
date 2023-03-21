@@ -3,6 +3,7 @@ package com.mp.config.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.InputStreamHttpServletRequestWrapper;
 import com.mp.config.MyResponse;
+import com.mp.config.TenantHelper;
 import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.config.mybatis.MybatisPlusTenantHandler;
 import io.jsonwebtoken.Claims;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class JwtFilter extends GenericFilter {
-    private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     private final ObjectMapper objectMapper;
 
