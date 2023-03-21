@@ -1,4 +1,4 @@
-package com.mp.mapperstruct;
+package com.mp.mapperstruct.base;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.MappingTarget;

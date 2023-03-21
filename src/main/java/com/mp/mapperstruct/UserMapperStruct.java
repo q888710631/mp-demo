@@ -1,6 +1,7 @@
 package com.mp.mapperstruct;
 
 import com.mp.dto.UserDTO;
+import com.mp.mapperstruct.base.EntityMapper;
 import com.mp.model.User;
 import org.mapstruct.Mapper;
 

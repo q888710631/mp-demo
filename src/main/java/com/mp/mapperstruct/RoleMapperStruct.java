@@ -1,6 +1,7 @@
 package com.mp.mapperstruct;
 
 import com.mp.dto.RoleDTO;
+import com.mp.mapperstruct.base.EntityMapper;
 import com.mp.model.Role;
 import org.mapstruct.Mapper;
 
