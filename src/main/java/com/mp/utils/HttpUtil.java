@@ -12,9 +12,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-public class MyHttpUtil {
+public class HttpUtil {
 
-    private MyHttpUtil() {
+    private HttpUtil() {
     }
 
     private static final String UNKNOWN = "unknown";

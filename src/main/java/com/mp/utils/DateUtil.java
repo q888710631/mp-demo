@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-public class MyDateUtil {
+public class DateUtil {
 
     private static final String DEFAULT_ZONE_OFFSET = "+8";
 
