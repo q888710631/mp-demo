@@ -11,7 +11,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 输出目录在启动目录下开始计算，开头有/则从根目录开始 -->
-            <fileNamePattern>/logs/honyee.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>/home/logs/honyee.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!-- 保留15天日志 -->
             <maxHistory>15</maxHistory>
             <!-- 设置文件大小 -->
