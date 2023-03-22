@@ -11,6 +11,7 @@ import com.mp.config.jwt.TokenProvider;
 import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.config.mybatis.MybatisPlusTenantHandler;
 import com.mp.dto.CitySimpleDTO;
+import com.mp.dto.ParamDTO;
 import com.mp.enums.StateEnum;
 import com.mp.mapper.CityMapper;
 import com.mp.mapper.ProductMapper;
@@ -20,6 +21,7 @@ import com.mp.model.City;
 import com.mp.model.Product;
 import com.mp.model.Role;
 import com.mp.model.User;
+import com.mp.utils.MyHttpUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.jupiter.api.BeforeAll;
@@ -106,7 +108,7 @@ class MpApplicationTests {
         log.info(() -> "queryCity");
     }
 
-//    @Test
+    //    @Test
     public void createProduct() {
         Product p = new Product();
         p.setTitle("产品" + System.currentTimeMillis());
@@ -115,7 +117,7 @@ class MpApplicationTests {
         log.info(() -> "createProduct");
     }
 
-//    @Test
+    //    @Test
     void queryProduct() {
         //
         LambdaQueryWrapper<Product> eq = new LambdaQueryWrapper<Product>().eq(Product::getId, "");
@@ -128,7 +130,7 @@ class MpApplicationTests {
         log.info(() -> "queryProduct");
     }
 
-//    @Test
+    //    @Test
     public void deleteProduct() {
         productMapper.deleteById(999);
         log.info(() -> "deleteProduct");
@@ -153,4 +155,13 @@ class MpApplicationTests {
         map.put(JwtConstants.AUTHORIZATION_HEADER, JwtConstants.BEARER + " " + jwt);
 
     }
+
+    @Test
+    public void urlToDTO() throws ReflectiveOperationException {
+        String url = "https://www.honyee.com/html/honyee.html?id=123&id=456&type=honyee&data.name=honyee";
+        ParamDTO paramDTO = MyHttpUtils.readQuery(url, ParamDTO.class);
+        log.info(() -> "urlToDTO");
+    }
+
+
 }

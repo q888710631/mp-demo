@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mp.config.Constants;
 import com.mp.exp.CommonException;
-import com.mp.utils.HttpUtils;
+import com.mp.utils.MyHttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
@@ -92,7 +92,7 @@ public class LoggingAspect implements Ordered {
                 logEntity.userAgent = Optional.ofNullable(request.getHeader("user-agent")).orElse("");
                 logEntity.ip = request.getRemoteAddr();
                 logEntity.headers = getHeadersInfo(request);
-                logEntity.realIp = HttpUtils.getIpAddress(request);
+                logEntity.realIp = MyHttpUtils.getIpAddress(request);
                 logEntity.params = getRequestParams(request);
             }
 

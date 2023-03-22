@@ -1,6 +1,33 @@
 # mp-demo
 spring-boot + mybatis plus 多租户
 
+## 2023.3.22
+
+新增一些工具类
+
+```java
+public class MyTest {
+    public void test() {
+        String url = "https://www.honyee.com/html/honyee.html?id=123&id=456&type=abc&data.name=honyee";
+        ParamDTO paramDTO = MyHttpUtils.readQuery(url, ParamDTO.class);
+    }
+}
+```
+
+```java
+public class ParamDTO {
+    List<String> id;
+    String type;
+    Data data;
+    public static class Data{
+        String name;
+        // 省略 get&set
+    }
+    
+    // 省略 get&set
+}
+```
+
 ## 2023.3.19
 `@Cacheable`新增缓存配置`redisCacheManager`和`cacheManagerTwice`
 

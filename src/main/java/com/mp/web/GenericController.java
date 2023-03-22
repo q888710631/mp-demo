@@ -26,7 +26,7 @@ public class GenericController {
     private GenericService genericService;
 
     @GetMapping("/test")
-    public void testGet(String abc, HttpServletResponse response) throws IOException {
+    public void testGet( HttpServletResponse response) throws IOException {
         // 测试缓存
         cacheService.cacheRedis("123");
         cacheService.cacheMemory("123");

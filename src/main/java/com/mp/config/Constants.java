@@ -15,4 +15,7 @@ public class Constants {
 
     // 表字段名
     public static final String COLUMN_TENANT_ID = "tenant_id";
+
+    // 中文范围
+    public static final String CN_RANGE = "\\u4e00-\\u9fa5";
 }
