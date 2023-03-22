@@ -1,6 +1,9 @@
 package com.mp.config;
 
 import com.mp.exp.CommonException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -14,11 +17,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import org.zalando.problem.Problem;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @ControllerAdvice
 public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
 
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
+
+    @Autowired
+    private Tracer tracer;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -29,11 +36,20 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         return true;
     }
 
+    /**
+     * Response.PrintWriter直接输出结果不会进入该方法
+     */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
         if (selectedContentType.includes(MEDIA_TYPE)) {
             response.getHeaders().setContentType(MEDIA_TYPE);
         }
+        String traceId = "";
+        Span span = tracer.currentSpan();
+        if(span != null){
+            traceId = span.context().traceId();
+        }
+        response.getHeaders().add("Trace-Id", traceId);
         if (body instanceof MyResponse
             || body instanceof String
             || body instanceof byte[]) {
@@ -42,18 +58,18 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         }
 
         int statusCode = ((ServletServerHttpResponse) response).getServletResponse().getStatus();
-        String msg = "成功";
+        String message = "成功";
         // 判断code是否大于4xx && 判断是不是problem
         // 错误返回的时候code和message的包装
         if (statusCode >= 400) {
             if ((body instanceof Problem)) {
                 Problem problem = (Problem) body;
-                msg = problem.getDetail();
+                message = problem.getDetail();
             } else {
-                msg = "服务异常";
+                message = "服务异常";
             }
         }
-        return new MyResponse<>(statusCode, msg, body);
+        return new MyResponse<>(statusCode, message, body);
     }
 
     @ExceptionHandler(value = CommonException.class)
