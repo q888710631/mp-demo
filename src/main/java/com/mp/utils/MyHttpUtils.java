@@ -1,7 +1,6 @@
 package com.mp.utils;
 
 import com.google.common.base.CaseFormat;
-import com.mp.exp.CommonException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.util.MultiValueMap;
@@ -9,7 +8,6 @@ import org.springframework.validation.DataBinder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
