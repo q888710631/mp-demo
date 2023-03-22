@@ -25,8 +25,6 @@ spring:
     host: 127.0.0.1
     port: 6379
 
-
-
 mybatis-plus:
   # 指定 mapper.xml 的位置
   mapper-locations: classpath:mybatis/mapper/*.xml
@@ -36,7 +34,8 @@ mybatis-plus:
     #默认开启驼峰命名法，可以不用设置该属性
     #-underscore-to-camel-case: true
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 pagehelper:
   propertyName: propertyValue
@@ -47,7 +46,7 @@ pagehelper:
 
 token-secret: Y2M3MTZmNTllMTMyMGQzNmQ5MjNhZTNjYWY2MmFmMDFiMWFkYjMwMWE0MjhiMDI3MWZhY2JiZGFkZDlhNDcwZTI3M2M0Mjg5MDdjY2E2YWMzMDEwMzkwYTQ0MzczN2NjODVhZmJmNDUzODdmNDBmODFiZDU4M2I1YjQwNjBlMTA=
 
-
-
-
-
+logging:
+  level:
+    # 打印SQL
+    com.mp.config.mybatis.MybatisPlusTenantLineInnerInterceptor: debug
