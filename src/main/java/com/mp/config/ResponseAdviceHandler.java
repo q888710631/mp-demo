@@ -50,12 +50,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
                 Problem problem = (Problem) body;
                 msg = problem.getDetail();
             } else {
-                msg =
-                    String.format(
-                        "服务异常 [%s][%s]",
-                        "traceId",//Optional.ofNullable(MDC.get(MDCFilter.TRACE_ID_HEADER)).orElse("-"),
-                        System.currentTimeMillis()
-                    );
+                msg = "服务异常";
             }
         }
         return new MyResponse<>(statusCode, msg, body);
