@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE configuration>-->
+
+<configuration scan="true">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+<!--    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>-->
+<!--    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />-->
+<!--    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />-->
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- 输出目录在启动目录下开始计算，开头有/则从根目录开始 -->
+            <fileNamePattern>/logs/honyee.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 保留15天日志 -->
+            <maxHistory>15</maxHistory>
+            <!-- 设置文件大小 -->
+            <MaxFileSize>100MB</MaxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <!-- 追加日志行和方法输出-->
+            <Pattern>%d ${LOG_LEVEL_PATTERN:-%5p} [%X{trace_id}] [%thread] %logger{0}[%line] : %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="FILE"/>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC"/>
+    </root>
+    <!--  # 打印SQL  -->
+    <logger name="com.mp.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
+
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+</configuration>
