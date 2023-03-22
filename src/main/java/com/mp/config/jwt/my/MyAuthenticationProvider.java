@@ -2,8 +2,6 @@ package com.mp.config.jwt.my;
 
 import com.mp.config.mybatis.MybatisPlusTenantHandler;
 import com.mp.service.MyUserDetailService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -14,8 +12,6 @@ import java.util.List;
 
 @Component
 public class MyAuthenticationProvider implements AuthenticationProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(MyAuthenticationProvider.class);
 
     private final MyUserDetailService myUserDetailService;
 

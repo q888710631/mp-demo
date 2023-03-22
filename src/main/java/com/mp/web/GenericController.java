@@ -3,8 +3,6 @@ package com.mp.web;
 import com.mp.config.TenantHelper;
 import com.mp.service.CacheService;
 import com.mp.service.GenericService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +15,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class GenericController {
-    private static final Logger log = LoggerFactory.getLogger(GenericController.class);
 
     @Resource
     private CacheService cacheService;

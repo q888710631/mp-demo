@@ -1,7 +1,5 @@
 package com.mp.config.seurity;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
@@ -14,7 +12,6 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 public class MyFilterAccessDecisionManager implements AccessDecisionManager {
-    private static final Logger log = LoggerFactory.getLogger(MyFilterAccessDecisionManager.class);
 
     /**
      * 校验角色，能进入此方法的都是需要登录鉴权的

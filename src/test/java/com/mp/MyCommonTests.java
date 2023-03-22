@@ -5,7 +5,7 @@ import com.mp.config.jwt.LoginTypeEnum;
 import com.mp.config.jwt.TokenProvider;
 import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.dto.ParamDTO;
-import com.mp.utils.MyHttpUtils;
+import com.mp.utils.MyHttpUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
@@ -36,10 +36,11 @@ public class MyCommonTests {
         map.put(JwtConstants.AUTHORIZATION_HEADER, JwtConstants.BEARER + " " + jwt);
 
     }
+
     @Test
     public void urlToDTO() throws ReflectiveOperationException {
         String url = "https://www.honyee.com/html/honyee.html?id=123&id=456&type=honyee&data.name=honyee";
-        ParamDTO paramDTO = MyHttpUtils.readQuery(url, ParamDTO.class);
+        ParamDTO paramDTO = MyHttpUtil.readQuery(url, ParamDTO.class);
         log.info(() -> "urlToDTO");
     }
 }

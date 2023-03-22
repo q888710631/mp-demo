@@ -1,8 +1,6 @@
 package com.mp.config;
 
 import com.mp.exp.CommonException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -19,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 
 @ControllerAdvice
 public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
-    private static final Logger log = LoggerFactory.getLogger(ResponseAdviceHandler.class);
 
     private static final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
 

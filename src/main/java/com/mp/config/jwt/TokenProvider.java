@@ -1,10 +1,9 @@
 package com.mp.config.jwt;
 
+import com.mp.utils.LogUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import org.yaml.snakeyaml.Yaml;
@@ -16,8 +15,6 @@ import java.util.Date;
 import java.util.Map;
 
 public class TokenProvider {
-
-    private static final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
     private static final TokenProvider INSTANT = new TokenProvider();
 
@@ -36,7 +33,7 @@ public class TokenProvider {
             key = Keys.hmacShaKeyFor(keyBytes);
             jwtParser = Jwts.parserBuilder().setSigningKey(key).build();
         } catch (Exception e) {
-            log.error("{0}", e);
+            LogUtil.get().error("{0}", e);
         }
     }
 
@@ -80,7 +77,7 @@ public class TokenProvider {
         try {
             return INSTANT.jwtParser.parseClaimsJws(authToken).getBody();
         } catch (JwtException | IllegalArgumentException e) {
-            log.info("Invalid JWT token.");
+            LogUtil.get().info("Invalid JWT token.");
             throw e;
         }
     }

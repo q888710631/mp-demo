@@ -5,10 +5,10 @@ import com.mp.config.InputStreamHttpServletRequestWrapper;
 import com.mp.config.MyResponse;
 import com.mp.config.jwt.my.MyAuthenticationToken;
 import com.mp.config.mybatis.MybatisPlusTenantHandler;
+import com.mp.utils.LogUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +28,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 public class JwtFilter extends GenericFilter {
-    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     private final ObjectMapper objectMapper;
 
@@ -41,6 +40,7 @@ public class JwtFilter extends GenericFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        Logger logger = LogUtil.get();
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String jwt = resolveToken(httpServletRequest);
         // 存储authentication
@@ -59,21 +59,23 @@ public class JwtFilter extends GenericFilter {
                 authentication = authenticationManager.authenticate(authentication);
 
                 if (null == authentication) {
-                    log.error("token认证失败,未找到合适的认证类型");
+                    logger.error("token认证失败,未找到合适的认证类型");
                     throw new AuthenticationCredentialsNotFoundException("token认证失败,未找到合适的认证类型");
                 }
                 if (Boolean.FALSE.equals(authentication.isAuthenticated())) {
-                    log.error("授权认证失败");
+                    logger.error("授权认证失败");
                     throw new BadCredentialsException("token认证失败");
                 }
                 securityContext.setAuthentication(authentication);
 
             } catch (JwtException | IllegalArgumentException e) {
-                log.info("Invalid JWT token.");
+                logger.info("Invalid JWT token.");
             } catch (AuthenticationException e) {
-                log.error("token 认证授权失败:{}", e.getMessage());
+                logger.error("token 认证授权失败:{}", e.getMessage());
                 resolveAuthenticationException(e, response);
                 return;
+            } finally {
+                LogUtil.remove();
             }
         }
 //        chain.doFilter(request, response);
@@ -83,6 +85,7 @@ public class JwtFilter extends GenericFilter {
             chain.doFilter(new InputStreamHttpServletRequestWrapper(httpServletRequest), response);
         } finally {
             MybatisPlusTenantHandler.removeTenantValue();
+            LogUtil.remove();
         }
     }
 
@@ -109,7 +112,7 @@ public class JwtFilter extends GenericFilter {
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
             response.getWriter().print(objectMapper.writeValueAsString(new MyResponse<>(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), null)));
         } catch (IOException e) {
-            log.error("### resolvePermissionFailException 处理权限异常返回失败", e);
+            LogUtil.get().error("### resolvePermissionFailException 处理权限异常返回失败", e);
         }
     }
 }

@@ -3,7 +3,7 @@ package com.mp.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySubUtils {
+public class MySubUtil {
 
     /**
      * list 分页处理

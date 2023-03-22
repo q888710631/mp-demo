@@ -9,7 +9,7 @@ spring-boot + mybatis plus 多租户
 public class MyTest {
     public void test() {
         String url = "https://www.honyee.com/html/honyee.html?id=123&id=456&type=abc&data.name=honyee";
-        ParamDTO paramDTO = MyHttpUtils.readQuery(url, ParamDTO.class);
+        ParamDTO paramDTO = MyHttpUtil.readQuery(url, ParamDTO.class);
     }
 }
 ```
