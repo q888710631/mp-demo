@@ -94,6 +94,7 @@ public class LoggingAspect implements Ordered {
                 logEntity.headers = getHeadersInfo(request);
                 logEntity.realIp = HttpUtil.getIpAddress(request);
                 logEntity.params = getRequestParams(request);
+                // todo get body
             }
 
             //类名

@@ -6,11 +6,11 @@ import javax.validation.constraints.NotBlank;
 
 public class LoginRequestDTO {
     @NotBlank(message = "用户名不能为空")
-    @Schema(title = "用户名")
+    @Schema(title = "用户名", defaultValue = "admin")
     private String username;
 
     @NotBlank(message = "密码不能为空")
-    @Schema(title = "密码")
+    @Schema(title = "密码", defaultValue = "admin")
     private String password;
 
     public String getUsername() {

@@ -1,8 +1,6 @@
 package com.honyee.config;
 
 
-import org.slf4j.MDC;
-
 /**
  * 统一返回结构.
  *
@@ -15,13 +13,7 @@ public class MyResponse<T> {
     private String message;
     private T data;
 
-    private String causeBy;
-
-    private String traceId;
-
-    public String getTraceId() {
-        return MDC.get("trace_id");
-    }
+    private String causeBy = "";
 
     public String getCauseBy() {
         return causeBy;
@@ -53,11 +45,6 @@ public class MyResponse<T> {
 
     /**
      * 成功返回静态方法.
-     *
-     * @param msg  提示消息
-     * @param data body数据
-     * @param <T>  泛型
-     * @return
      */
     public static <T> MyResponse<T> ok(String msg, T data) {
         return new MyResponse<>(200, msg, data);
@@ -72,10 +59,6 @@ public class MyResponse<T> {
     }
     /**
      * 成功返回静态方法.
-     *
-     * @param data body数据
-     * @param <T>  泛型
-     * @return
      */
     public static <T> MyResponse<T> ok(T data) {
         return new MyResponse<>(200, SUCCESS, data);
@@ -83,11 +66,6 @@ public class MyResponse<T> {
 
     /**
      * 调用失败, 返回500.
-     *
-     * @param msg  提示下戏
-     * @param data body数据
-     * @param <T>  泛型
-     * @return MyResponse
      */
     public static <T> MyResponse<T> fail(String msg, T data) {
         return new MyResponse<>(500, msg, data);
@@ -95,12 +73,12 @@ public class MyResponse<T> {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("MyResponse{");
-        sb.append("code=").append(code);
-        sb.append(", msg='").append(message).append('\'');
-        sb.append(", data=").append(data);
-        sb.append('}');
-        return sb.toString();
+        return "MyResponse{" +
+            "code=" + code +
+            ", message='" + message + '\'' +
+            ", data=" + data +
+            ", causeBy='" + causeBy + '\'' +
+            '}';
     }
 
     public Integer getCode() {
