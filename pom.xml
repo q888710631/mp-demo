@@ -15,6 +15,7 @@
     <description>mp-demo</description>
     <properties>
         <java.version>11</java.version>
+        <!-- profile默认值 -->
         <profile.exclude/>
         <profile.no-verify-token/>
     </properties>
