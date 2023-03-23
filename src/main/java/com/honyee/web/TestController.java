@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/test")
@@ -19,7 +20,7 @@ public class TestController {
     private CacheService cacheService;
 
     @GetMapping
-    public void testGet( HttpServletResponse response) throws IOException {
+    public void testGet(HttpServletResponse response) throws IOException {
         // 测试缓存
         cacheService.cacheRedis("123");
         cacheService.cacheMemory("123");
@@ -33,8 +34,8 @@ public class TestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> test(@RequestBody Object obj) {
-        return ResponseEntity.ok(obj);
+    public ResponseEntity<?> test(@RequestBody(required = false) Object obj) {
+        return ResponseEntity.ok(obj == null ? new HashMap<>() : obj);
     }
 
 }
