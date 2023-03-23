@@ -5,6 +5,7 @@ import com.mp.config.jwt.JwtFilter;
 import com.mp.config.jwt.my.MyAuthenticationProvider;
 import com.mp.service.MyUserDetailService;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.io.ClassPathResource;
@@ -49,6 +50,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 
     private AuthenticationManager authenticationManager;
 
+    @Value("${spring.profiles.active}")
+    private String env;
+
     public SecurityConfiguration(ObjectMapper objectMapper,
                                  MyUserDetailService myUserDetailService,
                                  MyAuthenticationProvider myAuthenticationProvider,
@@ -86,7 +90,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 public <O extends FilterSecurityInterceptor> O postProcess(O object) {
                     FilterInvocationSecurityMetadataSource securityMetadataSource = object.getSecurityMetadataSource();
                     object.setSecurityMetadataSource(
-                        new MyFilterInvocationSecurityMetadataSource(securityMetadataSource, authenticateProperties));
+                        new MyFilterInvocationSecurityMetadataSource(env, securityMetadataSource, authenticateProperties));
                     object.setAccessDecisionManager(new MyFilterAccessDecisionManager());
                     return object;
                 }

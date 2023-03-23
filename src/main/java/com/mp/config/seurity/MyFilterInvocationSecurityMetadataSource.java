@@ -18,10 +18,14 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
 
     private final AntPathMatcher antPathMatcher;
 
+    // 不校验token
+    private final boolean noVerifyToken;
+
     // 权限配置
     private final AuthenticateProperties authenticateProperties;
 
-    public MyFilterInvocationSecurityMetadataSource(FilterInvocationSecurityMetadataSource securityMetadataSource, AuthenticateProperties authenticateProperties) {
+    public MyFilterInvocationSecurityMetadataSource(String env, FilterInvocationSecurityMetadataSource securityMetadataSource, AuthenticateProperties authenticateProperties) {
+        this.noVerifyToken = env.contains("no-verify-token");
         this.securityMetadataSource = securityMetadataSource;
         this.antPathMatcher = new AntPathMatcher();
         this.authenticateProperties = authenticateProperties;
@@ -35,6 +39,9 @@ public class MyFilterInvocationSecurityMetadataSource implements FilterInvocatio
     // 获取当前url对应的权限
     @Override
     public Collection<ConfigAttribute> getAttributes(Object object) {
+        if (noVerifyToken) {
+            return null;
+        }
         if (!(object instanceof FilterInvocation)) {
             return securityMetadataSource.getAllConfigAttributes();
         }

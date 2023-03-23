@@ -31,6 +31,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-undertow</artifactId>
         </dependency>
 
         <dependency>
@@ -179,4 +190,27 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <properties>
+                <spring.profiles.active>dev${profile.exclude}${profile.no-verify-token}</spring.profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>exclude</id>
+            <properties>
+                <profile.exclude>,exclude</profile.exclude>
+            </properties>
+        </profile>
+        <profile>
+            <id>no-verify-token</id>
+            <properties>
+                <profile.no-verify-token>,no-verify-token</profile.no-verify-token>
+            </properties>
+        </profile>
+    </profiles>
 </project>
