@@ -1,2 +1,7 @@
 logging:
   config: classpath:logback-spring-prod.xml
+
+# 禁用文档
+springdoc:
+  api-docs:
+    enabled: false

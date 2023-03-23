@@ -72,6 +72,10 @@ authenticate-matchers:
   - path-matchers:
       - /api/test/**
     authenticated: false
+  # api-docs
+  - path-matchers:
+      - /v3/api-docs
+    authenticated: false
   # 登录授权
   - path-matchers:
       - /api/authenticate
@@ -95,6 +99,7 @@ menu-matchers:
     authenticated: true
     has-any-role:
       - admin
+
 
 ```
 

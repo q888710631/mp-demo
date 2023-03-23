@@ -31,7 +31,7 @@
         <appender-ref ref="ASYNC"/>
     </root>
     <!--  # 打印SQL  -->
-    <logger name="com.mp.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
+    <logger name="com.honyee.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 

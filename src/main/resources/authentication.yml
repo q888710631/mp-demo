@@ -1,7 +1,11 @@
 authenticate-matchers:
   # 测试
   - path-matchers:
-      - /api/test/**
+    - /api/test/**
+    authenticated: false
+  # api-docs
+  - path-matchers:
+    - /v3/api-docs
     authenticated: false
   # 登录授权
   - path-matchers:
@@ -9,20 +13,20 @@ authenticate-matchers:
     authenticated: false
   # 通用接口
   - path-matchers:
-      - /api/user-menu
-      - /api/all-role
+    - /api/user-menu
+    - /api/all-role
   # 管理员接口
   - path-matchers:
-      - /api/admin/**
+    - /api/admin/**
     has-any-role:
-      - admin
+    - admin
 
 # 菜单权限
 menu-matchers:
   - path-matchers:
-      - /index
+    - /index
   - path-matchers:
-      - /user/index
+    - /user/index
     authenticated: true
     has-any-role:
-      - admin
+    - admin
