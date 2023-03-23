@@ -2,27 +2,30 @@ package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.mp.model.base.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Collection;
 
+@Schema(title = "用户（租户）")
 @TableName("user")
 @InterceptorIgnore(tenantLine = "true")
 public class User extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    @Schema(title = "昵称")
     @TableField("nickname")
     private String nickname;
 
+    @Schema(title = "用户名")
     @TableField("username")
     private String username;
 
-    /**
-     * bcrypt password
-     */
+    @Schema(title = "密码 bcrypt加密过")
     @TableField("password")
     private String password;
 
+    @Schema(title = "角色")
     @TableField(exist = false)
     Collection<Role> roles;
 

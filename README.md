@@ -1,6 +1,9 @@
 # mp-demo
 spring-boot + mybatis plus 多租户
 
+## 2023.3.23
+整合`springdoc-openapi-ui`，通过`http://localhost:1222/v3/api-docs` 导入接口到apifox
+
 ## 2023.3.22
 
 新增一些工具类

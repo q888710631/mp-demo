@@ -11,6 +11,7 @@ import com.mp.dto.LoginRequestDTO;
 import com.mp.dto.LoginResponseDTO;
 import com.mp.model.Role;
 import com.mp.service.MyUserDetailService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +33,7 @@ public class AuthenticateController {
     @Resource
     private MyUserDetailService userDetailService;
 
+    @Operation(summary = "登录")
     @PostMapping("/authenticate")
     public MyResponse<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO dto) {
         AuthenticationManager authenticationManager = securityConfiguration.getAuthenticationManager();
@@ -49,6 +51,7 @@ public class AuthenticateController {
         return MyResponse.ok(new LoginResponseDTO(jwt));
     }
 
+    @Operation(summary = "用户角色")
     @GetMapping("/my-roles")
     public ResponseEntity<List<Role>> myRoles() {
         return ResponseEntity.ok(userDetailService.findRolesByUserId(TenantHelper.getTenantId()));

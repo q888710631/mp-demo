@@ -2,16 +2,20 @@ package com.mp.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.mp.model.base.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(title = "角色")
 @TableName("role")
 @InterceptorIgnore(tenantLine = "true")
 public class Role extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    @Schema(title = "角色名称")
     @TableField("role_name")
     private String roleName;
 
+    @Schema(title = "角色KEY")
     @TableField("role_key")
     private String roleKey;
 

@@ -1,6 +1,9 @@
 package com.mp.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class LoginResponseDTO {
+    @Schema(title = "令牌")
     private String token;
 
     public LoginResponseDTO() {

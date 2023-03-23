@@ -8,6 +8,7 @@ import com.mp.dto.UserRoleDTO;
 import com.mp.mapper.RoleMapper;
 import com.mp.mapper.UserMapper;
 import com.mp.service.MyUserDetailService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,16 +33,15 @@ public class AdminController {
     @Resource
     private UserMapper userMapper;
     /**
-     * 所有角色
+     *
      */
+    @Operation(summary = "所有角色")
     @GetMapping("/all-role")
     public List<RoleDTO> allRoles() {
         return roleMapper.findRoleList();
     }
 
-    /**
-     * 用户列表，包含用户拥有的角色
-     */
+    @Operation(summary = "用户列表，包含用户拥有的角色")
     @GetMapping("/user-list")
     public Page<UserDTO> userList(Pageable pageable) {
         Page<UserDTO> userDTOList = PageHelper.startPage(pageable.getPageNumber() + 1, pageable.getPageSize())
@@ -55,25 +55,19 @@ public class AdminController {
         return userDTOList;
     }
 
-    /**
-     * 创建用户
-     */
+    @Operation(summary = "创建用户")
     @PostMapping("create-user")
     public UserDTO createUser(@Validated @RequestBody UserDTO dto) {
         return myUserDetailService.createUser(dto);
     }
 
-    /**
-     * 更新用户信息
-     */
+    @Operation(summary = "更新用户信息")
     @PostMapping("update-user")
     public UserDTO updateUser(@Validated @RequestBody UserDTO dto) {
         return myUserDetailService.updateUser(dto);
     }
 
-    /**
-     * 更新用户角色
-     */
+    @Operation(summary = "更新用户角色")
     @PostMapping("update-role")
     public Collection<RoleDTO> updateUserRole(@Validated @RequestBody UserDTO dto) {
         return myUserDetailService.updateUserRole(dto);

@@ -3,31 +3,36 @@ package com.mp.dto;
 import com.mp.dto.base.Insert;
 import com.mp.dto.base.Update;
 import com.mp.dto.base.UpdateUserRole;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.HashSet;
 
+@Schema(title = "用户DTO")
 public class UserDTO {
     @NotNull(groups = {Update.class, UpdateUserRole.class})
+    @Schema(title = "用户ID", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Long id;
 
     @NotNull(groups = {Insert.class})
     @NotBlank(message = "昵称不能改为空")
+    @Schema(title = "昵称", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String nickname;
 
     @NotNull(groups = {Insert.class})
     @NotBlank(message = "用户名不能改为空")
+    @Schema(title = "用户名", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String username;
 
     @NotNull(groups = {Insert.class})
     @NotBlank(message = "密码不能改为空")
+    @Schema(title = "密码", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String password;
 
-    /**
-     * role_key list
-     */
+    @Schema(title = "角色key", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private Collection<String> roles;
 
     public UserDTO() {
