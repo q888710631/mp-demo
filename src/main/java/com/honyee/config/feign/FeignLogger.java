@@ -19,6 +19,8 @@ public class FeignLogger extends Logger {
     // proxy 包路径
     private final String[] proxyPackage;
 
+    private final org.slf4j.Logger logger = LogUtil.get();
+
     public FeignLogger() {
         EnableFeignClients ann = FeignConfiguration.class.getAnnotation(EnableFeignClients.class);
         this.proxyPackage = ann.basePackages();
@@ -33,8 +35,8 @@ public class FeignLogger extends Logger {
         StringBuilder logBuilder = new StringBuilder();
         try {
             String protocolVersion = resolveProtocolVersion(request.protocolVersion());
-            logBuilder.append(String.format("\nrequest:\n\t---> %s %s %s",
-                request.httpMethod().name(), request.url(), protocolVersion));
+            logBuilder.append(String.format("\nrequest:%s\n\t---> %s %s %s",
+                configKey, request.httpMethod().name(), request.url(), protocolVersion));
             if (logLevel.ordinal() >= Level.HEADERS.ordinal()) {
                 for (String field : request.headers().keySet()) {
                     if (shouldLogRequestHeader(field)) {
@@ -59,7 +61,7 @@ public class FeignLogger extends Logger {
                 logBuilder.append(String.format("\n\t---> END HTTP (%s-byte body)", bodyLength));
             }
         } finally {
-            LogUtil.get().info(logBuilder.toString());
+            logger.info(logBuilder.toString());
         }
 
     }
@@ -76,7 +78,7 @@ public class FeignLogger extends Logger {
                 response.reason() != null && logLevel.compareTo(Level.NONE) > 0 ? " " + response.reason()
                     : "";
             int status = response.status();
-            logBuilder.append(String.format("\nresponse:\n\t<--- %s %s%s (%sms)", protocolVersion, status, reason, elapsedTime));
+            logBuilder.append(String.format("\nresponse: %s\n\t<--- %s %s%s (%sms)", configKey, protocolVersion, status, reason, elapsedTime));
             if (logLevel.ordinal() >= Level.HEADERS.ordinal()) {
 
                 for (String field : response.headers().keySet()) {
@@ -107,7 +109,7 @@ public class FeignLogger extends Logger {
             }
             return response;
         } finally {
-            LogUtil.get().info(logBuilder.toString());
+            logger.info(logBuilder.toString());
         }
     }
 
