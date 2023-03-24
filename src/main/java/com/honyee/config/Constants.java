@@ -7,8 +7,6 @@ public class Constants {
     public static final String MAPPER_PACKAGE = "com.honyee.mapper";
     // model包路径
     public static final String MODEL_PACKAGE = "com.honyee.model";
-    // proxy包路径
-    public static final String[] PROXY_PACKAGE = {"com.honyee.proxy"};
 
     // 实体属性名
     public static final String FIELD_CREATE_TIME = "createTime";

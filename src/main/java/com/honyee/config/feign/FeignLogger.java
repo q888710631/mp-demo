@@ -7,6 +7,7 @@ import feign.Request;
 import feign.Response;
 import feign.Util;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -16,6 +17,13 @@ import java.util.stream.Collectors;
 import static feign.Util.*;
 
 public class FeignLogger extends Logger {
+    // proxy 包路径
+    private final String[] proxyPackage;
+
+    public FeignLogger() {
+        EnableFeignClients ann = FeignConfiguration.class.getAnnotation(EnableFeignClients.class);
+        this.proxyPackage = ann.basePackages();
+    }
 
     @Override
     protected void logRequest(String configKey, Level logLevel, Request request) {
@@ -140,8 +148,8 @@ public class FeignLogger extends Logger {
     /**
      * 查找Proxy
      */
-    private static Class<?> loadClass(String className) {
-        for (String packageName : Constants.PROXY_PACKAGE) {
+    private Class<?> loadClass(String className) {
+        for (String packageName : proxyPackage) {
             try {
                 return Class.forName(packageName + "." + className);
             } catch (ClassNotFoundException e) {
@@ -157,7 +165,7 @@ public class FeignLogger extends Logger {
      * @param proxy      例如 GenericProxy
      * @param methodName 例如test(String)
      */
-    private static Method loadMethod(Class<?> proxy, String methodName) {
+    private Method loadMethod(Class<?> proxy, String methodName) {
         String[] split = methodName.split("\\(");
         String methodSimpleName = split[0];
         for (Method method : proxy.getDeclaredMethods()) {
