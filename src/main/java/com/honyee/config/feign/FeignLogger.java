@@ -1,6 +1,5 @@
 package com.honyee.config.feign;
 
-import com.honyee.config.Constants;
 import com.honyee.utils.LogUtil;
 import feign.Logger;
 import feign.Request;
