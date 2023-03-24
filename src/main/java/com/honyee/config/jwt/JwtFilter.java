@@ -78,10 +78,10 @@ public class JwtFilter extends GenericFilter {
                 LogUtil.remove();
             }
         }
-//        chain.doFilter(request, response);
-        // 装饰Request，用来反复获取body
-//         chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
         try {
+            // 装饰Request，用来反复获取body
+//            chain.doFilter(request, response);
+//            chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
             chain.doFilter(new InputStreamHttpServletRequestWrapper(httpServletRequest), response);
         } finally {
             MybatisPlusTenantHandler.removeTenantValue();

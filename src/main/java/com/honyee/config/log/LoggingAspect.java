@@ -2,6 +2,7 @@ package com.honyee.config.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.honyee.config.Constants;
 import com.honyee.exp.CommonException;
 import com.honyee.utils.HttpUtil;
@@ -16,15 +17,23 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,9 +44,19 @@ import java.util.stream.IntStream;
 @Aspect
 @EnableAspectJAutoProxy
 @Component
-public class LoggingAspect implements Ordered {
+public class LoggingAspect implements InitializingBean, Ordered {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public int getOrder() {
+        return LOWEST_PRECEDENCE;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+//        objectMapper = new ObjectMapper();
+    }
 
     @Pointcut(
         "within(@org.springframework.stereotype.Service *)" +
@@ -67,7 +86,7 @@ public class LoggingAspect implements Ordered {
                 .error(
                     "Exception in {}() with cause = {}",
                     joinPoint.getSignature().getName(),
-                    e.getCause() != null ? e.getCause() :"NULL"
+                    e.getCause() != null ? e.getCause() : "NULL"
                 );
         }
     }
@@ -86,7 +105,8 @@ public class LoggingAspect implements Ordered {
                 ServletRequestAttributes req = (ServletRequestAttributes) requestAttributes;
                 HttpServletRequest request = req.getRequest();
                 logEntity.requestMethod = request.getMethod();
-                logEntity.contentType = (StringUtils.isEmpty(request.getContentType())) ? "none" : request.getContentType();
+                String contentType = request.getContentType();
+                logEntity.contentType = (StringUtils.isEmpty(contentType)) ? "" : contentType;
                 logEntity.requestURI = StringUtils.abbreviate(request.getRequestURI(), 255);
                 logEntity.requestURL = StringUtils.abbreviate(request.getRequestURL().toString(), 255);
                 logEntity.userAgent = Optional.ofNullable(request.getHeader("user-agent")).orElse("");
@@ -94,7 +114,18 @@ public class LoggingAspect implements Ordered {
                 logEntity.headers = getHeadersInfo(request);
                 logEntity.realIp = HttpUtil.getIpAddress(request);
                 logEntity.params = getRequestParams(request);
-                // todo get body
+                if (logEntity.contentType.startsWith(MediaType.APPLICATION_JSON.toString())) {
+                    try {
+                        // JwtFilter中对Request通过InputStreamHttpServletRequestWrapper装饰后才能在此处获取body
+                        InputStream inputStream = request.getInputStream();
+                        logEntity.body = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                            .lines().collect(Collectors.joining(System.lineSeparator()));
+                    } catch (IOException e) {
+                        // handle exception
+                    }
+                } else {
+                    logEntity.body = "";
+                }
             }
 
             //类名
@@ -137,8 +168,17 @@ public class LoggingAspect implements Ordered {
         String message = IntStream
             .range(0, args.length)
             .filter(i -> args[i] != null && !(args[i] instanceof HttpServletResponseWrapper))
-            .mapToObj(i -> parameterNames[i] + "=" + args[i].toString())
+            .mapToObj(i -> {
+                try {
+                    return parameterNames[i] + "=" + objectMapper.writeValueAsString(args[i]);
+                } catch (JsonProcessingException e) {
+                    return parameterNames[i] + "解析异常：" + e.getMessage();
+                }
+            })
             .collect(Collectors.joining(","));
+        if (StringUtils.isBlank(message)) {
+            return "";
+        }
         return "{" + message + "}";
     }
 
@@ -157,11 +197,6 @@ public class LoggingAspect implements Ordered {
         return map;
     }
 
-    @Override
-    public int getOrder() {
-        return LOWEST_PRECEDENCE;
-    }
-
     /**
      * 日志记录
      */
@@ -174,6 +209,8 @@ public class LoggingAspect implements Ordered {
         private String params;
         // 请求参数
         private String methodArgs;
+        // 请求体
+        private String body;
         // 响应参数
         private String result;
         // 请求方法
@@ -217,6 +254,7 @@ public class LoggingAspect implements Ordered {
                     "\r\n   Http Method : {}" +
                     "\r\n   Request URI : {}" +
                     "\r\n   Request Params : {}" +
+                    "\r\n   Request Body : {}" +
                     "\r\n   Method Args : {}" +
                     "\r\n   Http Headers : {}" +
                     "\r\n   Content-Type : {}" +
@@ -230,9 +268,10 @@ public class LoggingAspect implements Ordered {
                     "\r\n   Result : {}" +
                     "\r\n",
                 requestURL,
-                method,
+                requestMethod,
                 requestURI,
                 params,
+                body,
                 methodArgs,
                 headers,
                 contentType,
