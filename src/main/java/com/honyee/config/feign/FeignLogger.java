@@ -200,7 +200,7 @@ public class FeignLogger extends Logger {
     }
 
     /**
-     * 查找Proxy
+     * 查找Proxy，不支持查找子包
      */
     @Deprecated
     private Class<?> loadClass(String className) {
