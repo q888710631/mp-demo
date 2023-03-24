@@ -2,7 +2,9 @@
 spring-boot + mybatis plus 多租户
 
 ## 2023.3.24
-优化feign日志打印，使日志一次性输出。可通过配置application.yml或者注解`@DisableFeignLog`来开启/关闭日志
+优化feign日志打印，使request和response日志分别一次性输出。
+
+可通过配置application.yml或者注解`@DisableFeignLog`来开启/关闭日志
 
 ```yaml
 # feign日志级别

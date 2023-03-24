@@ -74,9 +74,7 @@ public class FeignLogger extends Logger {
         StringBuilder logBuilder = new StringBuilder();
         try {
             String protocolVersion = resolveProtocolVersion(response.protocolVersion());
-            String reason =
-                response.reason() != null && logLevel.compareTo(Level.NONE) > 0 ? " " + response.reason()
-                    : "";
+            String reason = response.reason() != null && logLevel.compareTo(Level.NONE) > 0 ? " " + response.reason() : "";
             int status = response.status();
             logBuilder.append(String.format("\nresponse: %s\n\t<--- %s %s%s (%sms)", configKey, protocolVersion, status, reason, elapsedTime));
             if (logLevel.ordinal() >= Level.HEADERS.ordinal()) {
