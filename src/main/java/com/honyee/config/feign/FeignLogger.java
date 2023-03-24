@@ -7,10 +7,16 @@ import feign.Response;
 import feign.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static feign.Util.*;
@@ -21,14 +27,46 @@ public class FeignLogger extends Logger {
 
     private final org.slf4j.Logger logger = LogUtil.get();
 
+    // 无需日志的Class -> Method，不考虑类名相同且方法完全一致的情况
+    private static final MultiValueMap<String, String> DISABLE_FEIGN_LOG_METHOD = new LinkedMultiValueMap<>();
+
     public FeignLogger() {
         EnableFeignClients ann = FeignConfiguration.class.getAnnotation(EnableFeignClients.class);
         this.proxyPackage = ann.basePackages();
+        for (String pack : this.proxyPackage) {
+            try {
+                init(pack);
+            } catch (IOException | ClassNotFoundException e) {
+                logger.error("初始化DISABLE_FEIGN_LOG_METHOD错误，pack={}，error={}", pack, e.getMessage());
+            }
+        }
+    }
+
+    private void init(String pack) throws IOException, ClassNotFoundException {
+        String packFormat = pack.replace(".", "/");
+        String path = packFormat + "/**/*.class";
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+        Resource[] resources = resourcePatternResolver.getResources(path);
+        for (Resource resource : resources) {
+            String filePath = resource.getURL().getPath();
+            String classPath = filePath.substring(filePath.indexOf(packFormat));
+            String classPackage = classPath.replaceAll("(\\$\\d+)?.class", "").replaceAll("/", ".");
+            Class<?> aClass = Class.forName(classPackage);
+            String className = aClass.getSimpleName();
+            boolean classHasAnn = aClass.getAnnotation(DisableFeignLog.class) != null;
+            for (Method method : aClass.getDeclaredMethods()) {
+                if (classHasAnn || method.getAnnotation(DisableFeignLog.class) != null) {
+                    String params = Arrays.stream(method.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(","));
+                    String format = String.format("%s(%s)", method.getName(), params);
+                    DISABLE_FEIGN_LOG_METHOD.add(className, format);
+                }
+            }
+        }
     }
 
     @Override
     protected void logRequest(String configKey, Level logLevel, Request request) {
-        if (checkDisableLog(configKey)) {
+        if (checkDisableLogV2(configKey)) {
             return;
         }
 
@@ -68,7 +106,7 @@ public class FeignLogger extends Logger {
 
     @Override
     protected Response logAndRebufferResponse(String configKey, Level logLevel, Response response, long elapsedTime) throws IOException {
-        if (checkDisableLog(configKey)) {
+        if (checkDisableLogV2(configKey)) {
             return response;
         }
         StringBuilder logBuilder = new StringBuilder();
@@ -121,6 +159,23 @@ public class FeignLogger extends Logger {
      *
      * @return true 禁止打印日志
      */
+    private boolean checkDisableLogV2(String configKey) {
+        String[] split = configKey.split("#");
+        if (split.length < 2) {
+            return false;
+        }
+        String className = split[0];
+        String methodName = split[1];
+        List<String> methods = DISABLE_FEIGN_LOG_METHOD.get(className);
+        return methods != null && methods.contains(methodName);
+    }
+
+    /**
+     * 检查是否允许打印日志
+     *
+     * @return true 禁止打印日志
+     */
+    @Deprecated
     private boolean checkDisableLog(String configKey) {
         if (StringUtils.isBlank(configKey)) {
             return false;
@@ -147,6 +202,7 @@ public class FeignLogger extends Logger {
     /**
      * 查找Proxy
      */
+    @Deprecated
     private Class<?> loadClass(String className) {
         for (String packageName : proxyPackage) {
             try {
@@ -164,6 +220,7 @@ public class FeignLogger extends Logger {
      * @param proxy      例如 GenericProxy
      * @param methodName 例如test(String)
      */
+    @Deprecated
     private Method loadMethod(Class<?> proxy, String methodName) {
         String[] split = methodName.split("\\(");
         String methodSimpleName = split[0];
