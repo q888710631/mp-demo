@@ -12,8 +12,6 @@ public class FeignLogger extends Logger {
     private static final ThreadLocal<StringBuilder> LOGGER_THREAD_LOCAL = new ThreadLocal<>();
     // 是否允许打印日志
     private static final ThreadLocal<Boolean> LOGGER_ENABLE_THREAD_LOCAL = new ThreadLocal<>();
-    // proxy所在的package
-    private static final String[] PROXY_PACKAGE = {"com.honyee.proxy"};
 
     @Override
     protected void log(String s, String s1, Object... objects) {
@@ -103,7 +101,7 @@ public class FeignLogger extends Logger {
      * 查找Proxy
      */
     private static Class<?> loadClass(String className) {
-        for (String packageName : PROXY_PACKAGE) {
+        for (String packageName : Constants.PROXY_PACKAGE) {
             try {
                 return Class.forName(packageName + "." + className);
             } catch (ClassNotFoundException e) {
