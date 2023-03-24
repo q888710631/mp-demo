@@ -1,101 +1,140 @@
 package com.honyee.config.feign;
 
 import com.honyee.config.Constants;
+import com.honyee.utils.LogUtil;
 import feign.Logger;
+import feign.Request;
+import feign.Response;
+import feign.Util;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import static feign.Util.*;
+
 public class FeignLogger extends Logger {
-    // 日志累计
-    private static final ThreadLocal<StringBuilder> LOGGER_THREAD_LOCAL = new ThreadLocal<>();
-    // 是否允许打印日志
-    private static final ThreadLocal<Boolean> LOGGER_ENABLE_THREAD_LOCAL = new ThreadLocal<>();
 
     @Override
-    protected void log(String s, String s1, Object... objects) {
-        checkEnableLog(s);
-        if (!LOGGER_ENABLE_THREAD_LOCAL.get()) {
+    protected void logRequest(String configKey, Level logLevel, Request request) {
+        if (checkDisableLog(configKey)) {
             return;
         }
 
-        StringBuilder stringBuilder = LOGGER_THREAD_LOCAL.get();
-        if (stringBuilder == null) {
-            stringBuilder = new StringBuilder();
-            LOGGER_THREAD_LOCAL.set(stringBuilder);
-        }
-        if (s1.startsWith("--->") && !s1.startsWith("---> END HTTP")) {
-            stringBuilder.append("\nrequest:");
-        }
-
-        if (s1.startsWith("<---") && !s1.startsWith("<--- END HTTP")) {
-            stringBuilder.append("\nresponse:");
-        }
-
-        stringBuilder.append("\n\t").append(String.format(s1, objects));
-    }
-
-    /**
-     * 获取日志，并清理
-     */
-    public static String popLog() {
+        StringBuilder logBuilder = new StringBuilder();
         try {
-            StringBuilder stringBuilder = LOGGER_THREAD_LOCAL.get();
-            if (stringBuilder == null) {
-                return null;
+            String protocolVersion = resolveProtocolVersion(request.protocolVersion());
+            logBuilder.append(String.format("\nrequest:\n\t---> %s %s %s",
+                request.httpMethod().name(), request.url(), protocolVersion));
+            if (logLevel.ordinal() >= Level.HEADERS.ordinal()) {
+                for (String field : request.headers().keySet()) {
+                    if (shouldLogRequestHeader(field)) {
+                        for (String value : valuesOrEmpty(request.headers(), field)) {
+                            logBuilder.append(String.format("\n\t%s: %s", field, value));
+                        }
+                    }
+                }
+
+                int bodyLength = 0;
+                if (request.body() != null) {
+                    bodyLength = request.length();
+                    if (logLevel.ordinal() >= Level.FULL.ordinal()) {
+                        String bodyText =
+                            request.charset() != null
+                                ? new String(request.body(), request.charset())
+                                : null;
+                        logBuilder.append("\n");
+                        logBuilder.append(String.format(bodyText != null ? bodyText : "Binary data"));
+                    }
+                }
+                logBuilder.append(String.format("\n\t---> END HTTP (%s-byte body)", bodyLength));
             }
-            return stringBuilder.toString();
         } finally {
-            remove();
+            LogUtil.get().info(logBuilder.toString());
+        }
+
+    }
+
+    @Override
+    protected Response logAndRebufferResponse(String configKey, Level logLevel, Response response, long elapsedTime) throws IOException {
+        if (checkDisableLog(configKey)) {
+            return response;
+        }
+        StringBuilder logBuilder = new StringBuilder();
+        try {
+            String protocolVersion = resolveProtocolVersion(response.protocolVersion());
+            String reason =
+                response.reason() != null && logLevel.compareTo(Level.NONE) > 0 ? " " + response.reason()
+                    : "";
+            int status = response.status();
+            logBuilder.append(String.format("\nresponse:\n\t<--- %s %s%s (%sms)", protocolVersion, status, reason, elapsedTime));
+            if (logLevel.ordinal() >= Level.HEADERS.ordinal()) {
+
+                for (String field : response.headers().keySet()) {
+                    if (shouldLogResponseHeader(field)) {
+                        for (String value : valuesOrEmpty(response.headers(), field)) {
+                            logBuilder.append(String.format("\n\t%s: %s", field, value));
+                        }
+                    }
+                }
+
+                int bodyLength = 0;
+                if (response.body() != null && !(status == 204 || status == 205)) {
+                    // HTTP 204 No Content "...response MUST NOT include a message-body"
+                    // HTTP 205 Reset Content "...response MUST NOT include an entity"
+                    if (logLevel.ordinal() >= Level.FULL.ordinal()) {
+                        logBuilder.append("\n");
+                    }
+                    byte[] bodyData = Util.toByteArray(response.body().asInputStream());
+                    bodyLength = bodyData.length;
+                    if (logLevel.ordinal() >= Level.FULL.ordinal() && bodyLength > 0) {
+                        logBuilder.append(String.format("\n\t%s", decodeOrDefault(bodyData, UTF_8, "Binary data")));
+                    }
+                    logBuilder.append(String.format("\n\t<--- END HTTP (%s-byte body)", bodyLength));
+                    return response.toBuilder().body(bodyData).build();
+                } else {
+                    logBuilder.append(String.format("\n\t<--- END HTTP (%s-byte body)", bodyLength));
+                }
+            }
+            return response;
+        } finally {
+            LogUtil.get().info(logBuilder.toString());
         }
     }
 
-    public static void remove() {
-        LOGGER_THREAD_LOCAL.remove();
-        LOGGER_ENABLE_THREAD_LOCAL.remove();
-    }
+    @Override
+    protected void log(String s, String s1, Object... objects) {
 
-    private static void enableLog() {
-        LOGGER_ENABLE_THREAD_LOCAL.set(Boolean.TRUE);
-    }
-
-    private static void disableLog() {
-        LOGGER_ENABLE_THREAD_LOCAL.set(Boolean.FALSE);
     }
 
     /**
      * 检查是否允许打印日志
+     *
+     * @return true 禁止打印日志
      */
-    private static void checkEnableLog(String s) {
-        // 已经检查过
-        if (LOGGER_ENABLE_THREAD_LOCAL.get() != null) {
-            return;
+    private boolean checkDisableLog(String configKey) {
+        if (StringUtils.isBlank(configKey)) {
+            return false;
         }
-        enableLog();
-        if (StringUtils.isBlank(s)) {
-            return;
-        }
-        String[] split = s.split("#");
+        String[] split = configKey.split("#");
         if (split.length < 2) {
-            return;
+            return false;
         }
         String className = split[0];
         String methodName = split[1];
 
         Class<?> proxy = loadClass(className);
-        if (proxy == null) {
-            return;
-        }
-        if (proxy.getAnnotation(DisableFeignLog.class) == null) {
-            Method method = loadMethod(proxy, methodName);
-            if (method != null && method.getAnnotation(DisableFeignLog.class) != null) {
-                disableLog();
+        if (proxy != null) {
+            if (proxy.getAnnotation(DisableFeignLog.class) == null) {
+                Method method = loadMethod(proxy, methodName);
+                return method != null && method.getAnnotation(DisableFeignLog.class) != null;
+            } else {
+                return true;
             }
-        } else {
-            disableLog();
         }
+        return false;
     }
 
     /**
