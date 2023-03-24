@@ -1,5 +1,16 @@
 # mp-demo
-spring-boot + mybatis plus 多租户
+spring boot + mybatis plus 多租户
+
+主要框架：
+
+1. spring boot 2.7.8 + undertow
+2. mybatis plus + pagehelper
+3. spring security + jwt
+4. openfeign
+5. sleuth
+6. springdoc-openapi
+7. mapstruct
+
 
 ## 2023.3.24
 优化feign日志打印，使request和response日志分别一次性输出。
