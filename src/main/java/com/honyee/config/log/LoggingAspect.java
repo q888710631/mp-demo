@@ -155,11 +155,10 @@ public class LoggingAspect implements Ordered {
     }
 
     private String wrapMethod(ProceedingJoinPoint point) {
-        if (point instanceof MethodInvocationProceedingJoinPoint) {
-            MethodInvocationProceedingJoinPoint p = (MethodInvocationProceedingJoinPoint) point;
-            Field methodInvocation = ReflectionUtils.findField(MethodInvocationProceedingJoinPoint.class, "methodInvocation");
+        Field methodInvocation = ReflectionUtils.findField(point.getClass(), "methodInvocation");
+        if (methodInvocation != null) {
             methodInvocation.setAccessible(true);
-            Object field = ReflectionUtils.getField(methodInvocation, p);
+            Object field = ReflectionUtils.getField(methodInvocation, point);
             Field methodField = ReflectionUtils.findField(field.getClass(), "method");
             methodField.setAccessible(true);
             Method method = (Method) ReflectionUtils.getField(methodField, field);
