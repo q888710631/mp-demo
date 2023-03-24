@@ -167,7 +167,7 @@ public class LoggingAspect implements Ordered {
             String format = String.format("%s(%s)", method.getName(), params);
             return format;
         }
-        return null;
+        return point.getSignature().getName() + "()";
     }
 
     /**
