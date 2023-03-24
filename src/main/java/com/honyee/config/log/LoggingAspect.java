@@ -16,11 +16,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
+import org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,29 +32,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Aspect
 @EnableAspectJAutoProxy
 @Component
-public class LoggingAspect implements InitializingBean, Ordered {
+public class LoggingAspect implements Ordered {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public int getOrder() {
         return LOWEST_PRECEDENCE;
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-//        objectMapper = new ObjectMapper();
     }
 
     @Pointcut(
@@ -94,7 +89,7 @@ public class LoggingAspect implements InitializingBean, Ordered {
         Object[] args = point.getArgs();
         RestApiLog logEntity = new RestApiLog();
         Object result = null;
-        //起始时间
+        // 起始时间
         StopWatch stopWatch = StopWatch.createStarted();
         try {
             //请求
@@ -126,13 +121,13 @@ public class LoggingAspect implements InitializingBean, Ordered {
                 }
             }
 
-            //类名
+            // 类名
             logEntity.className = point.getTarget().getClass().getName();
-            //请求方法
-            logEntity.method = point.getSignature().getName() + "()";
-            //参数
+            // 请求方法
+            logEntity.method = wrapMethod(point);
+            // 参数
             logEntity.methodArgs = wrapArgs(point);
-            //调用结果
+            // 调用结果
             result = point.proceed(args);
             logEntity.withThrows = false;
         } catch (Throwable throwable) {
@@ -157,6 +152,22 @@ public class LoggingAspect implements InitializingBean, Ordered {
             e.printStackTrace();
         }
         return "JSON parse error";
+    }
+
+    private String wrapMethod(ProceedingJoinPoint point) {
+        if (point instanceof MethodInvocationProceedingJoinPoint) {
+            MethodInvocationProceedingJoinPoint p = (MethodInvocationProceedingJoinPoint) point;
+            Field methodInvocation = ReflectionUtils.findField(MethodInvocationProceedingJoinPoint.class, "methodInvocation");
+            methodInvocation.setAccessible(true);
+            Object field = ReflectionUtils.getField(methodInvocation, p);
+            Field methodField = ReflectionUtils.findField(field.getClass(), "method");
+            methodField.setAccessible(true);
+            Method method = (Method) ReflectionUtils.getField(methodField, field);
+            String params = Arrays.stream(method.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(","));
+            String format = String.format("%s(%s)", method.getName(), params);
+            return format;
+        }
+        return null;
     }
 
     /**
