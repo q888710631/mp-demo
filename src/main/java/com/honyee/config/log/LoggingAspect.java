@@ -2,8 +2,8 @@ package com.honyee.config.log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.honyee.config.Constants;
+import com.honyee.config.feign.FeignLogger;
 import com.honyee.exp.CommonException;
 import com.honyee.utils.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +18,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
@@ -26,7 +27,6 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.BufferedReader;
@@ -139,13 +139,20 @@ public class LoggingAspect implements InitializingBean, Ordered {
             logEntity.withThrows = false;
         } catch (Throwable throwable) {
             logEntity.withThrows = true;
-            throwable = throwable;
+            logEntity.throwable = throwable;
             throw throwable;
         } finally {
             stopWatch.split();
             logEntity.executeMs = stopWatch.getSplitTime();
             stopWatch.stop();
-            logEntity.logPrint(logger(point));
+            Logger logger = logger(point);
+            // 打印feign日志
+            String log = FeignLogger.popLog();
+            if (log != null) {
+                logger.info(log);
+            }
+            // 打印请求日志
+            logEntity.logPrint(logger);
         }
         return result;
     }

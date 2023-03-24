@@ -32,6 +32,7 @@
     </root>
     <!--  # 打印SQL  -->
     <logger name="com.honyee.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
+<!--    <logger name="com.honyee.proxy" level="DEBUG"/>-->
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 

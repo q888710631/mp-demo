@@ -1,6 +1,18 @@
 # mp-demo
 spring-boot + mybatis plus 多租户
 
+## 2023.3.24
+优化feign日志打印，使日志一次性输出。可通过配置application.yml或者注解`@DisableFeignLog`来开启/关闭日志
+
+```yaml
+# feign日志级别
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+```
+
 ## 2023.3.23
 整合`springdoc-openapi-ui`，通过`http://localhost:1222/v3/api-docs` 导入接口到apifox
 

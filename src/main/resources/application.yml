@@ -58,3 +58,11 @@ token-secret: Y2M3MTZmNTllMTMyMGQzNmQ5MjNhZTNjYWY2MmFmMDFiMWFkYjMwMWE0MjhiMDI3MW
 
 logging:
   config: classpath:logback-spring.xml
+
+# feign日志级别
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+
