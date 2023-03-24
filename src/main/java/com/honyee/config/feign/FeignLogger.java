@@ -44,6 +44,7 @@ public class FeignLogger extends Logger {
 
     private void init(String pack) throws IOException, ClassNotFoundException {
         String packFormat = pack.replace(".", "/");
+        // 支持查找子包
         String path = packFormat + "/**/*.class";
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resourcePatternResolver.getResources(path);
