@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.honyee.config.Constants;
 import com.honyee.config.TenantHelper;
+import com.honyee.enums.UserStateEnum;
+import com.honyee.model.User;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +26,15 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName(Constants.FIELD_CREATE_TIME, new Date(), metaObject);
         this.setFieldValByName(Constants.FIELD_UPDATE_TIME, new Date(), metaObject);
+
+        Object originalObject = metaObject.getOriginalObject();
+        if (originalObject instanceof User) {
+            User user = (User) originalObject;
+            if (user.getState() == null) {
+                user.setState(UserStateEnum.ENABLE);
+            }
+        }
+
         Long tenantId = TenantHelper.getTenantId();
         if (tenantId != null) {
             // todo

@@ -129,6 +129,10 @@ public class LoggingAspect implements Ordered {
             logEntity.methodArgs = wrapArgs(point);
             // 调用结果
             result = point.proceed(args);
+            if (result != null) {
+                logEntity.result = result.toString();
+            }
+            // 异常
             logEntity.withThrows = false;
         } catch (Throwable throwable) {
             logEntity.withThrows = true;

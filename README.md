@@ -9,7 +9,10 @@ spring boot + mybatis plus 多租户
 4. openfeign
 5. sleuth
 6. springdoc-openapi
-7. mapstruct
+7. redisson
+8. mapstruct
+
+初始化sql： `resource/sql/init.sql`
 
 
 ## 2023.3.24

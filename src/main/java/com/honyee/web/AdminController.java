@@ -3,6 +3,7 @@ package com.honyee.web;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.honyee.dto.RoleDTO;
+import com.honyee.dto.UpdateUserStateOrLockDTO;
 import com.honyee.dto.UserDTO;
 import com.honyee.dto.UserRoleDTO;
 import com.honyee.mapper.RoleMapper;
@@ -32,6 +33,7 @@ public class AdminController {
 
     @Resource
     private UserMapper userMapper;
+
     /**
      *
      */
@@ -45,7 +47,7 @@ public class AdminController {
     @GetMapping("/user-list")
     public Page<UserDTO> userList(Pageable pageable) {
         Page<UserDTO> userDTOList = PageHelper.startPage(pageable.getPageNumber() + 1, pageable.getPageSize())
-            .doSelectPage(() -> userMapper.findUserDTOList());
+                .doSelectPage(() -> userMapper.findUserDTOList());
         List<Long> userIds = userDTOList.stream().map(UserDTO::getId).collect(Collectors.toList());
         List<UserRoleDTO> roles = roleMapper.findRoleKeyByUserIdIn(userIds);
         Map<Long, UserDTO> userMap = userDTOList.stream().collect(Collectors.toMap(UserDTO::getId, Function.identity()));
@@ -72,4 +74,11 @@ public class AdminController {
     public Collection<RoleDTO> updateUserRole(@Validated @RequestBody UserDTO dto) {
         return myUserDetailService.updateUserRole(dto);
     }
+
+    @Operation(summary = "更新用户状态和锁定时间")
+    @PostMapping("update-user-state-or-lock")
+    public UserDTO updateUserStateOrLock(@Validated @RequestBody UpdateUserStateOrLockDTO dto) {
+        return myUserDetailService.updateUserStateOrLock(dto);
+    }
+
 }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,9 @@ public class MySecurityProblemSupport implements AuthenticationEntryPoint {
         } else if (exception instanceof DisabledException) {
             myResponse.setCode(HttpStatus.FORBIDDEN.value());
             myResponse.setMessage("账号已被禁用");
+        } else if (exception instanceof LockedException) {
+            myResponse.setCode(HttpStatus.FORBIDDEN.value());
+            myResponse.setMessage("账号已被锁定");
         } else {
             myResponse.setMessage(exception.getMessage());
         }

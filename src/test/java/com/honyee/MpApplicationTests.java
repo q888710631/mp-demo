@@ -11,9 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.UUID;
 
 @SpringBootTest
 //@InterceptorIgnore(tenantLine = "true")
@@ -38,17 +40,28 @@ class MpApplicationTests {
     }
 
     @Test
-    void queryUser() {
-        User admin = userMapper.findByUsername("admin");
-        List<Role> roles = roleMapper.findRolesByUserId(admin.getId());
-        List<User> users = userMapper.selectList(new QueryWrapper<User>().eq("id", 1L));
-        if (users.isEmpty()) {
-            User entity = new User();
-            entity.setId(1L);
-            entity.setNickname("Honyee");
-            userMapper.insert(entity);
-        }
-        log.info(() -> "queryUser");
+    void userTest() {
+        BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
+//        User admin = userMapper.findByUsername("admin");
+//        List<Role> roles = roleMapper.findRolesByUserId(admin.getId());
+//        List<User> users = userMapper.selectList(new QueryWrapper<User>().eq("id", 1L));
+//        if (users.isEmpty()) {
+//            User entity = new User();
+//            entity.setId(1L);
+//            entity.setNickname("Honyee");
+//            entity.setUsername("admin");
+//            entity.setPassword(bc.encode("admin"));
+//            userMapper.insert(entity);
+//        }
+        UUID uuid = UUID.randomUUID();
+        String uuidValue = uuid.toString().replaceAll("-", "");
+        uuidValue = uuidValue.substring(uuidValue.length() / 4 * 3);
+        User entity = new User();
+        entity.setNickname("用户" + System.currentTimeMillis());
+        entity.setUsername(uuidValue);
+        entity.setPassword(bc.encode(uuidValue));
+        userMapper.insert(entity);
+        log.info(() -> "userTest");
     }
 
 }

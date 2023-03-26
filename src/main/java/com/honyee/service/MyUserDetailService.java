@@ -3,9 +3,10 @@ package com.honyee.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.honyee.config.seurity.SecurityConstants;
-import com.honyee.config.seurity.UserPrincipal;
 import com.honyee.dto.RoleDTO;
+import com.honyee.dto.UpdateUserStateOrLockDTO;
 import com.honyee.dto.UserDTO;
+import com.honyee.enums.UserStateEnum;
 import com.honyee.exp.CommonException;
 import com.honyee.exp.DataNotExistsException;
 import com.honyee.mapper.RoleMapper;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,16 +60,7 @@ public class MyUserDetailService implements UserDetailsService {
     @Cacheable(value = "user-login", key = "#username", cacheManager = "memoryCacheManager")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = findWithRolesByUserName(username);
-        if (user == null) {
-            return new UserPrincipal(null, null, null, null);
-        }
-        return new UserPrincipal(
-            user.getId(),
-            user.getUsername(),
-            user.getPassword(),
-            user.getRoles().stream().map(Role::getRoleName).map(SimpleGrantedAuthority::new).collect(Collectors.toList())
-        );
+        return findWithRolesByUserName(username);
     }
 
     /**
@@ -93,9 +86,9 @@ public class MyUserDetailService implements UserDetailsService {
     @Cacheable(value = "user-role", key = "#userId", cacheManager = "memoryCacheManager")
     public List<GrantedAuthority> findGrantedAuthroityByUserId(Long userId) {
         return roleMapper.findRolesByUserId(userId).stream()
-            .map(Role::getRoleKey)
-            .map(SecurityConstants::roleFormat)
-            .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+                .map(Role::getRoleKey)
+                .map(SecurityConstants::roleFormat)
+                .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     /**
@@ -196,6 +189,39 @@ public class MyUserDetailService implements UserDetailsService {
         }
 
         return roleMapperStruct.toDto(new ArrayList<>(resultRoleKeyMap.values()));
+    }
+
+    /**
+     * 更新用户状态和锁定时间
+     */
+    @Transactional
+    public UserDTO updateUserStateOrLock(UpdateUserStateOrLockDTO dto) {
+        Long userId = dto.getId();
+        UserStateEnum state = dto.getState();
+        Boolean unlock = dto.getUnlock();
+        LocalDateTime lockBeginDate = dto.getLockBeginDate();
+        LocalDateTime lockEndDate = dto.getLockEndDate();
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new DataNotExistsException(userId);
+        }
+
+        if (state != null) {
+            user.setState(state);
+        }
+
+        if (Boolean.TRUE.equals(unlock)) {
+            user.setLockBeginDate(null);
+            user.setLockEndDate(null);
+        } else if (Boolean.FALSE.equals(unlock)) {
+            if (lockBeginDate == null || lockEndDate == null || lockBeginDate.isAfter(lockEndDate)) {
+                throw new CommonException("锁定区间不正确");
+            }
+            user.setLockBeginDate(lockBeginDate);
+            user.setLockEndDate(lockEndDate);
+        }
+        userMapper.updateById(user);
+        return userMapperStruct.toDto(user);
     }
 
 }
