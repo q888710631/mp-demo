@@ -1,7 +1,5 @@
 package com.honyee.app.web;
 
-import com.honyee.app.dto.TestDTO;
-import com.honyee.app.proxy.GenericProxy;
 import com.honyee.app.service.CacheService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +19,8 @@ public class TestController {
     @Resource
     private CacheService cacheService;
 
-    @Resource
-    private GenericProxy genericProxy;
-
     @GetMapping
     public void testGet(HttpServletResponse response) throws IOException {
-//        ResponseEntity<Object> test = genericProxy.test("123");
-        ResponseEntity<Object> objectResponseEntity = genericProxy.test2(new TestDTO());
 
         // 测试缓存
         cacheService.cacheRedis("123");

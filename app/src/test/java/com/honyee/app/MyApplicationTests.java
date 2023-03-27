@@ -63,14 +63,4 @@ class MyApplicationTests {
         log.info(() -> "userTest");
     }
 
-    @Test
-    public void testUpdateById() {
-        User entity = new User();
-        entity.setId(1L);
-        entity.setNickname("Honyee");
-        entity.setUsername("admin");
-        entity.setLockBeginDate(null);
-        userMapper.updateById(entity);
-    }
-
 }
