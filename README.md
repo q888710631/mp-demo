@@ -14,7 +14,7 @@ spring boot + mybatis plus 多租户
 
 初始化sql： `resource/sql/init.sql`
 
-目录接口：
+目录：
 ```text
 mp-demo
 ├── app 主体
