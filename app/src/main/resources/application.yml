@@ -1,0 +1,68 @@
+server:
+  port: 1222
+  undertow:
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可
+    buffer-size: 1024
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    direct-buffers: true
+    threads:
+      io: 16
+      # 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程
+      # 它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+      worker: 256
+spring:
+  profiles:
+    active: @spring.profiles.active@
+  application:
+    name: honyee
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://127.0.0.1/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+mybatis-plus:
+  # 指定 mapper.xml 的位置
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  #扫描实体类的位置,在此处指明扫描实体类的包，在 mapper.xml 中就可以不写实体类的全路径名
+  type-aliases-package: com.honyee.model,com.honyee.app.dto
+  #configuration:
+    #默认开启驼峰命名法，可以不用设置该属性
+    #-underscore-to-camel-case: true
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+pagehelper:
+  propertyName: propertyValue
+  # 分页合理化参数，该参数设置为 true 时，pageNum<=0 时会查询第一页， pageNum>pages（超过总数时），会查询最后一页。默认false 时，直接根据参数进行查询。
+  reasonable: false
+  # 分页插件默认参数支持 default-count 形式，自定义扩展的参数，必须大小写一致
+  defaultCount: true
+
+token-secret: Y2M3MTZmNTllMTMyMGQzNmQ5MjNhZTNjYWY2MmFmMDFiMWFkYjMwMWE0MjhiMDI3MWZhY2JiZGFkZDlhNDcwZTI3M2M0Mjg5MDdjY2E2YWMzMDEwMzkwYTQ0MzczN2NjODVhZmJmNDUzODdmNDBmODFiZDU4M2I1YjQwNjBlMTA=
+
+logging:
+  config: classpath:logback-spring.xml
+
+# feign日志级别
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+

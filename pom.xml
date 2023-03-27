@@ -2,207 +2,244 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.8</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-    <groupId>com.example</groupId>
-    <artifactId>mp-demo</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <!--  parent pom必须设置的项  -->
+    <packaging>pom</packaging>
+    <groupId>com.honyee</groupId>
+    <artifactId>parent</artifactId>
+    <version>${my.version}</version>
     <name>mp-demo</name>
     <description>mp-demo</description>
+    <!--  包含的子模块  -->
+    <modules>
+        <module>app</module>
+        <module>cover</module>
+    </modules>
     <properties>
+        <my.version>0.0.1-SNAPSHOT</my.version>
+        <spring.boot.veresion>2.7.8</spring.boot.veresion>
         <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <!-- profile默认值 -->
         <profile.exclude/>
         <profile.no-verify-token/>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+    <!-- 统一的依赖   -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.honyee</groupId>
+                <artifactId>app</artifactId>
+                <version>${my.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+            <dependency>
+                <groupId>com.honyee</groupId>
+                <artifactId>cover</artifactId>
+                <version>${my.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-undertow</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring.boot.veresion}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.zalando</groupId>
-            <artifactId>problem-spring-web</artifactId>
-            <version>0.27.0</version>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.boot.veresion}</version>
+                <scope>test</scope>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.boot.veresion}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter-tomcat</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.32</version>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-undertow</artifactId>
+                <version>${spring.boot.veresion}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.5.3.1</version>
-        </dependency>
+            <dependency>
+                <groupId>org.zalando</groupId>
+                <artifactId>problem-spring-web</artifactId>
+                <version>0.27.0</version>
+            </dependency>
 
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.11.5</version>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+                <version>${spring.boot.veresion}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.5</version>
-        </dependency>
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>8.0.32</version>
+            </dependency>
 
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
-        </dependency>
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.5.3.1</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>30.1.1-jre</version>
-        </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.11.5</version>
+            </dependency>
 
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>3.1.5</version>
-        </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.11.5</version>
+            </dependency>
 
-        <!--  解决mybatis plus 使用多租户插件时，执行insert出现的强转错误
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.11.5</version>
+            </dependency>
 
-            class TenantLineInnerInterceptor{
-                processInsertSelect(){
-                    PlainSelect plainSelect = (PlainSelect) selectBody;
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>30.1.1-jre</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>3.1.5</version>
+            </dependency>
+
+            <!--  解决mybatis plus 使用多租户插件时，执行insert出现的强转错误
+
+                class TenantLineInnerInterceptor{
+                    processInsertSelect(){
+                        PlainSelect plainSelect = (PlainSelect) selectBody;
+                    }
                 }
-            }
 
-           -->
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-            <version>4.4</version>
-            <scope>compile</scope>
-        </dependency>
+               -->
+            <dependency>
+                <groupId>com.github.jsqlparser</groupId>
+                <artifactId>jsqlparser</artifactId>
+                <version>4.4</version>
+                <scope>compile</scope>
+            </dependency>
 
 
-        <dependency>
-            <groupId>com.github.pagehelper</groupId>
-            <artifactId>pagehelper-spring-boot-starter</artifactId>
-            <version>1.4.6</version>
-        </dependency>
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>1.4.6</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.10.2</version>
-        </dependency>
+            <dependency>
+                <groupId>org.reflections</groupId>
+                <artifactId>reflections</artifactId>
+                <version>0.10.2</version>
+            </dependency>
 
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.11.0</version>
-        </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.15.6</version>
-        </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>3.15.6</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.9.6</version>
-        </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjrt</artifactId>
+                <version>1.9.6</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.9.6</version>
-        </dependency>
+            <dependency>
+                <groupId>org.aspectj</groupId>
+                <artifactId>aspectjweaver</artifactId>
+                <version>1.9.6</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>1.4.2.Final</version>
-        </dependency>
-        <!--  扫描交给spring管理的mapper  @Mapper(componentModel = "spring")    -->
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct-processor</artifactId>
-            <version>1.4.2.Final</version>
-        </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>1.4.2.Final</version>
+            </dependency>
+            <!--  扫描交给spring管理的mapper  @Mapper(componentModel = "spring")    -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>1.4.2.Final</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-openfeign</artifactId>
-            <version>3.1.6</version>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>3.1.6</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-sleuth</artifactId>
-            <version>3.1.7</version>
-        </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-sleuth</artifactId>
+                <version>3.1.7</version>
+            </dependency>
 
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.15</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>swagger-ui</artifactId>
-                    <groupId>org.webjars</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-    </dependencies>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-ui</artifactId>
+                <version>1.6.15</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>swagger-ui</artifactId>
+                        <groupId>org.webjars</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.veresion}</version>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!--解决找不到@profile.name@-->
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
 
     <profiles>

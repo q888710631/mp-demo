@@ -14,6 +14,8 @@ spring boot + mybatis plus 多租户
 
 初始化sql： `resource/sql/init.sql`
 
+## 2023.3.27
+优化mybatis sql日志打印，并拆分模块`app`、`cover`
 
 ## 2023.3.24
 优化feign日志打印，使request和response日志分别一次性输出。
