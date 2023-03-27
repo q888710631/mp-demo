@@ -4,9 +4,11 @@ public class Constants {
     // 基本包路径
     public static final String BASE_PACKAGE = "com.honyee.app";
     // mybatis的mapper接口路径
-    public static final String MAPPER_PACKAGE = "com.honyee.app.mapper";
+    public static final String MAPPER_PACKAGE = BASE_PACKAGE + ".mapper";
     // model包路径
-    public static final String MODEL_PACKAGE = "com.honyee.app.model";
+    public static final String MODEL_PACKAGE = BASE_PACKAGE + ".model";
+    // proxy包路径
+    public static final String PROXY_PACKAGE = BASE_PACKAGE + ".proxy";
 
     // 实体属性名
     public static final String FIELD_CREATE_TIME = "createTime";

@@ -18,7 +18,8 @@ spring boot + mybatis plus 多租户
 ```text
 mp-demo
 ├── app 主体
-└── cover 存放覆盖源码的类
+├── cover 存放覆盖源码的类
+└── kafka 存放kafka的demo
 ```
 
 ## 2023.3.27

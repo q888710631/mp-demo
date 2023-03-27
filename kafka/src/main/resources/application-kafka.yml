@@ -1,0 +1,5 @@
+spring:
+  kafka:
+    bootstrap-servers: 49.232.119.51:9092
+    consumer:
+      group-id: honyee

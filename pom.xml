@@ -13,6 +13,7 @@
     <modules>
         <module>app</module>
         <module>cover</module>
+        <module>kafka</module>
     </modules>
     <properties>
         <my.version>0.0.1-SNAPSHOT</my.version>
@@ -23,6 +24,7 @@
         <!-- profile默认值 -->
         <profile.exclude/>
         <profile.no-verify-token/>
+        <profile.kafka/>
     </properties>
 
     <!-- 统一的依赖   -->
@@ -37,6 +39,12 @@
             <dependency>
                 <groupId>com.honyee</groupId>
                 <artifactId>cover</artifactId>
+                <version>${my.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.honyee</groupId>
+                <artifactId>kafka</artifactId>
                 <version>${my.version}</version>
             </dependency>
 
@@ -219,6 +227,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.kafka</groupId>
+                <artifactId>spring-kafka</artifactId>
+                <version>2.9.6</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -233,7 +246,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <!--解决找不到@profile.name@-->
+                <!--解决找不到@spring.profiles.active@-->
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*.*</include>
@@ -246,7 +259,22 @@
         <profile>
             <id>dev</id>
             <properties>
-                <spring.profiles.active>dev${profile.exclude}${profile.no-verify-token}</spring.profiles.active>
+                <env>dev</env>
+                <spring.profiles.active>
+                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka}
+                </spring.profiles.active>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <properties>
+                <env>prod</env>
+                <spring.profiles.active>
+                    ${env}{profile.exclude}${profile.no-verify-token}${profile.kafka}
+                </spring.profiles.active>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -263,6 +291,18 @@
             <properties>
                 <profile.no-verify-token>,no-verify-token</profile.no-verify-token>
             </properties>
+        </profile>
+        <profile>
+            <id>kafka</id>
+            <properties>
+                <profile.kafka>,kafka</profile.kafka>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.honyee</groupId>
+                    <artifactId>kafka</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>
