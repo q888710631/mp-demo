@@ -9,12 +9,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
 
-@Profile("dev")
+@Profile("kafka-single")
 @Service
-public class TestService implements InitializingBean {
+public class KafkaSingleService implements InitializingBean {
 
     @Autowired(required = false)
-    KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -25,7 +25,7 @@ public class TestService implements InitializingBean {
 
     @KafkaListener(topics = {"kafka-test"})
     public void kafkaTestListener(String result, Acknowledgment acknowledgment) {
-        LogUtil.get().info("收到kafka消息，{}", result);
+        LogUtil.get().info("收到kafka single消息，{}", result);
         acknowledgment.acknowledge();
     }
 }

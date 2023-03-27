@@ -23,6 +23,7 @@
         <!-- profile默认值 -->
         <profile.exclude/>
         <profile.no-verify-token/>
+        <profile.kafka-mul>,kafka-single</profile.kafka-mul>
     </properties>
 
     <!-- 统一的依赖   -->
@@ -255,7 +256,7 @@
             <properties>
                 <env>dev</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}
+                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}
                 </spring.profiles.active>
             </properties>
             <activation>
@@ -267,7 +268,7 @@
             <properties>
                 <env>prod</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}
+                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}
                 </spring.profiles.active>
             </properties>
         </profile>
@@ -281,6 +282,12 @@
             <id>no-verify-token</id>
             <properties>
                 <profile.no-verify-token>,no-verify-token</profile.no-verify-token>
+            </properties>
+        </profile>
+        <profile>
+            <id>kafka-mul</id>
+            <properties>
+                <profile.kafka-mul>,kafka-mul</profile.kafka-mul>
             </properties>
         </profile>
     </profiles>

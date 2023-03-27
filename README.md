@@ -21,6 +21,13 @@ mp-demo
 └── cover 存放覆盖源码的类
 ```
 
+## 2023.3.28
+整合kafka，默认单个实例，对应配置文件：`application-kafka-singlel.yml`
+
+maven启动kafka-mul可配置多个实例，对应配置文件：`application-kafka-mul.yml`、`KafkaMulConfiguration`
+
+maven开启exclude支持排除Kafka，对应配置文件：`application-exclude.yml`
+
 ## 2023.3.27
 优化mybatis sql日志打印，并拆分模块`app`、`cover`
 

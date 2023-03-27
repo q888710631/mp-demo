@@ -1,0 +1,10 @@
+spring:
+  kafka:
+    # broker
+    bootstrap-servers: 49.232.119.51:9092
+    #producer:
+    consumer:
+      group-id: honyee
+      enable-auto-commit: false
+    listener:
+      ack-mode: MANUAL
