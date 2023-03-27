@@ -13,7 +13,6 @@
     <modules>
         <module>app</module>
         <module>cover</module>
-        <module>kafka</module>
     </modules>
     <properties>
         <my.version>0.0.1-SNAPSHOT</my.version>
@@ -24,7 +23,6 @@
         <!-- profile默认值 -->
         <profile.exclude/>
         <profile.no-verify-token/>
-        <profile.kafka/>
     </properties>
 
     <!-- 统一的依赖   -->
@@ -39,12 +37,6 @@
             <dependency>
                 <groupId>com.honyee</groupId>
                 <artifactId>cover</artifactId>
-                <version>${my.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.honyee</groupId>
-                <artifactId>kafka</artifactId>
                 <version>${my.version}</version>
             </dependency>
 
@@ -227,11 +219,13 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>org.springframework.kafka</groupId>
                 <artifactId>spring-kafka</artifactId>
                 <version>2.9.6</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -261,7 +255,7 @@
             <properties>
                 <env>dev</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka}
+                    ${env}${profile.exclude}${profile.no-verify-token}
                 </spring.profiles.active>
             </properties>
             <activation>
@@ -273,7 +267,7 @@
             <properties>
                 <env>prod</env>
                 <spring.profiles.active>
-                    ${env}{profile.exclude}${profile.no-verify-token}${profile.kafka}
+                    ${env}{profile.exclude}${profile.no-verify-token}
                 </spring.profiles.active>
             </properties>
             <activation>
@@ -291,18 +285,6 @@
             <properties>
                 <profile.no-verify-token>,no-verify-token</profile.no-verify-token>
             </properties>
-        </profile>
-        <profile>
-            <id>kafka</id>
-            <properties>
-                <profile.kafka>,kafka</profile.kafka>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.honyee</groupId>
-                    <artifactId>kafka</artifactId>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
 </project>

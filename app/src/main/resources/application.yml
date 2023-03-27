@@ -34,6 +34,15 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
+  kafka:
+    # broker
+    bootstrap-servers: 49.232.119.51:9092
+    consumer:
+      group-id: honyee
+      enable-auto-commit: false
+    listener:
+      ack-mode: MANUAL
+
 
 mybatis-plus:
   # 指定 mapper.xml 的位置

@@ -4,7 +4,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CacheService{
+public class CacheService {
 
     @Cacheable(value = "cache-redis#60", key = "#key")
     public void cacheRedis(String key) {
