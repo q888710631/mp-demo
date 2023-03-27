@@ -1,7 +1,7 @@
-package my.mapper;
+package com.honyee.app.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import my.model.City;
+import com.honyee.app.model.City;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

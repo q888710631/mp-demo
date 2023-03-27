@@ -1,4 +1,4 @@
-package my.model;
+package com.honyee.app.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 

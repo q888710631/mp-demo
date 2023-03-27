@@ -1,4 +1,4 @@
-package my.enums;
+package com.honyee.app.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 

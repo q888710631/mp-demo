@@ -1,16 +1,16 @@
-package my;
+package com.honyee.app;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import my.enums.StateEnum;
-import my.dto.CitySimpleDTO;
-import my.mapper.CityMapper;
-import my.model.City;
-import my.model.Product;
-import my.mapper.ProductMapper;
+import com.honyee.app.enums.StateEnum;
+import com.honyee.app.dto.CitySimpleDTO;
+import com.honyee.app.mapper.CityMapper;
+import com.honyee.app.model.City;
+import com.honyee.app.model.Product;
+import com.honyee.app.mapper.ProductMapper;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.platform.commons.logging.Logger;

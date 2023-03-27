@@ -1,9 +1,9 @@
-package my.model;
+package com.honyee.app.model;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import my.enums.StateEnum;
+import com.honyee.app.enums.StateEnum;
 import com.honyee.app.model.base.BaseTenantEntity;
 
 @TableName("product")

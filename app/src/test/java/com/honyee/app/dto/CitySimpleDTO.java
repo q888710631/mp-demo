@@ -1,4 +1,4 @@
-package my.dto;
+package com.honyee.app.dto;
 
 public class CitySimpleDTO {
     private Long id;

@@ -1,10 +1,10 @@
-package my;
+package com.honyee.app;
 
 import com.honyee.app.config.jwt.JwtConstants;
 import com.honyee.app.config.jwt.LoginTypeEnum;
 import com.honyee.app.config.jwt.TokenProvider;
 import com.honyee.app.config.jwt.my.MyAuthenticationToken;
-import my.dto.ParamDTO;
+import com.honyee.app.dto.ParamDTO;
 import com.honyee.app.utils.HttpUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
