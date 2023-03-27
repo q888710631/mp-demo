@@ -14,6 +14,13 @@ spring boot + mybatis plus 多租户
 
 初始化sql： `resource/sql/init.sql`
 
+目录接口：
+```text
+mp-demo
+├── app 主体
+└── cover 存放覆盖源码的类
+```
+
 ## 2023.3.27
 优化mybatis sql日志打印，并拆分模块`app`、`cover`
 
