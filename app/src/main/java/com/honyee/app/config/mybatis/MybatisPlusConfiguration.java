@@ -8,7 +8,6 @@ import com.honyee.app.config.Constants;
 import com.honyee.app.config.TenantHelper;
 import com.honyee.app.enums.UserStateEnum;
 import com.honyee.app.model.User;
-import com.honyee.app.model.base.BaseEntity;
 import com.honyee.app.model.base.BaseTenantEntity;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
