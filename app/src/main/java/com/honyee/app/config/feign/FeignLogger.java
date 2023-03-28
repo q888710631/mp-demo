@@ -5,7 +5,6 @@ import feign.Logger;
 import feign.Request;
 import feign.Response;
 import feign.Util;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
