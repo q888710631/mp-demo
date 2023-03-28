@@ -1,6 +1,6 @@
 package com.honyee.app.config.lock;
 
-import com.honyee.app.exp.CommonException;
+import com.honyee.app.exp.LockOutTimeException;
 import com.honyee.app.utils.LogUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -50,7 +50,7 @@ public class RedisLockAspect {
                 if (lock.tryLock(annotation.timeLong(), annotation.timeUnit())) {
                     return point.proceed();
                 }
-                throw new CommonException("系统繁忙，稍后重试");
+                throw new LockOutTimeException(lockKey);
             } else {
                 lock.lock(annotation.timeLong(), annotation.timeUnit());
                 return point.proceed();
