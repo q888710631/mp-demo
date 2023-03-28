@@ -10,6 +10,6 @@ public class TestService {
     @RedisLock(value = "test", key = "#query")
     public String lockTest(String query) {
         LogUtil.info("TestService.test()............");
-        return "lock test complete";
+        return "complete";
     }
 }

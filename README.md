@@ -30,6 +30,17 @@ maven开启exclude支持排除Kafka，对应配置文件：`application-exclude.
 
 新增`@RedisLock`注解，在Method上加锁，使用方式类似`@Cacheable`，支持`SpEl`
 
+```java
+@Service
+public class TestService {
+
+    @RedisLock(value = "test", key = "#query")
+    public String lockTest(String query) {
+        return "complete";
+    }
+}
+```
+
 ## 2023.3.27
 优化mybatis sql日志打印，并拆分模块`app`、`cover`
 
