@@ -8,6 +8,8 @@ import com.honyee.app.config.Constants;
 import com.honyee.app.config.TenantHelper;
 import com.honyee.app.enums.UserStateEnum;
 import com.honyee.app.model.User;
+import com.honyee.app.model.base.BaseEntity;
+import com.honyee.app.model.base.BaseTenantEntity;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -27,17 +29,26 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
         this.setFieldValByName(Constants.FIELD_CREATE_TIME, new Date(), metaObject);
         this.setFieldValByName(Constants.FIELD_UPDATE_TIME, new Date(), metaObject);
 
+        // entity
         Object originalObject = metaObject.getOriginalObject();
+
+        // 填充租户
+        Long tenantId = TenantHelper.getTenantId();
+        if (tenantId != null) {
+            if (originalObject instanceof BaseTenantEntity) {
+                BaseTenantEntity baseTenantEntity = (BaseTenantEntity) originalObject;
+                if (baseTenantEntity.getTenantId() == null) {
+                    baseTenantEntity.setTenantId(tenantId);
+                }
+            }
+        }
+
+        // User填充默认state
         if (originalObject instanceof User) {
             User user = (User) originalObject;
             if (user.getState() == null) {
                 user.setState(UserStateEnum.ENABLE);
             }
-        }
-
-        Long tenantId = TenantHelper.getTenantId();
-        if (tenantId != null) {
-            // todo
         }
     }
 

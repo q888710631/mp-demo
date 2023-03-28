@@ -1,72 +1,85 @@
 package com.honyee.app.config;
 
-import org.springframework.util.StreamUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 
 /**
- * HttpServletRequest 装饰，使InputStream可以重复读取
+ * 请求流支持多次获取
  */
 public class MyHttpRequestWrapper extends HttpServletRequestWrapper {
-    byte[] body;
-    String bodyStr;
+
+    /**
+     * 用于缓存输入流
+     */
+    private ByteArrayOutputStream cachedBytes;
 
     public MyHttpRequestWrapper(HttpServletRequest request) {
         super(request);
-        this.body = readBody(request);
-        this.bodyStr = new String(body, StandardCharsets.UTF_8);
-     }
+    }
 
-    public byte[] readBody(ServletRequest request) {
-        try (InputStream inputStream = request.getInputStream()) {
-            if (inputStream.available() != 0) {
-                return StreamUtils.copyToByteArray(inputStream);
-            }
-        } catch (IOException e) {
-             throw new RuntimeException(e);
+    @Override
+    public ServletInputStream getInputStream() throws IOException {
+        if (cachedBytes == null) {
+            // 首次获取流时，将流放入 缓存输入流 中
+            cacheInputStream();
         }
-        return new byte[0];
+
+        // 从 缓存输入流 中获取流并返回
+        return new CachedServletInputStream(cachedBytes.toByteArray());
     }
 
     @Override
-    public ServletInputStream getInputStream() {
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(body);
-        return new ServletInputStream() {
-            @Override
-            public boolean isFinished() {
-                return false;
-            }
-            @Override
-            public boolean isReady() {
-                return false;
-            }
-            @Override
-            public void setReadListener(ReadListener readListener) {
-            }
-            @Override
-            public int read() {
-                return byteArrayInputStream.read();
-            }
-        };
-
+    public BufferedReader getReader() throws IOException {
+        return new BufferedReader(new InputStreamReader(getInputStream()));
     }
 
-    @Override
-    public BufferedReader getReader() {
-        return new BufferedReader(new InputStreamReader(this.getInputStream()));
+    /**
+     * 首次获取流时，将流放入 缓存输入流 中
+     */
+    private void cacheInputStream() throws IOException {
+        // 缓存输入流以便多次读取
+        cachedBytes = new ByteArrayOutputStream();
+        IOUtils.copy(super.getInputStream(), cachedBytes);
     }
 
-    public byte[] getBody() {
-        return body;
+    /**
+     * 读取缓存的请求正文的输入流
+     * <p>
+     * 用于根据 缓存输入流 创建一个可返回的
+     */
+    public static class CachedServletInputStream extends ServletInputStream {
+
+        private final ByteArrayInputStream input;
+
+        public CachedServletInputStream(byte[] buf) {
+            // 从缓存的请求正文创建一个新的输入流
+            input = new ByteArrayInputStream(buf);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return false;
+        }
+
+        @Override
+        public boolean isReady() {
+            return false;
+        }
+
+        @Override
+        public void setReadListener(ReadListener listener) {
+
+        }
+
+        @Override
+        public int read() {
+            return input.read();
+        }
     }
 
-    public String getBodyStr() {
-        return bodyStr;
-    }
 }
