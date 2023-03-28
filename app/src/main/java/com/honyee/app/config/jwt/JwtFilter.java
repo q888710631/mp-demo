@@ -74,8 +74,6 @@ public class JwtFilter extends GenericFilter {
                 logger.error("token 认证授权失败:{}", e.getMessage());
                 resolveAuthenticationException(e, response);
                 return;
-            } finally {
-                LogUtil.remove();
             }
         }
         try {
@@ -83,7 +81,6 @@ public class JwtFilter extends GenericFilter {
             chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
         } finally {
             MybatisPlusTenantHandler.removeTenantValue();
-            LogUtil.remove();
         }
     }
 

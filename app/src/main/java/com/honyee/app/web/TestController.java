@@ -1,6 +1,7 @@
 package com.honyee.app.web;
 
 import com.honyee.app.service.CacheService;
+import com.honyee.app.service.TestService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ public class TestController {
     @Resource
     private CacheService cacheService;
 
+    @Resource
+    private TestService testService;
+
     @GetMapping
     public void testGet(HttpServletResponse response) throws IOException {
 
@@ -36,6 +40,7 @@ public class TestController {
 
     @PostMapping
     public ResponseEntity<?> test(@RequestBody(required = false) Object obj) {
+        testService.lockTest("honyee");
         return ResponseEntity.ok(obj == null ? new HashMap<>() : obj);
     }
 

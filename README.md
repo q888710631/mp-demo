@@ -28,6 +28,8 @@ maven开启kafka-mul可配置多个实例，对应配置文件：`application-ka
 
 maven开启exclude支持排除Kafka，对应配置文件：`application-exclude.yml`
 
+新增`@RedisLock`注解，在Method上加锁，使用方式类似`@Cacheable`，支持`SpEl`
+
 ## 2023.3.27
 优化mybatis sql日志打印，并拆分模块`app`、`cover`
 
