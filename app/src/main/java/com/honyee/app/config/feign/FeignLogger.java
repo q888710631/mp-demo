@@ -22,8 +22,6 @@ import java.util.stream.Collectors;
 import static feign.Util.*;
 
 public class FeignLogger extends Logger {
-    // proxy 包路径
-    private final String[] proxyPackage;
 
     private final org.slf4j.Logger logger = LogUtil.get();
 
@@ -32,8 +30,7 @@ public class FeignLogger extends Logger {
 
     public FeignLogger() {
         EnableFeignClients ann = FeignConfiguration.class.getAnnotation(EnableFeignClients.class);
-        this.proxyPackage = ann.basePackages();
-        for (String pack : this.proxyPackage) {
+        for (String pack : ann.basePackages()) {
             try {
                 init(pack);
             } catch (IOException | ClassNotFoundException e) {
@@ -169,71 +166,5 @@ public class FeignLogger extends Logger {
         String methodName = split[1];
         List<String> methods = DISABLE_FEIGN_LOG_METHOD.get(className);
         return methods != null && methods.contains(methodName);
-    }
-
-    /**
-     * 检查是否允许打印日志
-     *
-     * @return true 禁止打印日志
-     */
-    @Deprecated
-    private boolean checkDisableLog(String configKey) {
-        if (StringUtils.isBlank(configKey)) {
-            return false;
-        }
-        String[] split = configKey.split("#");
-        if (split.length < 2) {
-            return false;
-        }
-        String className = split[0];
-        String methodName = split[1];
-
-        Class<?> proxy = loadClass(className);
-        if (proxy != null) {
-            if (proxy.getAnnotation(DisableFeignLog.class) == null) {
-                Method method = loadMethod(proxy, methodName);
-                return method != null && method.getAnnotation(DisableFeignLog.class) != null;
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 查找Proxy，不支持查找子包
-     */
-    @Deprecated
-    private Class<?> loadClass(String className) {
-        for (String packageName : proxyPackage) {
-            try {
-                return Class.forName(packageName + "." + className);
-            } catch (ClassNotFoundException e) {
-                // ignore
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 查找method
-     *
-     * @param proxy      例如 GenericProxy
-     * @param methodName 例如test(String)
-     */
-    @Deprecated
-    private Method loadMethod(Class<?> proxy, String methodName) {
-        String[] split = methodName.split("\\(");
-        String methodSimpleName = split[0];
-        for (Method method : proxy.getDeclaredMethods()) {
-            if (method.getName().equals(methodSimpleName)) {
-                String params = Arrays.stream(method.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(","));
-                String format = String.format("%s(%s)", methodSimpleName, params);
-                if (methodName.equals(format)) {
-                    return method;
-                }
-            }
-        }
-        return null;
     }
 }
