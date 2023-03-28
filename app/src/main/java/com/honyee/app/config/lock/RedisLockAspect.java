@@ -42,8 +42,9 @@ public class RedisLockAspect {
         String key = parseSpel(context, annotation, annotation.key());
         String value = annotation.valueSpel() ? parseSpel(context, annotation, annotation.value()) : annotation.value();
 
-        LogUtil.get().info("value={}, key={}", value, key);
-        RLock lock = redissonClient.getLock(String.format("lock_%s_%s", value, key));
+        LogUtil.get().info("@RedisLock => value={}, key={}", value, key);
+        String lockKey = String.format("lock_%s_%s", value, key);
+        RLock lock = redissonClient.getLock(lockKey);
         try {
             if (annotation.tryLock()) {
                 if (lock.tryLock(annotation.timeLong(), annotation.timeUnit())) {

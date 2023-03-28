@@ -3,6 +3,7 @@ package com.honyee.app.config.log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.config.Constants;
+import com.honyee.app.config.lock.RedisLockAspect;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.HttpUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -67,20 +68,25 @@ public class LoggingAspect implements Ordered {
         Logger logger = logger(joinPoint);
         if (e instanceof CommonException) {
             for (StackTraceElement stack : e.getStackTrace()) {
-                if (stack.getClassName().startsWith(Constants.BASE_PACKAGE)) {
+                String className = stack.getClassName();
+                if (className.startsWith(Constants.BASE_PACKAGE)
+                    && !className.endsWith(RedisLockAspect.class.getName())
+                    && !className.contains("$$")
+                ) {
                     logger.warn("自定义异常 {} => {}.{}(), line={}, message={}",
-                        e.getClass().getSimpleName(), stack.getClassName(), stack.getMethodName(), stack.getLineNumber(), e.getMessage());
-                    break;
+                        e.getClass().getSimpleName(),
+                        className,
+                        stack.getMethodName(),
+                        stack.getLineNumber(),
+                        e.getMessage());
+                    return;
                 }
             }
-        } else {
-            logger
-                .error(
-                    "Exception in {}() with cause = {}",
-                    joinPoint.getSignature().getName(),
-                    e.getCause() != null ? e.getCause() : "NULL"
-                );
         }
+        logger.error("Exception in {}() with cause = {}",
+            joinPoint.getSignature().getName(),
+            e.getCause() != null ? e.getCause() : "NULL"
+        );
     }
 
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || within(@org.springframework.stereotype.Controller *)")

@@ -1,6 +1,7 @@
 package com.honyee.app.config;
 
 import com.honyee.app.exp.CommonException;
+import com.honyee.app.exp.LockOutTimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -69,6 +70,12 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
             }
         }
         return new MyResponse<>(statusCode, message, body);
+    }
+
+    @ExceptionHandler(value = LockOutTimeException.class)
+    @ResponseBody
+    public MyResponse<?> handler(LockOutTimeException e) {
+        return new MyResponse<>(500, "系统繁忙，稍后重试");
     }
 
     @ExceptionHandler(value = CommonException.class)
