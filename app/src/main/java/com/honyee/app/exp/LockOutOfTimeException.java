@@ -3,12 +3,12 @@ package com.honyee.app.exp;
 /**
  * 异常：请求锁超时
  */
-public class LockOutTimeException extends CommonException {
+public class LockOutOfTimeException extends CommonException {
 
-    public LockOutTimeException() {
+    public LockOutOfTimeException() {
         super("请求锁超时");
     }
-    public LockOutTimeException(Object obj) {
+    public LockOutOfTimeException(Object obj) {
         super("请求锁超时：" + obj);
     }
 
