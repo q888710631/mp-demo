@@ -38,9 +38,6 @@ public class RateLimitAspect {
         .recordStats()
         .build();
 
-    /**
-     * 限流策略 ： 1秒钟2个请求
-     */
     @Pointcut(value = "@annotation(com.honyee.app.config.limit.RateLimit)")
     public void access() {
 
