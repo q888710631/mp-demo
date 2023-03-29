@@ -3,7 +3,12 @@
 
 <configuration scan="true">
 
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>
+                %d %highlight(${LOG_LEVEL_PATTERN:-%5p}) %cyan([%thread]) %green(%logger{0}[%line]) %msg%n</Pattern>
+        </encoder>
+    </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
@@ -17,7 +22,7 @@
         <encoder>
             <charset>utf-8</charset>
             <!-- 追加日志行和方法输出-->
-            <Pattern>%d ${LOG_LEVEL_PATTERN:-%5p} [%X{trace_id}] [%thread] %logger{0}[%line] : %msg%n</Pattern>
+            <Pattern>%d ${LOG_LEVEL_PATTERN:-%5p} [%thread] %logger{0}[%line] %msg%n</Pattern>
         </encoder>
     </appender>
 
@@ -29,6 +34,7 @@
 
     <root level="INFO">
         <appender-ref ref="ASYNC"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
     <!--  # 打印SQL  -->
     <logger name="com.honyee.app.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>

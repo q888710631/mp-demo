@@ -2,12 +2,6 @@
 <!--<!DOCTYPE configuration>-->
 
 <configuration scan="true">
-
-    <include resource="org/springframework/boot/logging/logback/default.xml"/>
-    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
-    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
-
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 输出目录在启动目录下开始计算，开头有/则从根目录开始 -->
@@ -20,7 +14,7 @@
         <encoder>
             <charset>utf-8</charset>
             <!-- 追加日志行和方法输出-->
-            <Pattern>%d ${LOG_LEVEL_PATTERN:-%5p} [%X{trace_id}] [%thread] %logger{0}[%line] : %msg%n</Pattern>
+            <Pattern>%d ${LOG_LEVEL_PATTERN:-%5p} [%thread] %logger{0}[%line] %msg%n</Pattern>
         </encoder>
     </appender>
 

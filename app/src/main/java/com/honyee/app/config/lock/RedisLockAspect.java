@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
@@ -26,6 +27,12 @@ public class RedisLockAspect {
 
     @Resource
     private RedissonClient redissonClient;
+
+    private final boolean enableLog;
+
+    public RedisLockAspect(@Value("${application.redis-lock.log.enable}") Boolean redisLockLogEnable) {
+        this.enableLog = Boolean.TRUE.equals(redisLockLogEnable);
+    }
 
     @Pointcut(value = "@annotation(com.honyee.app.config.lock.RedisLock)")
     public void access() {
@@ -46,6 +53,9 @@ public class RedisLockAspect {
         String lockKey = String.format("lock_%s_%s", value, key);
         RLock lock = redissonClient.getLock(lockKey);
         try {
+            if (enableLog) {
+                LogUtil.info("锁定：{}", lockKey);
+            }
             if (annotation.tryLock()) {
                 if (lock.tryLock(annotation.timeLong(), annotation.timeUnit())) {
                     return point.proceed();
@@ -58,6 +68,9 @@ public class RedisLockAspect {
         } finally {
             if (lock.isLocked() && lock.isHeldByCurrentThread()) {
                 lock.unlock();
+                if (enableLog) {
+                    LogUtil.info("解锁：{}", lockKey);
+                }
             }
         }
     }
