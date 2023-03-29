@@ -29,6 +29,8 @@ public class TestService {
         delayTask.setTask(() -> {
             System.out.println(LocalDateTime.now());
         });
+        // https://blog.csdn.net/weixin_51110874/article/details/123288473
+        // https://blog.csdn.net/WantFlyDaCheng/article/details/120558888
         try {
             redisTemplate.opsForZSet().add("delay_task", objectMapper.writeValueAsString(objectMapper), System.currentTimeMillis() + 30_0000L);
         } catch (JsonProcessingException e) {
