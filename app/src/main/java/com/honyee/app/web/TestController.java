@@ -1,5 +1,6 @@
 package com.honyee.app.web;
 
+import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.service.CacheService;
 import com.honyee.app.service.TestService;
 import org.springframework.context.annotation.Profile;
@@ -38,6 +39,7 @@ public class TestController {
         System.out.println("结束");
     }
 
+    @RateLimit(limitIp = true)
     @PostMapping
     public ResponseEntity<?> test(@RequestBody(required = false) Object obj) {
         testService.lockTest("honyee");

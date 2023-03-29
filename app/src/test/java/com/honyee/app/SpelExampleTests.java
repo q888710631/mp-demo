@@ -8,8 +8,6 @@ import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import java.util.concurrent.TimeUnit;
-
 public class SpelExampleTests {
     @Test
     public void test() {
@@ -44,7 +42,6 @@ public class SpelExampleTests {
 
         Expression expression = parser.parseExpression(greetingExp, new TemplateParserContext());
         System.out.println(expression.getValue(context, String.class)); // Hello, honyee ---> C:\Users\xxxx
-        TimeUnit t = TimeUnit.SECONDS;
     }
 
 

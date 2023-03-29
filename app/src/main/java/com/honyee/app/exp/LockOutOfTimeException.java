@@ -12,4 +12,8 @@ public class LockOutOfTimeException extends CommonException {
         super("请求锁超时：" + obj);
     }
 
+    @Override
+    public String getCommonMessage() {
+        return "系统繁忙，稍后重试";
+    }
 }

@@ -20,6 +20,8 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+## 2023.3.29
+新增限流注解@RateLimit
 
 ## 2023.3.28
 整合kafka，默认单个实例，对应配置文件：`application-kafka-singlel.yml`
