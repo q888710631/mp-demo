@@ -70,10 +70,10 @@ public class RateLimitAspect {
     }
 
     private void check(String key, double rate, long timeout, TimeUnit timeUnit, Cache<Object, Object> rateLimiterCache) {
-        Object ifPresent = rateLimiterCacheCommon.getIfPresent(key);
+        Object ifPresent = rateLimiterCache.getIfPresent(key);
         if (ifPresent == null) {
             ifPresent = RateLimiter.create(rate);
-            rateLimiterCacheCommon.put(key, ifPresent);
+            rateLimiterCache.put(key, ifPresent);
         }
         RateLimiter rateLimiter = (RateLimiter) ifPresent;
         if (!rateLimiter.tryAcquire(timeout, timeUnit)) {

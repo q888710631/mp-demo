@@ -16,14 +16,14 @@ public @interface RateLimit {
      */
     boolean limit() default true;
     double rate() default 10.0;
-    long timeout() default 5000L;
-    TimeUnit timeUnit() default TimeUnit.SECONDS;
+    long timeout() default 500L;
+    TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
 
     /**
      * 根据ip限流
      */
     boolean limitIp() default false;
-    double rateIp() default 3.0;
-    long timeoutIp() default 5000L;
-    TimeUnit timeUnitIp() default TimeUnit.SECONDS;
+    double rateIp() default 1.0;
+    long timeoutIp() default 500L;
+    TimeUnit timeUnitIp() default TimeUnit.MILLISECONDS;
 }
