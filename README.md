@@ -23,6 +23,20 @@ mp-demo
 ## 2023.3.29
 新增限流注解@RateLimit
 
+```java
+@RestController
+@RequestMapping("/api/test")
+public class TestController {
+    
+    @RateLimit
+    @PostMapping
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(new HashMap<>());
+    }
+
+}
+```
+
 ## 2023.3.28
 整合kafka，默认单个实例，对应配置文件：`application-kafka-singlel.yml`
 
