@@ -22,7 +22,31 @@ mp-demo
 ```
 
 ## 2023.3.30
-1. 接入飞书机器人消息 `FeishuService.send(FeishuMessageRequeset)`
+1. 接入飞书机器人消息
+
+```yaml
+application:
+  feishu:
+    group:
+      common: 飞书机器人的hook
+```
+
+```java
+@Service
+public class TestService {
+
+    @Resource
+    FeishuService feishuService;
+
+    public String feishu() {
+      FeishuMessageRequeset feishuMessageRequeset = new FeishuMessageRequeset();
+      feishuMessageRequeset.setTitle("测试消息");
+      feishuMessageRequeset.addMsg("请说", "hello honyee");
+      feishuService.send(feishuMessageRequeset);
+    }
+
+}
+```
 
 2. 新增延时任务实现`DelayTaskListener<T>`
 
