@@ -52,7 +52,7 @@ public class MyDelayTaskListener implements DelayTaskListener<MyDelayParam> {
 @Service
 public class TestService {
 
-    public void delay(String query) {
+    public void delay() {
         MyDelayParam myDelayParam = new MyDelayParam();
         myDelayParam.setId(System.currentTimeMillis());
         myDelayParam.setTitle("延时任务");
