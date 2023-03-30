@@ -71,6 +71,9 @@ application:
   redis-lock:
     log:
       enable: true
+  delay-task:
+    # 通过kafka实际调用任务，前提是先启用kafka
+    kafka-execute: false
   feishu:
     group:
       common: 飞书机器人的hook

@@ -48,10 +48,20 @@ public class TestService {
 }
 ```
 
-2. 新增延时任务实现`DelayTaskListener<T>`
+2. 新增延时任务实现`DelayTaskListener<T>`，可以指定由线程或Kafka执行任务
+```yaml
+application:
+  delay-task:
+    # 通过kafka实际调用任务，前提是先启用kafka
+    kafka-execute: true
+```
 
 入参，必须实现Serializable
 ```java
+/**
+ * 交由kafka执行时需要该注解
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class MyDelayParam implements Serializable {
     private long id;
     private String title;

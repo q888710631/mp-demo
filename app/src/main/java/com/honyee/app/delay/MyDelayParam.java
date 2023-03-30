@@ -1,7 +1,10 @@
 package com.honyee.app.delay;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.io.Serializable;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class MyDelayParam implements Serializable {
     private long id;
     private String title;
