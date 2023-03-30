@@ -1,11 +1,10 @@
-package com.honyee.app.config.delay;
+package com.honyee.app.delay;
 
 import java.io.Serializable;
 
-public class DelayTask implements Serializable {
+public class MyDelayParam implements Serializable {
     private long id;
     private String title;
-    private Runnable task;
 
     public long getId() {
         return id;
@@ -23,11 +22,11 @@ public class DelayTask implements Serializable {
         this.title = title;
     }
 
-    public Runnable getTask() {
-        return task;
-    }
-
-    public void setTask(Runnable task) {
-        this.task = task;
+    @Override
+    public String toString() {
+        return "MyDelayParam{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            '}';
     }
 }

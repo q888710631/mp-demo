@@ -48,7 +48,7 @@ public class LogUtil {
         get().error(format, arguments);
     }
 
-    public void error(String msg, Throwable t) {
+    public static void error(String msg, Throwable t) {
         get().error(msg, t);
     }
 

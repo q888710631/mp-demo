@@ -20,6 +20,49 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+
+## 2023.3.30
+新增延时任务实现
+
+1. 入参，必须实现Serializable
+```java
+public class MyDelayParam implements Serializable {
+    private long id;
+    private String title;
+    // 省略get&set
+}
+```
+
+2. 实现监听
+```java
+@Component
+public class MyDelayTaskListener implements DelayTaskListener<MyDelayParam> {
+
+    @Override
+    public void run(MyDelayParam myDelayParam) {
+        System.out.println("MyDelayTaskListener");
+    }
+}
+```
+
+3. 提交延时任务
+```java
+@Service
+public class TestService {
+
+    public void delay(String query) {
+        MyDelayParam myDelayParam = new MyDelayParam();
+        myDelayParam.setId(System.currentTimeMillis());
+        myDelayParam.setTitle("延时任务");
+        // 延时
+        DelayTaskConfiguration.submit(myDelayParam, 5, TimeUnit.SECONDS);
+        // 指定时间
+        DelayTaskConfiguration.submit(myDelayParam, Instant.now().plusSeconds(5));
+    }
+
+}
+```
+
 ## 2023.3.29
 新增限流注解@RateLimit
 

@@ -1,9 +1,6 @@
 package com.honyee.app.config;
 
 import com.honyee.app.exp.CommonException;
-import com.honyee.app.exp.LockOutOfTimeException;
-import com.honyee.app.exp.RateLimitExistsException;
-import com.honyee.app.utils.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
