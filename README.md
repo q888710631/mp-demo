@@ -22,7 +22,7 @@ mp-demo
 ```
 
 ## 2023.3.30
-新增延时任务实现
+新增延时任务实现`DelayTaskListener<T>`
 
 1. 入参，必须实现Serializable
 ```java
@@ -64,7 +64,7 @@ public class TestService {
 ```
 
 ## 2023.3.29
-新增限流注解@RateLimit
+新增限流注解`@RateLimit`
 
 ```java
 @RestController
