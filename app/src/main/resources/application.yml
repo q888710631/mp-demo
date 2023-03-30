@@ -71,3 +71,6 @@ application:
   redis-lock:
     log:
       enable: true
+  feishu:
+    group:
+      common: 飞书机器人的hook

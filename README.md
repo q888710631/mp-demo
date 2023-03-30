@@ -22,6 +22,8 @@ mp-demo
 ```
 
 ## 2023.3.30
+接入飞书机器人消息
+
 新增延时任务实现`DelayTaskListener<T>`
 
 1. 入参，必须实现Serializable
