@@ -16,7 +16,9 @@ import org.springframework.util.StopWatch;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,20 +28,24 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class DelayTaskConfiguration implements DisposableBean {
 
-    private final RedissonClient redissonClient;
-
     public static boolean enable = true;
 
     // Listener<T>中T的Class.name
     private static final Set<String> QUEUE_NAMES = new HashSet<>();
+    // 已创建的ScheduledExecutorService
+    private static final List<ScheduledExecutorService> EXECUTOR_LIST = new ArrayList<>();
 
     @Override
     public void destroy() {
         enable = false;
+        for (ScheduledExecutorService executor : EXECUTOR_LIST) {
+            if (!executor.isShutdown()) {
+                executor.shutdown();
+            }
+        }
     }
 
     public DelayTaskConfiguration(RedissonClient redissonClient, ObjectProvider<DelayTaskListener<?>> listenerList) {
-        this.redissonClient = redissonClient;
 
         for (DelayTaskListener delayTaskListener : listenerList) {
             // 获取接口泛型
@@ -57,7 +63,7 @@ public class DelayTaskConfiguration implements DisposableBean {
         String name = String.format("%s-%%d", delayTaskListener.getClass().getSimpleName());
         ThreadFactory build = new ThreadFactoryBuilder().setNameFormat(name).build();
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor(build);
-
+        EXECUTOR_LIST.add(scheduledExecutorService);
         scheduledExecutorService.submit(() -> {
             String queueName = MyDelayParam.class.getName();
             RBlockingQueue<T> blockingFairQueue = redissonClient.getBlockingQueue(queueName);
@@ -86,8 +92,8 @@ public class DelayTaskConfiguration implements DisposableBean {
             throw new CommonException("时间不正确");
         }
 
-        long l = at.getEpochSecond() - now.getEpochSecond();
-        submit(e, l, TimeUnit.SECONDS);
+        long timeLong = at.getEpochSecond() - now.getEpochSecond();
+        submit(e, timeLong, TimeUnit.SECONDS);
     }
 
     public static void submit(@NotNull Object e, long delay, @NotNull TimeUnit timeUnit) {
