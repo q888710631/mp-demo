@@ -22,7 +22,7 @@ mp-demo
 ```
 
 ## 2023.3.30
-1. 接入飞书机器人消息
+1. 接入飞书机器人消息 `FeishuService.send(FeishuMessageRequeset)`
 
 2. 新增延时任务实现`DelayTaskListener<T>`
 

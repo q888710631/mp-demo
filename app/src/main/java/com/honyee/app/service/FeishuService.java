@@ -10,11 +10,12 @@ import javax.annotation.Resource;
 import java.net.URI;
 
 /**
+ * 飞书机器人
+ * <p>
  * 参考文档 https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/create_json#45e0953e
- *
  */
 @Service
-public class FeishuNotifyService {
+public class FeishuService {
 
     public static final String URL = "https://open.feishu.cn/open-apis/bot/v2/hook/";
 
@@ -65,23 +66,23 @@ public class FeishuNotifyService {
     }
 
     /**
-     * 钉钉通知 ，actionCard模式，不支持艾特
+     * actionCard模式，不支持艾特
      */
-    public void send(FeishuMessageRequeset dingDTO) {
-        FeishuCard card = new FeishuCard(dingDTO.getTitle());
+    public void send(FeishuMessageRequeset request) {
+        FeishuCard card = new FeishuCard(request.getTitle());
         // 消息内容
         StringBuilder sb = new StringBuilder();
-        for (FeishuMessageRequeset.KeyValue keyValue : dingDTO.getMsg()) {
+        for (FeishuMessageRequeset.KeyValue keyValue : request.getMsg()) {
             if (keyValue.getKey() == null) {
                 sb.append("\n");
-            }else {
+            } else {
                 sb.append(String.format("**%s：**%s\n", keyValue.getKey(), keyValue.getValue()));
             }
         }
         card.appendDivText(sb.toString());
 
         // 消息等级
-        MessageLevelEnum level = dingDTO.getLevel();
+        MessageLevelEnum level = request.getLevel();
         if (level != null) {
             FeishuCard.Header header = card.getHeader();
             switch (level) {
@@ -105,7 +106,7 @@ public class FeishuNotifyService {
             }
         }
 
-        send(dingDTO.getGroup(), card);
+        send(request.getGroup(), card);
     }
 
 
