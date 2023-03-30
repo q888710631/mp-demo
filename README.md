@@ -22,11 +22,11 @@ mp-demo
 ```
 
 ## 2023.3.30
-接入飞书机器人消息
+1. 接入飞书机器人消息
 
-新增延时任务实现`DelayTaskListener<T>`
+2. 新增延时任务实现`DelayTaskListener<T>`
 
-1. 入参，必须实现Serializable
+入参，必须实现Serializable
 ```java
 public class MyDelayParam implements Serializable {
     private long id;
@@ -35,7 +35,7 @@ public class MyDelayParam implements Serializable {
 }
 ```
 
-2. 实现监听
+实现监听
 ```java
 @Component
 public class MyDelayTaskListener implements DelayTaskListener<MyDelayParam> {
@@ -47,7 +47,7 @@ public class MyDelayTaskListener implements DelayTaskListener<MyDelayParam> {
 }
 ```
 
-3. 提交延时任务
+提交延时任务
 ```java
 @Service
 public class TestService {
@@ -83,13 +83,13 @@ public class TestController {
 ```
 
 ## 2023.3.28
-整合kafka，默认单个实例，对应配置文件：`application-kafka-singlel.yml`
+1. 整合kafka，默认单个实例，对应配置文件：`application-kafka-singlel.yml`
 
-maven开启kafka-mul可配置多个实例，对应配置文件：`application-kafka-mul.yml`、`KafkaMulConfiguration`
+    maven开启kafka-mul可配置多个实例，对应配置文件：`application-kafka-mul.yml`、`KafkaMulConfiguration`
 
-maven开启exclude支持排除Kafka，对应配置文件：`application-exclude.yml`
+    maven开启exclude支持排除Kafka，对应配置文件：`application-exclude.yml`
 
-新增`@RedisLock`注解，在Method上加锁，使用方式类似`@Cacheable`，支持`SpEl`
+2. 新增`@RedisLock`注解，在Method上加锁，使用方式类似`@Cacheable`，支持`SpEl`
 
 ```java
 @Service
@@ -103,9 +103,11 @@ public class TestService {
 ```
 
 ## 2023.3.27
+
 优化mybatis sql日志打印，并拆分模块`app`、`cover`
 
 ## 2023.3.24
+
 优化feign日志打印，使request和response日志分别一次性输出。
 
 可通过配置application.yml或者注解`@DisableFeignLog`来开启/关闭日志
@@ -120,6 +122,7 @@ feign:
 ```
 
 ## 2023.3.23
+
 整合`springdoc-openapi-ui`，通过`http://localhost:1222/v3/api-docs` 导入接口到apifox
 
 ## 2023.3.22
@@ -150,6 +153,7 @@ public class ParamDTO {
 ```
 
 ## 2023.3.19
+
 `@Cacheable`新增缓存配置`redisCacheManager`和`cacheManagerTwice`
 
 `redisCacheManager`缓存到redis，可自定义每个value的缓存时长
@@ -182,6 +186,7 @@ public class CacheService {
 
 
 ## 2023.3.16
+
 新增`url权限配置`和`菜单权限配置`，存储于`authentication.yml`
 
 ```yaml
@@ -225,7 +230,7 @@ menu-matchers:
 
 ## 2023.2.27 
 
-### @InterceptorIgnore补充
+补充`@InterceptorIgnore`的支持范围
 
 1. 支持Entity
 ```java
