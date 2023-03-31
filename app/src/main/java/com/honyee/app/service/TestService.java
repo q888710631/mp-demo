@@ -17,7 +17,7 @@ public class TestService {
         MyDelayParam myDelayParam = new MyDelayParam();
         myDelayParam.setId(System.currentTimeMillis());
         myDelayParam.setTitle("myDelayParam");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
             DelayTaskConfiguration.submit(myDelayParam, i + 2, TimeUnit.SECONDS);
         }
         return "complete";

@@ -6,6 +6,7 @@ import com.honyee.app.AppApplication;
 import com.honyee.app.delay.MyDelayParam;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.LogUtil;
+import org.noear.snack.ONode;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,9 +42,10 @@ public class DelayTaskConfiguration implements DisposableBean {
     private boolean enableKafkaRun = false;
     // 线程池
     private final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    // 子类泛型
+    private static final Map<String, Class<?>> SUB_CLASS_T = new HashMap<>();
 
-    @Autowired(required = false)
-    private KafkaTemplate kafkaTemplate;
+    private final KafkaTemplate kafkaTemplate;
 
     @Resource
     private ObjectMapper objectMapper;
@@ -59,8 +62,10 @@ public class DelayTaskConfiguration implements DisposableBean {
 
     public DelayTaskConfiguration(@Value("${application.delay-task.kafka-execute}") Boolean kafkaExecute,
                                   RedissonClient redissonClient,
+                                  @Autowired(required = false) KafkaTemplate kafkaTemplate,
                                   ObjectProvider<DelayTaskListener<?>> listenerList) {
         this.enableKafkaRun = Boolean.TRUE.equals(kafkaExecute) && kafkaTemplate != null;
+        this.kafkaTemplate = kafkaTemplate;
 
         if (!this.enableKafkaRun) {
             executor.setCorePoolSize(5); //核心线程数
@@ -74,8 +79,11 @@ public class DelayTaskConfiguration implements DisposableBean {
 
         for (DelayTaskListener delayTaskListener : listenerList) {
             // 获取接口泛型
-            Class<?> tClass = (Class<?>) ((ParameterizedType) delayTaskListener.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
-
+            Class<? extends DelayTaskListener> aClass = delayTaskListener.getClass();
+            ParameterizedType genericSuperclass = (ParameterizedType)aClass.getGenericSuperclass();
+            Class<?> tClass = (Class<?>)genericSuperclass.getActualTypeArguments()[0];
+            // 填充子类泛型
+            SUB_CLASS_T.put(tClass.getName(), tClass);
             // 填充队列名称
             QUEUE.put(tClass.getName(), delayTaskListener);
 
@@ -86,6 +94,10 @@ public class DelayTaskConfiguration implements DisposableBean {
 
     public static DelayTaskListener getDelayTaskListener(String key) {
         return QUEUE.get(key);
+    }
+
+    public static Class<?> getSubParam(String className) {
+        return SUB_CLASS_T.get(className);
     }
 
     private <T> void initListener(Class<T> tClass, DelayTaskListener<T> delayTaskListener, RedissonClient redissonClient) {
