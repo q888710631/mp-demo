@@ -5,10 +5,10 @@ import com.honyee.app.utils.LogUtil;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MyDelayTaskListener implements DelayTaskListener<MyDelayParam> {
+public class MyDelayTaskListener extends DelayTaskListener<MyDelayParam> {
 
     @Override
-    public void run(MyDelayParam myDelayParam) {
+    public void execute(MyDelayParam myDelayParam) {
         LogUtil.info("{}开始执行任务->{}", this.getClass().getSimpleName(), myDelayParam.getTitle());
         try {
             Thread.sleep(1234);

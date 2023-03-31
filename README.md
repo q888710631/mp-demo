@@ -216,9 +216,6 @@ public class CacheService {
 }
 ```
 
-
-
-
 ## 2023.3.16
 
 新增`url权限配置`和`菜单权限配置`，存储于`authentication.yml`
@@ -260,14 +257,15 @@ menu-matchers:
 
 ```
 
-
-
 ## 2023.2.27 
+1. 获取租户ID `TenantHelper.getTenantId()`
 
-补充`@InterceptorIgnore`的支持范围
+2. 补充`@InterceptorIgnore`的支持范围
 
-1. 支持Entity
 ```java
+/**
+ * 支持Entity
+ */
 @TableName("tenant")
 @InterceptorIgnore(tenantLine = "true")
 public class Tenant extends BaseEntity{
@@ -280,8 +278,10 @@ public class Tenant extends BaseEntity{
 }
 ```
 
-2. 支持Class
 ```java
+/**
+ * 支持Class
+ */
 @SpringBootTest
 @InterceptorIgnore(tenantLine = "true")
 class MpApplicationTests {
@@ -289,8 +289,10 @@ class MpApplicationTests {
 }
 ```
 
-3. 支持Method
 ```java
+/**
+ * 支持Method
+ */
 @SpringBootTest
 class MpApplicationTests {
     @Test

@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.util.StopWatch;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
@@ -25,10 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @Configuration
 public class DelayTaskConfiguration implements DisposableBean {
@@ -39,9 +36,10 @@ public class DelayTaskConfiguration implements DisposableBean {
     private static final Map<String, DelayTaskListener> QUEUE = new HashMap<>();
     // 已创建的ScheduledExecutorService
     private static final List<ScheduledExecutorService> EXECUTOR_LIST = new ArrayList<>();
-
-    @Value("${application.delay-task.kafka-execute}")
-    private Boolean kafkaExecute = Boolean.FALSE;
+    // 是否使用kafka运行
+    private boolean enableKafkaRun = false;
+    // 线程池
+    private final ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
     @Autowired(required = false)
     private KafkaTemplate kafkaTemplate;
@@ -59,7 +57,20 @@ public class DelayTaskConfiguration implements DisposableBean {
         }
     }
 
-    public DelayTaskConfiguration(RedissonClient redissonClient, ObjectProvider<DelayTaskListener<?>> listenerList) {
+    public DelayTaskConfiguration(@Value("${application.delay-task.kafka-execute}") Boolean kafkaExecute,
+                                  RedissonClient redissonClient,
+                                  ObjectProvider<DelayTaskListener<?>> listenerList) {
+        this.enableKafkaRun = Boolean.TRUE.equals(kafkaExecute) && kafkaTemplate != null;
+
+        if (!this.enableKafkaRun) {
+            executor.setCorePoolSize(5); //核心线程数
+            executor.setMaxPoolSize(10);  //最大线程数
+            executor.setQueueCapacity(1000); //队列大小
+            executor.setKeepAliveSeconds(300); //线程最大空闲时间
+            executor.setThreadNamePrefix("my-async-Executor-"); // 指定用于新创建的线程名称的前缀
+            executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // 拒绝策略（一共四种，此处省略）
+            executor.initialize();
+        }
 
         for (DelayTaskListener delayTaskListener : listenerList) {
             // 获取接口泛型
@@ -90,16 +101,12 @@ public class DelayTaskConfiguration implements DisposableBean {
             while (enable) {
                 try {
                     T param = blockingFairQueue.take();
-                    if (Boolean.TRUE.equals(kafkaExecute) && kafkaTemplate != null) {
+                    if (this.enableKafkaRun) {
                         kafkaTemplate.send("delay_task", objectMapper.writeValueAsString(param));
                     } else {
-                        LogUtil.info("延时任务-开始：{}", param);
-                        StopWatch stopWatch = new StopWatch();
-                        stopWatch.start();
-                        delayTaskListener.run(param);
-                        stopWatch.stop();
-                        long totalTimeMillis = stopWatch.getLastTaskTimeMillis();
-                        LogUtil.info("延时任务-结束：时长={}ms，param={}", totalTimeMillis, param);
+                        executor.submit(() -> {
+                            delayTaskListener.run(param);
+                        });
                     }
                 } catch (Exception e) {
                     LogUtil.error("延时任务-异常：{}", e);

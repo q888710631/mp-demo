@@ -3,11 +3,9 @@ package com.honyee.app.config.delay;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.exp.CommonException;
-import com.honyee.app.utils.LogUtil;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 import java.util.Map;
@@ -29,13 +27,7 @@ public class DelayTaskKafkaService {
         Class<?> aClass = Class.forName(className.toString());
         Object param = readResult(result, aClass);
         DelayTaskListener delayTaskListener = DelayTaskConfiguration.getDelayTaskListener(className.toString());
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
         delayTaskListener.run(param);
-        stopWatch.stop();
-        long totalTimeMillis = stopWatch.getLastTaskTimeMillis();
-        LogUtil.info("延时任务-结束：时长={}ms，param={}", totalTimeMillis, param);
-
         // 执行没出错则消费掉
         acknowledgment.acknowledge();
     }

@@ -1,6 +1,5 @@
 package com.honyee.app.service;
 
-import com.honyee.app.proxy.feishu.FeishuProxy;
 import com.honyee.app.proxy.feishu.*;
 import com.honyee.app.utils.LogUtil;
 import org.springframework.beans.factory.annotation.Value;
