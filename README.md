@@ -1,5 +1,5 @@
 # mp-demo
-spring boot + mybatis plus 多租户
+spring boot + mybatis plus 多租户 以及各种框架整合
 
 主要框架：
 
