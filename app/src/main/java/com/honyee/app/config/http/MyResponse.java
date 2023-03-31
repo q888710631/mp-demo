@@ -1,4 +1,4 @@
-package com.honyee.app.config;
+package com.honyee.app.config.http;
 
 
 /**

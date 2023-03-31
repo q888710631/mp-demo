@@ -1,4 +1,4 @@
-package com.honyee.app.config;
+package com.honyee.app.config.http;
 
 import com.honyee.app.exp.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;

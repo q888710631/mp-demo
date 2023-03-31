@@ -1,7 +1,7 @@
 package com.honyee.app.config.seurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.honyee.app.config.MyResponse;
+import com.honyee.app.config.http.MyResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;

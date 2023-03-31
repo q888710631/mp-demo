@@ -1,8 +1,8 @@
 package com.honyee.app.config.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.honyee.app.config.MyHttpRequestWrapper;
-import com.honyee.app.config.MyResponse;
+import com.honyee.app.config.http.MyHttpRequestWrapper;
+import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.config.jwt.my.MyAuthenticationToken;
 import com.honyee.app.config.mybatis.MybatisPlusTenantHandler;
 import com.honyee.app.utils.LogUtil;

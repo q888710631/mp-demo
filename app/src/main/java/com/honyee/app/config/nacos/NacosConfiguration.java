@@ -2,7 +2,6 @@ package com.honyee.app.config.nacos;
 
 import com.alibaba.cloud.nacos.NacosConfigManager;
 import com.alibaba.cloud.nacos.NacosConfigProperties;
-import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.common.notify.NotifyCenter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -19,7 +18,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import javax.annotation.Resource;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -72,20 +70,19 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
     private void init() {
         if (loadConfig(getDataId())) {
             try {
-                nacosConfigManager.getConfigService().addListener(getDataId(), nacosConfigProperties.getGroup(), new NacosListener());
+                nacosConfigManager.getConfigService().addListener(getDataId(), nacosConfigProperties.getGroup(), new NacosListener(this));
                 LogUtil.info("### nacos add listener 执行成功");
             } catch (NacosException e) {
                 LogUtil.error("### nacos add listener 执行失败：{}", e.getMessage());
             }
         } else {
             // 执行失败，延迟重试
-            LogUtil.error("### addAuthenticateListener 执行失败，稍后重试");
+            LogUtil.error("### nacos load config 执行失败，稍后重试");
             executor.schedule(this::init, 5L, TimeUnit.SECONDS);
         }
-
     }
 
-    private boolean loadConfig(String dataId) {
+    public boolean loadConfig(String dataId) {
         try {
             String configInfo = nacosConfigManager.getConfigService().getConfig(dataId, nacosConfigProperties.getGroup(), nacosConfigProperties.getTimeout());
             LogUtil.info("nacos配置获取：{}", configInfo);
@@ -100,7 +97,11 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
      * 解析配置
      * @param configInfo yaml配置信息
      */
-    private boolean analysisConfig(String configInfo) {
+    public boolean analysisConfig(String configInfo) {
+        if (configInfo == null) {
+            LogUtil.warn("nacos 没有读取到配置文件，可能未连接成功或没有该配置文件");
+            return false;
+        }
         Yaml yaml = new Yaml();
         Map map = yaml.loadAs(configInfo, Map.class);
         return true;
@@ -108,19 +109,6 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
 
     private String getDataId() {
         return this.applicationName;
-    }
-
-    public class NacosListener implements Listener {
-
-        @Override
-        public Executor getExecutor() {
-            return null;
-        }
-
-        @Override
-        public void receiveConfigInfo(String configInfo) {
-            boolean result = analysisConfig(configInfo);
-        }
     }
 
 }
