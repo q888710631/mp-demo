@@ -56,10 +56,10 @@ application:
     kafka-execute: true
 ```
 
-入参，必须实现Serializable
 ```java
 /**
- * 交由kafka执行时需要该注解
+ * 1. 必须实现Serializable
+ * 2. 交由kafka执行时注解 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public class MyDelayParam implements Serializable {
