@@ -27,7 +27,7 @@ public class DelayTaskKafkaService {
         if (className == null) {
             throw new CommonException("延时参数没有配置@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)");
         }
-        Class<?> aClass = DelayTaskConfiguration.getSubParam(className);
+        Class<?> aClass = DelayTaskConfiguration.getDelayTaskParamClass(className);
         if (aClass == null) {
             throw new CommonException("延时参数没有匹配" + className + "的监听");
         }

@@ -6,7 +6,6 @@ import com.honyee.app.AppApplication;
 import com.honyee.app.delay.MyDelayParam;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.LogUtil;
-import org.noear.snack.ONode;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
@@ -21,7 +20,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -96,7 +94,7 @@ public class DelayTaskConfiguration implements DisposableBean {
         return QUEUE.get(key);
     }
 
-    public static Class<?> getSubParam(String className) {
+    public static Class<?> getDelayTaskParamClass(String className) {
         return SUB_CLASS_T.get(className);
     }
 
