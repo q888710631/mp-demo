@@ -7,10 +7,11 @@ spring boot + mybatis plus 多租户
 2. mybatis plus + pagehelper
 3. spring security + jwt
 4. openfeign
-5. sleuth
-6. springdoc-openapi
-7. redisson
-8. mapstruct
+5. kafka
+6. nacos
+7. sleuth
+8. springdoc-openapi
+9. redisson
 
 初始化sql： `resource/sql/init.sql`
 
