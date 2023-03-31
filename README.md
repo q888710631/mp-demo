@@ -142,9 +142,11 @@ public class TestService {
 
 ## 2023.3.24
 
-优化feign日志打印，使request和response日志分别一次性输出。
+1. 日志打印工具封装`LogUtil`
 
-可通过配置application.yml或者注解`@DisableFeignLog`来开启/关闭日志
+2. 优化feign日志打印，使request和response日志分别一次性输出。
+
+   可通过配置application.yml或者注解`@DisableFeignLog`来开启/关闭日志
 
 ```yaml
 # feign日志级别
