@@ -76,7 +76,7 @@ public class DelayTaskConfiguration implements DisposableBean {
         }
 
         for (DelayTaskListener delayTaskListener : listenerList) {
-            // 获取接口泛型
+            // 获取泛型
             Class<? extends DelayTaskListener> aClass = delayTaskListener.getClass();
             ParameterizedType genericSuperclass = (ParameterizedType)aClass.getGenericSuperclass();
             Class<?> tClass = (Class<?>)genericSuperclass.getActualTypeArguments()[0];
