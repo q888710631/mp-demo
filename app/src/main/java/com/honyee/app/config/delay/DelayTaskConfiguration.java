@@ -90,10 +90,16 @@ public class DelayTaskConfiguration implements DisposableBean {
         }
     }
 
-    public static DelayTaskListener getDelayTaskListener(String key) {
-        return QUEUE.get(key);
+    /**
+     * 获取延迟任务监听
+     */
+    public static DelayTaskListener getDelayTaskListener(String className) {
+        return QUEUE.get(className);
     }
 
+    /**
+     * 获取延迟任务参数Class
+     */
     public static Class<?> getDelayTaskParamClass(String className) {
         return SUB_CLASS_T.get(className);
     }
