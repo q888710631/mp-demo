@@ -21,6 +21,78 @@ mp-demo
 └── cover 存放覆盖源码的类
 ```
 
+## 2023.3.31
+整合Naocs
+
+```yaml
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+        namespace:
+        enabled: true
+```
+
+```java
+/**
+ * Nacos配置
+ */
+public class NacosConfiguration implements InitializingBean {
+   @Override
+   public void afterPropertiesSet() throws Exception {
+       // 配置变动监听
+      nacosConfigManager.getConfigService().addListener(getDataId(), nacosConfigProperties.getGroup(), new NacosListener());
+      
+      // 订阅
+      NotifyCenter.registerSubscriber(new NacosInstancesChangeNotifier());
+   }
+   
+   @EventListener
+   public void onApplicationEvent(HeartbeatEvent event) {
+      // 实例心跳监听
+   }
+}
+
+```
+
+```java
+/**
+ * 配置变动监听
+ */
+public class NacosListener implements Listener {
+
+     @Override
+     public Executor getExecutor() {
+         return null;
+     }
+
+     @Override
+     public void receiveConfigInfo(String configInfo) {
+         boolean result = analysisConfig(configInfo);
+     }
+ }
+```
+
+```java
+/**
+ * 实例变动事件
+ */
+public class NacosInstancesChangeNotifier extends Subscriber<InstancesChangeEvent> {
+   @Override
+   public void onEvent(InstancesChangeEvent event) {
+      // do something
+   }
+
+   @Override
+   public Class<? extends Event> subscribeType() {
+      return InstancesChangeEvent.class;
+   }
+}
+```
+
 ## 2023.3.30
 1. 接入飞书机器人消息
 
