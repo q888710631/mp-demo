@@ -6,6 +6,7 @@ import com.honyee.app.AppApplication;
 import com.honyee.app.delay.MyDelayParam;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.LogUtil;
+import org.redisson.RedissonShutdownException;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
@@ -124,7 +125,9 @@ public class DelayTaskConfiguration implements DisposableBean {
                             delayTaskListener.run(param);
                         });
                     }
-                } catch (Exception e) {
+                } catch (RedissonShutdownException e) {
+                    LogUtil.error("延时任务-异常：{}", e.getMessage());
+                }catch (Exception e) {
                     LogUtil.error("延时任务-异常：{}", e);
                 }
             }

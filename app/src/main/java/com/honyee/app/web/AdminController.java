@@ -2,6 +2,8 @@ package com.honyee.app.web;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.honyee.app.AppApplication;
+import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.dto.RoleDTO;
 import com.honyee.app.dto.UpdateUserStateOrLockDTO;
 import com.honyee.app.dto.UserDTO;
@@ -9,7 +11,9 @@ import com.honyee.app.dto.UserRoleDTO;
 import com.honyee.app.mapper.RoleMapper;
 import com.honyee.app.mapper.UserMapper;
 import com.honyee.app.service.MyUserDetailService;
+import com.honyee.app.utils.LogUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,9 +38,6 @@ public class AdminController {
     @Resource
     private UserMapper userMapper;
 
-    /**
-     *
-     */
     @Operation(summary = "所有角色")
     @GetMapping("/all-role")
     public List<RoleDTO> allRoles() {
@@ -79,6 +80,21 @@ public class AdminController {
     @PostMapping("update-user-state-or-lock")
     public UserDTO updateUserStateOrLock(@Validated @RequestBody UpdateUserStateOrLockDTO dto) {
         return myUserDetailService.updateUserStateOrLock(dto);
+    }
+
+    @Operation(summary = "手动关闭服务")
+    //@PostMapping("close-server")
+    public MyResponse<Void> closeServer() {
+        new Thread(() -> {
+            LogUtil.info("准备关闭服务");
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            SpringApplication.exit(AppApplication.context);
+        }).start();
+        return new MyResponse<>();
     }
 
 }
