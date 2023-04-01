@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class GenericService implements InitializingBean {
-    @Value("${server.port}")
+    @Value("${server.port:8080}")
     private String port;
 
     @Resource

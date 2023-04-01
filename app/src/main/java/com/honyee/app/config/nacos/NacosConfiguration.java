@@ -3,11 +3,14 @@ package com.honyee.app.config.nacos;
 import com.alibaba.cloud.nacos.NacosConfigManager;
 import com.alibaba.cloud.nacos.NacosConfigProperties;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.client.naming.utils.NetUtils;
 import com.alibaba.nacos.common.notify.NotifyCenter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.honyee.app.utils.LogUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -16,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.yaml.snakeyaml.Yaml;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,21 +33,35 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
     @Value("${spring.application.name}")
     private String applicationName;
 
-    @Resource
+    @Value("${server.port:8080}")
+    private int port ;
+
+    @Autowired(required = false)
     private NacosConfigManager nacosConfigManager;
 
-    @Resource
+    @Autowired(required = false)
     private DiscoveryClient discoveryClient;
 
-    @Resource
+    @Autowired(required = false)
     private NacosConfigProperties nacosConfigProperties;
+
+    @Autowired(required = false)
+    private NamingService namingService;
+
+    private NacosInstancesChangeNotifier nacosInstancesChangeNotifier;
 
     // 线程，仅在spring.cloud.nacos.discovery.enabled=true时有效
     private ScheduledExecutorService executor = null;
 
     @Override
     public void destroy() throws Exception {
-
+        if (Boolean.TRUE.equals(enable)) {
+            // 取消订阅：实例变动监听
+            NotifyCenter.deregisterSubscriber(nacosInstancesChangeNotifier);
+            String ip = NetUtils.localIP();
+            // 移除自身实例
+            namingService.deregisterInstance(applicationName, nacosConfigProperties.getGroup(), ip, port);
+        }
     }
 
     @Override
