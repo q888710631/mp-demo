@@ -334,6 +334,8 @@ menu-matchers:
 
 ## 2023.3.15
 接入springdoc
+
+apifox导入地址：http://localhost:1222/v3/api-docs
 ```yaml
 # 禁用文档
 springdoc:
