@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <script src="./stomp.min.js"></script>
+</head>
+<body>
+    <label><input id="uid"/></label>
+    <button onclick="login()" id="login">登录</button>
+    <label><input id="msg" placeholder="信息后加 -id，发给指定人"/></label>
+    <button onclick="sendMsg()">发送</button>
+    <div id="user"></div>
+    <div id="greet"></div>
+    <script>
+        let stompClient
+        function login() {
+            // 根据输入的 id 号模拟不同用户的订阅
+            let socket = new WebSocket(`ws://localhost:1222/websocket?token=jwt123`)
+            stompClient = Stomp.over(socket)
+            stompClient.connect({"Authorization":"abc"}, function () {
+                // 所有想要接收给指定用户发送的信息的订阅地址都必须加上/user前缀
+                // 这里是为了配合后台的 convertAndSendToUser 方法，如果使用
+                // convertAndSend，就不需要 /user 前缀了，下面会再介绍
+                /*stompClient.subscribe(`/user/chat/contact`, function (frame) {
+                    let entity = JSON.parse(frame.body)
+                    showGreeting(`收到用户${entity.from}的信息: ${entity.message}`)
+                })*/
+            })
+
+            //document.getElementById('user').innerText = `当前用户为：${document.getElementById('uid').value}`
+
+            function showGreeting(clientMessage) {
+                document.getElementById("greet").innerText += `${clientMessage}\n`
+            }
+        }
+
+        function sendMsg() {
+            const msg = document.getElementById('msg').value
+            stompClient.send("/sendMsg", {}, JSON.stringify({
+                from: document.getElementById('uid').value,
+                to: msg.substring(msg.lastIndexOf('-') + 1),
+                message: msg.substring(0, msg.lastIndexOf('-')),
+                time: new Date()
+            }))
+        }
+    </script>
+</body>
+</html>

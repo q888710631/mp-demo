@@ -278,7 +278,6 @@ public class LoggingAspect implements Ordered {
                                 "\r\n   Http Headers : {}" +
                                 "\r\n   Class name : {}" +
                                 "\r\n   Method Name : {}" +
-                                "\r\n   User Agent : {}" +
                                 "\r\n   Execution Time : {}ms" +
                                 "\r\n   WithThrows : {}" +
                                 "\r\n   Result : {}" +
@@ -287,7 +286,6 @@ public class LoggingAspect implements Ordered {
                         headers,
                         className,
                         method,
-                        userAgent,
                         executeMs,
                         wrapThrowMessage(),
                         wrapResult(result)

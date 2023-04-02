@@ -1,5 +1,6 @@
 package com.honyee.app.config.http;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessagingException;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 /**
  * websocket消息拦截器
  */
+@Profile("websocket")
 @Component
 public class WebsocketAuthChannelInterceptor implements ChannelInterceptor {
 

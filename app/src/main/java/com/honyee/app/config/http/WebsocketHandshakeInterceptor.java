@@ -1,5 +1,6 @@
 package com.honyee.app.config.http;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * websocket握手前后拦截器，获取不到自定义的header
  */
+@Profile("websocket")
 @Component
 public class WebsocketHandshakeInterceptor implements HandshakeInterceptor {
     /**

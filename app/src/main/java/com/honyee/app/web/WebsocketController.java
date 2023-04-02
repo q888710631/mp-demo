@@ -1,13 +1,14 @@
 package com.honyee.app.web;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 
+@Profile("websocket")
 @RestController
 public class WebsocketController {
-
 
     // 这里的 @MessageMapping 可以当成 @RequestMapping,
     // 当有信息 (sendMsg 方法中的 messageEntity 参数即为客服端发送的信息实体)
