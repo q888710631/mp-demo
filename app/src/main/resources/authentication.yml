@@ -6,7 +6,6 @@ authenticate-matchers:
   # websocket,考虑连接时携带token
   - path-matchers:
     - /websocket
-    - /websocket2
     authenticated: false
   # api-docs
   - path-matchers:

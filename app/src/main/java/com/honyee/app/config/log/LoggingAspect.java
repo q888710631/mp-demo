@@ -52,8 +52,8 @@ public class LoggingAspect implements Ordered {
     }
 
     @Pointcut(
-        "within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.web.bind.annotation.RestController *)"
+            "within(@org.springframework.stereotype.Service *)" +
+                    " || within(@org.springframework.web.bind.annotation.RestController *)"
     )
     public void springBeanPointcut() {
         // Method is empty as this is just a Pointcut, the implementations are in the advices.
@@ -70,22 +70,22 @@ public class LoggingAspect implements Ordered {
             for (StackTraceElement stack : e.getStackTrace()) {
                 String className = stack.getClassName();
                 if (className.startsWith(Constants.BASE_PACKAGE)
-                    && !className.endsWith(RedisLockAspect.class.getName())
-                    && !className.contains("$$")
+                        && !className.endsWith(RedisLockAspect.class.getName())
+                        && !className.contains("$$")
                 ) {
                     logger.warn("自定义异常 {} => {}.{}(), line={}, message={}",
-                        e.getClass().getSimpleName(),
-                        className,
-                        stack.getMethodName(),
-                        stack.getLineNumber(),
-                        e.getMessage());
+                            e.getClass().getSimpleName(),
+                            className,
+                            stack.getMethodName(),
+                            stack.getLineNumber(),
+                            e.getMessage());
                     return;
                 }
             }
         }
         logger.error("Exception in {}() with cause = {}",
-            joinPoint.getSignature().getName(),
-            e.getCause() != null ? e.getCause() : "NULL"
+                joinPoint.getSignature().getName(),
+                e.getCause() != null ? e.getCause() : "NULL"
         );
     }
 
@@ -99,7 +99,9 @@ public class LoggingAspect implements Ordered {
         try {
             //请求
             RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-            if (requestAttributes != null) {
+            if (requestAttributes == null) {
+                logEntity.isWebsocket = true;
+            } else {
                 ServletRequestAttributes req = (ServletRequestAttributes) requestAttributes;
                 HttpServletRequest request = req.getRequest();
                 logEntity.requestMethod = request.getMethod();
@@ -117,7 +119,7 @@ public class LoggingAspect implements Ordered {
                         // JwtFilter中对Request通过InputStreamHttpServletRequestWrapper装饰后才能在此处获取body
                         InputStream inputStream = request.getInputStream();
                         logEntity.body = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-                            .lines().collect(Collectors.joining(System.lineSeparator()));
+                                .lines().collect(Collectors.joining(System.lineSeparator()));
                     } catch (IOException e) {
                         // handle exception
                     }
@@ -185,16 +187,16 @@ public class LoggingAspect implements Ordered {
         String[] parameterNames = ((MethodSignature) joinPoint.getSignature()).getParameterNames();
         Object[] args = joinPoint.getArgs();
         String message = IntStream
-            .range(0, args.length)
-            .filter(i -> args[i] != null && !(args[i] instanceof HttpServletResponseWrapper))
-            .mapToObj(i -> {
-                try {
-                    return parameterNames[i] + "=" + objectMapper.writeValueAsString(args[i]);
-                } catch (JsonProcessingException e) {
-                    return parameterNames[i] + "解析异常：" + e.getMessage();
-                }
-            })
-            .collect(Collectors.joining(","));
+                .range(0, args.length)
+                .filter(i -> args[i] != null && !(args[i] instanceof HttpServletResponseWrapper))
+                .mapToObj(i -> {
+                    try {
+                        return parameterNames[i] + "=" + objectMapper.writeValueAsString(args[i]);
+                    } catch (JsonProcessingException e) {
+                        return parameterNames[i] + "解析异常：" + e.getMessage();
+                    }
+                })
+                .collect(Collectors.joining(","));
         if (StringUtils.isBlank(message)) {
             return "";
         }
@@ -220,6 +222,7 @@ public class LoggingAspect implements Ordered {
      * 日志记录
      */
     public static class RestApiLog {
+        private boolean isWebsocket = false;
         // 类名
         private String className;
         // 方法名
@@ -267,42 +270,69 @@ public class LoggingAspect implements Ordered {
         }
 
         private void logPrint(Logger logger) {
-            logger.info(
-                "\r\n" +
-                    "\r\n   Request URL : {}" +
-                    "\r\n   Http Method : {}" +
-                    "\r\n   Request URI : {}" +
-                    "\r\n   Request Params : {}" +
-                    "\r\n   Request Body : {}" +
-                    "\r\n   Method Args : {}" +
-                    "\r\n   Http Headers : {}" +
-                    "\r\n   Content-Type : {}" +
-                    "\r\n   Class name : {}" +
-                    "\r\n   Method Name : {}" +
-                    "\r\n   Request IP : {}" +
-                    "\r\n   Real IP : {}" +
-                    "\r\n   User Agent : {}" +
-                    "\r\n   Execution Time : {}ms" +
-                    "\r\n   WithThrows : {}" +
-                    "\r\n   Result : {}" +
-                    "\r\n",
-                requestURL,
-                requestMethod,
-                requestURI,
-                params,
-                body,
-                methodArgs,
-                headers,
-                contentType,
-                className,
-                method,
-                ip,
-                realIp,
-                userAgent,
-                executeMs,
-                wrapThrowMessage(),
-                wrapResult(result)
-            );
+            if (isWebsocket) {
+                logger.info(
+                        "\r\n" +
+                                "\r\n   Websocket Request " +
+                                "\r\n   Method Args : {}" +
+                                "\r\n   Http Headers : {}" +
+                                "\r\n   Class name : {}" +
+                                "\r\n   Method Name : {}" +
+                                "\r\n   User Agent : {}" +
+                                "\r\n   Execution Time : {}ms" +
+                                "\r\n   WithThrows : {}" +
+                                "\r\n   Result : {}" +
+                                "\r\n",
+                        methodArgs,
+                        headers,
+                        className,
+                        method,
+                        userAgent,
+                        executeMs,
+                        wrapThrowMessage(),
+                        wrapResult(result)
+                );
+            } else {
+                logger.info(
+                        "\r\n" +
+                                "\r\n   Request URL : {}" +
+                                "\r\n   Http Method : {}" +
+                                "\r\n   Request URI : {}" +
+                                "\r\n   Request Params : {}" +
+                                "\r\n   Request Body : {}" +
+                                "\r\n   Method Args : {}" +
+                                "\r\n   Http Headers : {}" +
+                                "\r\n   Content-Type : {}" +
+                                "\r\n   Class name : {}" +
+                                "\r\n   Method Name : {}" +
+                                "\r\n   Request IP : {}" +
+                                "\r\n   Real IP : {}" +
+                                "\r\n   User Agent : {}" +
+                                "\r\n   Execution Time : {}ms" +
+                                "\r\n   WithThrows : {}" +
+                                "\r\n   Result : {}" +
+                                "\r\n",
+                        requestURL,
+                        requestMethod,
+                        requestURI,
+                        params,
+                        body,
+                        methodArgs,
+                        headers,
+                        contentType,
+                        className,
+                        method,
+                        ip,
+                        realIp,
+                        userAgent,
+                        executeMs,
+                        wrapThrowMessage(),
+                        wrapResult(result)
+                );
+
+            }
+
+
         }
     }
 }

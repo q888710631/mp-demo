@@ -24,11 +24,13 @@ mp-demo
 ```
 
 ## 2023.4.1
-整合WebSocket，需在maven启用websocket选项，以及在`authentication.yml`配置权限
+整合WebSocket STOMP，需在maven启用websocket选项，以及在`authentication.yml`配置权限
 
-有两种写法，选其中一种即可
-1. `WebSocketConfiguration`对应`WebsocketService`
-2. `WebSocketConfiguration2`对应`WebsocketService2`
+执行顺序
+1. `WebsocketHandshakeInterceptor` 握手拦截
+2. `WebsocketHandshakeHandler` 鉴权拦截
+3. `WebsocketAuthChannelInterceptor` 消息到达前拦截
+4. `WebsocketController` Controller
 
 
 ## 2023.3.31
