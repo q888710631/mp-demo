@@ -24,7 +24,7 @@ mp-demo
 ```
 
 ## 2023.4.1
-整合WebSocket，须在maven启用websocket选项，以及在`authentication.yml`配置权限
+整合WebSocket，需在maven启用websocket选项，以及在`authentication.yml`配置权限
 
 有两种写法，选其中一种即可
 1. `WebSocketConfiguration`对应`WebsocketService`

@@ -1,8 +1,8 @@
 package com.honyee.app.service;
 
 import com.honyee.app.utils.LogUtil;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 必须是@Component而不能时@Service
  */
+@Profile("websocket")
 @Component
 @ServerEndpoint("/websocket2")
 public class WebsocketService2 {
