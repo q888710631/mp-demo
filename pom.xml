@@ -24,6 +24,7 @@
         <profile.exclude/>
         <profile.no-verify-token/>
         <profile.kafka-mul>,kafka-single</profile.kafka-mul>
+        <profile.websocket/>
     </properties>
 
     <!-- 统一的依赖   -->
@@ -251,6 +252,12 @@
                 <version>2021.1</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-websocket</artifactId>
+                <version>${spring.boot.veresion}</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>
@@ -281,7 +288,7 @@
             <properties>
                 <env>dev</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}
+                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}${profile.websocket}
                 </spring.profiles.active>
             </properties>
             <activation>
@@ -293,7 +300,7 @@
             <properties>
                 <env>prod</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}
+                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}${profile.websocket}
                 </spring.profiles.active>
             </properties>
         </profile>
@@ -313,6 +320,12 @@
             <id>kafka-mul</id>
             <properties>
                 <profile.kafka-mul>,kafka-mul</profile.kafka-mul>
+            </properties>
+        </profile>
+        <profile>
+            <id>websocket</id>
+            <properties>
+                <profile.websocket>,websocket</profile.websocket>
             </properties>
         </profile>
     </profiles>

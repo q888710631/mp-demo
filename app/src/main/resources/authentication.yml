@@ -3,6 +3,11 @@ authenticate-matchers:
   - path-matchers:
     - /api/test/**
     authenticated: false
+  # websocket,考虑连接时携带token
+  - path-matchers:
+    - /websocket
+    - /websocket2
+    authenticated: false
   # api-docs
   - path-matchers:
     - /v3/api-docs

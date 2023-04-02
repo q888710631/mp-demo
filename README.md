@@ -12,6 +12,7 @@ spring boot + mybatis plus 多租户 以及各种框架整合。
 7. sleuth
 8. springdoc-openapi
 9. redisson
+10. websocket
 
 初始化sql： `resource/sql/init.sql`
 
@@ -21,6 +22,14 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+
+## 2023.4.1
+整合WebSocket,须在maven启用websocket选项,以及在`authentication.yml`配置权限
+
+有两种写法,选其中一种即可
+1. `WebSocketConfiguration`对应`WebsocketService`
+2. `WebSocketConfiguration2`对应`WebsocketService2`
+
 
 ## 2023.3.31
 整合Naocs
