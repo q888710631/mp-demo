@@ -332,6 +332,16 @@ menu-matchers:
 
 ```
 
+## 2023.3.15
+接入springdoc
+```yaml
+# 禁用文档
+springdoc:
+  api-docs:
+    enabled: false
+```
+
+
 ## 2023.2.27 
 1. 获取租户ID `TenantHelper.getTenantId()`
 
