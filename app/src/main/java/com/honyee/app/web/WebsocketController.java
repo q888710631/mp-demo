@@ -1,7 +1,6 @@
 package com.honyee.app.web;
 
 import com.honyee.app.exp.CommonException;
-import com.honyee.app.utils.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -29,7 +28,7 @@ public class WebsocketController {
         // 点对点发送给subscribe
         // template.convertAndSend("/topic/notifications", "hello everybody");
 
-        if(true)throw new CommonException("故意的异常");
+        if (true) throw new CommonException("故意的异常");
         return "我是返回值";
     }
 
@@ -40,7 +39,6 @@ public class WebsocketController {
     @MessageExceptionHandler
     @SendToUser("/topic/error")
     public String exceptionHandle(Throwable throwable) {
-        LogUtil.error("websocket异常：{}", throwable);
         return throwable.getMessage();
     }
 
