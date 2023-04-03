@@ -28,16 +28,17 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // 开启一个简单的基于内存的消息代理
         // 将消息返回到订阅了带 /topics 前缀的目的客户端
-        registry.enableSimpleBroker("/topics");
-        // todo 待验证配置
-//        registry.setUserDestinationPrefix("/app");
+        // topic 广播 user 点对点前缀
+        registry.enableSimpleBroker("/topic");
+        registry.setUserDestinationPrefix("/user");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/websocket").setAllowedOrigins("*")
-                .setHandshakeHandler(websocketHandshakeHandler)
-                .addInterceptors(websocketHandShakeInterceptor)
+        registry.addEndpoint("/websocket")
+            .setAllowedOrigins("*")
+            .setHandshakeHandler(websocketHandshakeHandler)
+            .addInterceptors(websocketHandShakeInterceptor)
         ;
     }
 

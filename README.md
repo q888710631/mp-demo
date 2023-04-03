@@ -26,11 +26,13 @@ mp-demo
 ## 2023.4.1
 整合WebSocket STOMP，需在maven启用websocket选项，以及在`authentication.yml`配置权限
 
-执行顺序
+执行顺序：
 1. `WebsocketHandshakeInterceptor` 握手拦截
 2. `WebsocketHandshakeHandler` 鉴权拦截
 3. `WebsocketAuthChannelInterceptor` 消息到达前拦截
 4. `WebsocketController` Controller
+
+示例： `WebsocketController` 和 `/resource/html/websocket.html`
 
 
 ## 2023.3.31

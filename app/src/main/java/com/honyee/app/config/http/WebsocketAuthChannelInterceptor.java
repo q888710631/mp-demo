@@ -22,6 +22,7 @@ public class WebsocketAuthChannelInterceptor implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         StompCommand command = accessor.getCommand();
         if (StompCommand.CONNECT.equals(command) && accessor.getUser() == null) {
+            // Websocket可处理异常MessagingException
             throw new MessagingException("鉴权失败");
         }
         return message;

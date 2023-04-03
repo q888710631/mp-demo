@@ -1,7 +1,14 @@
 package com.honyee.app.web;
 
+import com.honyee.app.exp.CommonException;
+import com.honyee.app.utils.LogUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
@@ -10,34 +17,53 @@ import java.util.Date;
 @RestController
 public class WebsocketController {
 
-    // 这里的 @MessageMapping 可以当成 @RequestMapping,
-    // 当有信息 (sendMsg 方法中的 messageEntity 参数即为客服端发送的信息实体)
-    // 发送到 /sendMsg 时会在这里进行处理
-    @MessageMapping("/sendMsg")
-    public void sendMsg(MessageEntity messageEntity) {
-        System.out.println();
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @MessageMapping("/send-msg") // 相当于@RequestMapping
+    @SendToUser("/topic/notifications") // 返回值发送给请求消息的人
+    @SendTo("/topic/notifications") // 返回值发送给所有人
+    public String sendMsg(MessageEntity messageEntity) {
+        // 点对点发送给user-name=honyee的subscribe
+        // template.convertAndSendToUser("honyee","/topic/notifications", "hello honyee");
+        // 点对点发送给subscribe
+        // template.convertAndSend("/topic/notifications", "hello everybody");
+
+        if(true)throw new CommonException("故意的异常");
+        return "我是返回值";
+    }
+
+    /**
+     * 异常处理，@MessageExceptionHandler可指定处理的异常
+     * 只有在同一个Controller里才能处理？？
+     */
+    @MessageExceptionHandler
+    @SendToUser("/topic/error")
+    public String exceptionHandle(Throwable throwable) {
+        LogUtil.error("websocket异常：{}", throwable);
+        return throwable.getMessage();
     }
 
     public static class MessageEntity {
 
-        private Long from;
-        private Long to;
+        private String from;
+        private String to;
         private String message;
         private Date time;
 
-        public Long getFrom() {
+        public String getFrom() {
             return from;
         }
 
-        public void setFrom(Long from) {
+        public void setFrom(String from) {
             this.from = from;
         }
 
-        public Long getTo() {
+        public String getTo() {
             return to;
         }
 
-        public void setTo(Long to) {
+        public void setTo(String to) {
             this.to = to;
         }
 
