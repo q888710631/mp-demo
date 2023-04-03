@@ -29,6 +29,9 @@
                 stompClient.subscribe(`/user/topic/notifications`, function (frame) {
 					//
                 })
+				stompClient.subscribe(`/user/topic/error`, function (frame) {
+					// 异常消息
+                })
             })
 
         }
