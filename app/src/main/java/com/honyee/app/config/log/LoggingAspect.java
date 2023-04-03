@@ -78,7 +78,7 @@ public class LoggingAspect implements Ordered {
                         e.getClass().getSimpleName(),
                         className,
                         stack.getMethodName(),
-                        stack.getLineNumber(),
+                        stack.getLineNumber(), // 不准确
                         e.getMessage());
                     return;
                 }
