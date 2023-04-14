@@ -487,12 +487,12 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
 
         Object key = null;
         for (Cache cache : context.getCaches()) {
+            boolean immediate = operation.isBeforeInvocation();
             if (operation.isCacheWide()) {
                 if (key == null) {
                     key = generateKey(context, result);
                 }
                 logInvalidating(context, operation, key);
-                boolean immediate = operation.isBeforeInvocation();
                 try {
                     if (immediate) {
                         cache.invalidate();
@@ -501,7 +501,7 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
                             RedisCache redisCache = (RedisCache) cache;
                             redisCache.clear(key);
                         } else {
-                            cache.clear();
+                            doClear(cache, immediate);
                         }
                     }
                 } catch (RuntimeException ex) {
@@ -512,7 +512,7 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
                     key = generateKey(context, result);
                 }
                 logInvalidating(context, operation, key);
-                doEvict(cache, key, operation.isBeforeInvocation());
+                doEvict(cache, key, immediate);
             }
         }
     }
