@@ -20,8 +20,8 @@ public class CacheConfiguration {
     /**
      * 缓存到redis
      */
-    //@Bean
-    //@Primary
+    @Bean
+    @Primary
     public CacheManager redisCacheManager(RedisTemplate redisTemplate) {
         RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisTemplate.getConnectionFactory());
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
@@ -32,7 +32,7 @@ public class CacheConfiguration {
     /**
      * 缓存到内存
      */
-    //@Bean
+    @Bean
     public CacheManager memoryCacheManager() {
         CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
         Caffeine<Object, Object> caffeine = Caffeine.newBuilder()

@@ -47,17 +47,11 @@ public class TestController {
         return ResponseEntity.ok(obj == null ? new HashMap<>() : obj);
     }
 
-    static int i = 0;
-    static String[] arr = {"way_", "home_"};
     @GetMapping("cache")
     public MyResponse cacheTest() {
-
-        for (int i = 0; i < 10; i++) {
-            cacheService.cacheTest(arr[i++ % arr.length] + System.currentTimeMillis());
-        }
+        testService.cacheTest();
         return MyResponse.ok();
     }
-
 
     @GetMapping("evict")
     public MyResponse evictTest() {

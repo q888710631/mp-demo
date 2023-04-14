@@ -13,18 +13,18 @@ public class CacheService {
     }
 
 
-    //    @Cacheable(value = "cache-memory", key = "#key", cacheManager = "memoryCacheManager")
+    @Cacheable(value = "cache-memory", key = "#key", cacheManager = "memoryCacheManager")
     public void cacheMemory(String key) {
         System.out.println("cache-memory");
     }
 
-    @Cacheable(value = "cache-test", key = "#key")
-    public void cacheTest(String key) {
+    @Cacheable(value = "cache-test", key = "#prefix + '_' + #key")
+    public String cacheTest(String prefix, String key) {
+        return key;
     }
 
-    @CacheEvict(cacheNames = "cache-test::way", allEntries = true)
+    @CacheEvict(value = "cache-test", key = "#prefix", allEntries = true)
     public void evictTest(String prefix) {
     }
-
 
 }
