@@ -55,7 +55,7 @@ public class TestController {
 
     @GetMapping("evict")
     public MyResponse evictTest() {
-        cacheService.evictTest("way");
+        testService.evictTest();
         return MyResponse.ok();
     }
 

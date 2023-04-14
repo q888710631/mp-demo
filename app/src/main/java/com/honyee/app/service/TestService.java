@@ -35,4 +35,8 @@ public class TestService {
             }
         }
     }
+
+    public void evictTest() {
+        cacheService.evictTest("way");
+    }
 }

@@ -23,7 +23,7 @@ public class CacheService {
         return key;
     }
 
-    @CacheEvict(value = "cache-test", key = "#prefix", allEntries = true)
+    @CacheEvict(value = "cache-test", key = "#prefix + '_'", allEntries = true)
     public void evictTest(String prefix) {
     }
 
