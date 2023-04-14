@@ -1,5 +1,6 @@
 package com.honyee.app.web;
 
+import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.service.CacheService;
 import com.honyee.app.service.TestService;
@@ -45,5 +46,18 @@ public class TestController {
         testService.lockTest("honyee");
         return ResponseEntity.ok(obj == null ? new HashMap<>() : obj);
     }
+
+    @GetMapping("cache")
+    public MyResponse cacheTest() {
+        testService.cacheTest();
+        return MyResponse.ok();
+    }
+
+    @GetMapping("evict")
+    public MyResponse evictTest() {
+        cacheService.evictTest("way");
+        return MyResponse.ok();
+    }
+
 
 }

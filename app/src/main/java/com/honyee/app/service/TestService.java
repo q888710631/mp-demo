@@ -6,10 +6,13 @@ import com.honyee.app.delay.MyDelayParam;
 import com.honyee.app.utils.LogUtil;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class TestService {
+    @Resource
+    private CacheService cacheService;
 
     @RedisLock(value = "test", key = "#query")
     public String lockTest(String query) {
@@ -23,4 +26,13 @@ public class TestService {
         return "complete";
     }
 
+    public void cacheTest() {
+        String[] arr = {"way", "home"};
+        // 批量添加缓存
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 0; j < 10; j++) {
+                cacheService.cacheTest(arr[i], System.currentTimeMillis() + "");
+            }
+        }
+    }
 }

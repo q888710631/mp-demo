@@ -22,6 +22,20 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+## 2023.4.14
+`@CacheEvict`支持模糊删除指定前缀的缓存（重写了`CacheAspectSupport`和`RedisCache`）
+
+```java
+public class CacheService {
+   // 清理前缀为prefix的所有缓存（根据key，支持SPEL）
+   @CacheEvict(value = "cache-test", key = "#prefix", allEntries = true)
+   public void evictTest(String prefix) {
+   }    
+}
+
+```
+
+
 
 ## 2023.4.1
 整合WebSocket STOMP，需在maven启用websocket选项，以及在`authentication.yml`配置权限
