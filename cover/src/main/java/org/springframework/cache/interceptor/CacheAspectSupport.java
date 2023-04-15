@@ -485,33 +485,27 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
     private void performCacheEvict(
         CacheOperationContext context, CacheEvictOperation operation, @Nullable Object result) {
 
-        Object key = null;
+        Object key = generateKey(context, result);
+        boolean immediate = operation.isBeforeInvocation();
+        logInvalidating(context, operation, key);
         for (Cache cache : context.getCaches()) {
-            boolean immediate = operation.isBeforeInvocation();
             if (operation.isCacheWide()) {
-                if (key == null) {
-                    key = generateKey(context, result);
-                }
-                logInvalidating(context, operation, key);
                 try {
                     if (immediate) {
                         cache.invalidate();
                     } else {
                         if (cache instanceof RedisCache) {
+                            // 重写过的RedisCache.clear(key)
                             RedisCache redisCache = (RedisCache) cache;
                             redisCache.clear(key);
                         } else {
-                            doClear(cache, immediate);
+                            doClear(cache, false);
                         }
                     }
                 } catch (RuntimeException ex) {
                     getErrorHandler().handleCacheClearError(ex, cache);
                 }
             } else {
-                if (key == null) {
-                    key = generateKey(context, result);
-                }
-                logInvalidating(context, operation, key);
                 doEvict(cache, key, immediate);
             }
         }
