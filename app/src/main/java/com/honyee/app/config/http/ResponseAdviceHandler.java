@@ -1,6 +1,5 @@
 package com.honyee.app.config.http;
 
-import com.honyee.app.enums.MyResponseCodeEnums;
 import com.honyee.app.exp.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;

@@ -1,4 +1,4 @@
-package com.honyee.app.enums;
+package com.honyee.app.config.http;
 
 /**
  * 自定义响应码
