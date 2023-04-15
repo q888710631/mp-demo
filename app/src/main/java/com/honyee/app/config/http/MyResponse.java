@@ -1,15 +1,15 @@
 package com.honyee.app.config.http;
 
 
+import com.honyee.app.enums.MyResponseCodeEnums;
+
 /**
  * 统一返回结构.
  *
  */
 public class MyResponse<T> {
 
-    private final static String SUCCESS = "success";
-
-    private Integer code = 200;
+    private Integer code = MyResponseCodeEnums.OK.getCode();
     private String message;
     private T data;
 
@@ -47,7 +47,7 @@ public class MyResponse<T> {
      * 成功返回静态方法.
      */
     public static <T> MyResponse<T> ok(String msg, T data) {
-        return new MyResponse<>(200, msg, data);
+            return new MyResponse<>(MyResponseCodeEnums.OK.getCode(), msg, data);
     }
 
     /**
@@ -55,20 +55,27 @@ public class MyResponse<T> {
      *
      */
     public static MyResponse<Object> ok() {
-        return new MyResponse<>(200, SUCCESS, null);
+        return new MyResponse<>(MyResponseCodeEnums.OK.getCode(), MyResponseCodeEnums.OK.getMessage(), null);
     }
     /**
      * 成功返回静态方法.
      */
     public static <T> MyResponse<T> ok(T data) {
-        return new MyResponse<>(200, SUCCESS, data);
+        return new MyResponse<>(MyResponseCodeEnums.OK.getCode(), MyResponseCodeEnums.OK.getMessage(), data);
     }
 
     /**
-     * 调用失败, 返回500.
+     * 调用失败
+     */
+    public static <T> MyResponse<T> fail() {
+        return new MyResponse<>(MyResponseCodeEnums.COMMON_EXCEPTION.getCode(), MyResponseCodeEnums.COMMON_EXCEPTION.getMessage(), null);
+    }
+
+    /**
+     * 调用失败
      */
     public static <T> MyResponse<T> fail(String msg, T data) {
-        return new MyResponse<>(500, msg, data);
+        return new MyResponse<>(MyResponseCodeEnums.COMMON_EXCEPTION.getCode(), msg, data);
     }
 
     @Override
@@ -86,7 +93,7 @@ public class MyResponse<T> {
     }
 
     public boolean isSuccess(){
-        return code == 200;
+        return code == MyResponseCodeEnums.OK.getCode();
     }
 
     public void setCode(Integer code) {

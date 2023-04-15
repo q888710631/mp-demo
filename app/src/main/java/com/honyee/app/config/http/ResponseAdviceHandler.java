@@ -1,5 +1,6 @@
 package com.honyee.app.config.http;
 
+import com.honyee.app.enums.MyResponseCodeEnums;
 import com.honyee.app.exp.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
@@ -26,6 +27,11 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
     @Autowired
     private Tracer tracer;
 
+    /**
+     * http错误码从400开始
+     */
+    private static final Integer ERROR_CODE_BEGIN = 400;
+
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         Class<?> kls = returnType.getDeclaringClass();
@@ -45,7 +51,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         }
         String traceId = "";
         Span span = tracer.currentSpan();
-        if(span != null){
+        if (span != null) {
             traceId = span.context().traceId();
         }
         response.getHeaders().add("Trace-Id", traceId);
@@ -60,7 +66,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         String message = "成功";
         // 判断code是否大于4xx && 判断是不是problem
         // 错误返回的时候code和message的包装
-        if (statusCode >= 400) {
+        if (statusCode >= ERROR_CODE_BEGIN) {
             if ((body instanceof Problem)) {
                 Problem problem = (Problem) body;
                 message = problem.getDetail();
@@ -74,7 +80,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(value = CommonException.class)
     @ResponseBody
     public MyResponse<?> handler(CommonException e) {
-        return new MyResponse<>(500, e.getCommonMessage());
+        return new MyResponse<>(MyResponseCodeEnums.COMMON_EXCEPTION.getCode(), e.getCommonMessage());
     }
 
 
