@@ -48,13 +48,13 @@ public class TestController {
     }
 
     @GetMapping("cache")
-    public MyResponse cacheTest() {
+    public MyResponse<?> cacheTest() {
         testService.cacheTest();
         return MyResponse.ok();
     }
 
     @GetMapping("evict")
-    public MyResponse evictTest() {
+    public MyResponse<?> evictTest() {
         testService.evictTest();
         return MyResponse.ok();
     }
