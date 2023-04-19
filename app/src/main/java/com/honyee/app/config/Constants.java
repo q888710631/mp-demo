@@ -21,7 +21,7 @@ public class Constants {
     // 中文范围
     public static final String CN_RANGE = "\\u4e00-\\u9fa5";
     // trace id
-    public static final String TRACE_ID = "trace_id";
+    public static final String TRACE_ID = "traceId";
 
 
 }
