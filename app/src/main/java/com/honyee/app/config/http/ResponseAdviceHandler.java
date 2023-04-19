@@ -1,5 +1,6 @@
 package com.honyee.app.config.http;
 
+import com.honyee.app.config.Constants;
 import com.honyee.app.exp.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
@@ -53,7 +54,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         if (span != null) {
             traceId = span.context().traceId();
         }
-        response.getHeaders().add("Trace-Id", traceId);
+        response.getHeaders().add(Constants.TRACE_ID, traceId);
         if (body instanceof MyResponse
             || body instanceof String
             || body instanceof byte[]) {
