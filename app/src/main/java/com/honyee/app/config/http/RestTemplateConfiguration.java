@@ -40,12 +40,13 @@ public class RestTemplateConfiguration {
 
         @Override
         public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-            // 打印日志，请求时sleuth已默认填充trace头部： X-B3-TraceId、X-B3-SpanId、X-B3-ParentSpanId、X-B3-Sampled
+            // sleuth已默认填充trace头部： X-B3-TraceId、X-B3-SpanId、X-B3-ParentSpanId、X-B3-Sampled
             Span currentSpan = tracer.currentSpan();
             if (currentSpan != null) {
                 HttpHeaders headers = request.getHeaders();
                 headers.add(Constants.TRACE_ID, currentSpan.context().traceId());
             }
+            // 打印日志
             traceRequest(request, body);
             ClientHttpResponse response = execution.execute(request, body);
             traceResponse(response);
