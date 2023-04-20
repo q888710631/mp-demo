@@ -3,9 +3,9 @@ package com.honyee.app.config.log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.config.Constants;
-import com.honyee.app.config.lock.RedisLockAspect;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.HttpUtil;
+import com.honyee.app.utils.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
@@ -21,6 +21,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.request.RequestAttributes;
@@ -64,30 +65,39 @@ public class LoggingAspect implements Ordered {
         return LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringTypeName());
     }
 
+    private static final Set<String> excludeClassName = Set.of(
+        "com.honyee.app.config.log.FeiShuAlertAppender",
+        "com.honyee.app.config.log.LoggingAspect",
+        "com.honyee.app.config.lock.RedisLockAspect",
+        "com.honyee.app.config.jwt.JwtFilter"
+    );
+
     @AfterThrowing(pointcut = "springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-        Logger logger = logger(joinPoint);
-        if (e instanceof CommonException) {
-            for (StackTraceElement stack : e.getStackTrace()) {
+        List<String> logList = Arrays.stream(e.getStackTrace()).filter(stack -> {
                 String className = stack.getClassName();
-                if (className.startsWith(Constants.BASE_PACKAGE)
-                    && !className.endsWith(RedisLockAspect.class.getName())
-                    && !className.contains("$$")
-                ) {
-                    logger.warn("自定义异常 {} => {}.{}(), line={}, message={}",
-                        e.getClass().getSimpleName(),
-                        className,
-                        stack.getMethodName(),
-                        stack.getLineNumber(), // 不准确
-                        e.getMessage());
-                    return;
-                }
-            }
+                return className.startsWith(Constants.BASE_PACKAGE) // 项目内的包名
+                    && !excludeClassName.contains(className)
+                    && !className.contains("$$");
+            })
+            .map(stack -> {
+                String className = stack.getClassName();
+                return String.format("%s.%s(%d)",
+                    className,
+                    stack.getMethodName(),
+                    stack.getLineNumber());
+            }).collect(Collectors.toList());
+        String message = e.getMessage();
+        String simpleName = e.getClass().getSimpleName();
+        if (e instanceof CommonException) {
+            logList.add(0, String.format("自定义异常 %s：%s", simpleName, message));
+            String logStr = String.join("\n\tat ", logList);
+            LogUtil.warn(logStr);
+        } else {
+            logList.add(0, String.format("其他异常 %s：%s", simpleName, message));
+            String logStr = String.join("\n\tat ", logList);
+            LogUtil.error(logStr);
         }
-        logger.error("Exception in {}() with cause = {}",
-            joinPoint.getSignature().getName(),
-            e.getCause() != null ? e.getCause() : "NULL"
-        );
     }
 
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || within(@org.springframework.stereotype.Controller *)")
@@ -192,6 +202,9 @@ public class LoggingAspect implements Ordered {
             .filter(i -> args[i] != null && !(args[i] instanceof HttpServletResponseWrapper))
             .mapToObj(i -> {
                 try {
+                    if (args[i] instanceof SecurityContextHolderAwareRequestWrapper) {
+                        return "";
+                    }
                     return parameterNames[i] + "=" + objectMapper.writeValueAsString(args[i]);
                 } catch (JsonProcessingException e) {
                     return parameterNames[i] + "解析异常：" + e.getMessage();
@@ -199,9 +212,10 @@ public class LoggingAspect implements Ordered {
             })
             .collect(Collectors.joining(","));
         if (StringUtils.isBlank(message)) {
-            logEntity.methodArgs = "";
+            logEntity.methodArgs = "{}";
+        } else {
+            logEntity.methodArgs = "{" + message + "}";
         }
-        logEntity.methodArgs = "{" + message + "}";
     }
 
 
