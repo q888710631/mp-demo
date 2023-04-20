@@ -28,10 +28,11 @@ public class TestService {
 
     public void cacheTest() {
         String[] arr = {"way", "home"};
+        long currentTimeMillis = System.currentTimeMillis();
         // 批量添加缓存
         for (int i = 0; i < arr.length; i++) {
             for (int j = 0; j < 10; j++) {
-                cacheService.cacheTest(arr[i], System.currentTimeMillis() + "");
+                cacheService.cacheTest(arr[i], currentTimeMillis + j + "");
             }
         }
     }
