@@ -90,11 +90,11 @@ public class FeishuService {
     /**
      * actionCard模式，不支持艾特
      */
-    public void send(FeishuMessageRequeset request) {
+    public void send(FeishuMessageRequest request) {
         FeishuCard card = new FeishuCard(request.getTitle());
         // 消息内容
         StringBuilder sb = new StringBuilder();
-        for (FeishuMessageRequeset.KeyValue keyValue : request.getMsg()) {
+        for (FeishuMessageRequest.KeyValue keyValue : request.getMsg()) {
             if (keyValue.getKey() == null) {
                 sb.append("\n");
             } else {

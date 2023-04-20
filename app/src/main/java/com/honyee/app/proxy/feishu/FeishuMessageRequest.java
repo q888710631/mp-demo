@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FeishuMessageRequeset {
+public class FeishuMessageRequest {
 
     /**
      * 标题
@@ -48,7 +48,7 @@ public class FeishuMessageRequeset {
     protected MessageLevelEnum level;
 
     @SuppressWarnings("unchecked")
-    public FeishuMessageRequeset addAt(String phone) {
+    public FeishuMessageRequest addAt(String phone) {
         if (phone == null) {
             throw new NullPointerException("phone is marked non-null but is null");
         }
@@ -65,21 +65,21 @@ public class FeishuMessageRequeset {
         this.group = group;
     }
 
-    public FeishuMessageRequeset setAtAll() {
+    public FeishuMessageRequest setAtAll() {
         this.at.put("isAtAll", true);
         return this;
     }
 
-    public FeishuMessageRequeset() {
+    public FeishuMessageRequest() {
         this.level = MessageLevelEnum.INFO;
     }
 
-    public FeishuMessageRequeset addMsg(String key, String value) {
+    public FeishuMessageRequest addMsg(String key, String value) {
         this.msg.add(new KeyValue(key, value));
         return this;
     }
 
-    public FeishuMessageRequeset emptyLine() {
+    public FeishuMessageRequest emptyLine() {
         this.msg.add(new KeyValue());
         return this;
     }
@@ -104,27 +104,27 @@ public class FeishuMessageRequeset {
         return this.at;
     }
 
-    public FeishuMessageRequeset setTitle(String title) {
+    public FeishuMessageRequest setTitle(String title) {
         this.title = title;
         return this;
     }
 
-    public FeishuMessageRequeset setToken(String token) {
+    public FeishuMessageRequest setToken(String token) {
         this.token = token;
         return this;
     }
 
-    public FeishuMessageRequeset setSecret(String secret) {
+    public FeishuMessageRequest setSecret(String secret) {
         this.secret = secret;
         return this;
     }
 
-    public FeishuMessageRequeset setMsg(List<KeyValue> msg) {
+    public FeishuMessageRequest setMsg(List<KeyValue> msg) {
         this.msg = msg;
         return this;
     }
 
-    public FeishuMessageRequeset setAt(Map<String, Object> at) {
+    public FeishuMessageRequest setAt(Map<String, Object> at) {
         this.at = at;
         return this;
     }
@@ -145,32 +145,32 @@ public class FeishuMessageRequeset {
         this.level = level;
     }
 
-    public FeishuMessageRequeset level(MessageLevelEnum level) {
+    public FeishuMessageRequest level(MessageLevelEnum level) {
         this.level = level;
         return this;
     }
 
-    public FeishuMessageRequeset info() {
+    public FeishuMessageRequest info() {
         this.level = MessageLevelEnum.INFO;
         return this;
     }
 
-    public FeishuMessageRequeset success() {
+    public FeishuMessageRequest success() {
         this.level = MessageLevelEnum.SUCCESS;
         return this;
     }
 
-    public FeishuMessageRequeset warn() {
+    public FeishuMessageRequest warn() {
         this.level = MessageLevelEnum.WARN;
         return this;
     }
 
-    public FeishuMessageRequeset error() {
+    public FeishuMessageRequest error() {
         this.level = MessageLevelEnum.ERROR;
         return this;
     }
 
-    public FeishuMessageRequeset special() {
+    public FeishuMessageRequest special() {
         this.level = MessageLevelEnum.SPECIAL;
         return this;
     }
