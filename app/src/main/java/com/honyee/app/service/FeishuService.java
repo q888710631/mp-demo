@@ -38,7 +38,7 @@ public class FeishuService {
         executor.setQueueCapacity(1000); //队列大小
         executor.setKeepAliveSeconds(300); //线程最大空闲时间
         executor.setThreadNamePrefix("my-feishu-Executor-"); // 指定用于新创建的线程名称的前缀
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // 拒绝策略（一共四种，此处省略）
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy()); // 丢弃策略（一共四种，此处省略）
         executor.initialize();
     }
 

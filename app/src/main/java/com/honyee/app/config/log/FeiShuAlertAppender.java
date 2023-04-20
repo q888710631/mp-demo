@@ -39,6 +39,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         String formattedMessage = event.getFormattedMessage();
         Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
         FeishuMessageRequest request = new FeishuMessageRequest();
+        request.error();
         request.setTitle("异常告警");
         request.addMsg("告警环境", env);
         request.addMsg("应用名称", applicationName);
