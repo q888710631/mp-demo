@@ -26,18 +26,21 @@ public class TestService {
         return "complete";
     }
 
+    int i = 0;
+    String[] arr = {"first", "twice", "third"};
+
     public void cacheTest() {
-        String[] arr = {"way", "home"};
         long currentTimeMillis = System.currentTimeMillis();
         // 批量添加缓存
         for (int i = 0; i < arr.length; i++) {
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 3; j++) {
                 cacheService.cacheTest(arr[i], currentTimeMillis + j + "");
             }
         }
     }
 
     public void evictTest() {
-        cacheService.evictTest("way");
+        i = (i + 1) % arr.length;
+        cacheService.evictTest(arr[i]);
     }
 }
