@@ -58,6 +58,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         executor.setThreadNamePrefix("my-feishu-Executor-"); // 指定用于新创建的线程名称的前缀
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy()); // 丢弃策略（一共四种，此处省略）
         executor.initialize();
+        // sleuth包装自定义线程池：自定义的异步任务线程池，会导致Sleuth无法新创建一个Span，需要通过LazyTraceExecutor包裹一层
         this.executor = new LazyTraceExecutor(beanFactory, executor);
     }
 
