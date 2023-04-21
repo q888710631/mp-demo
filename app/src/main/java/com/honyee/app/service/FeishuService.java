@@ -30,6 +30,9 @@ public class FeishuService {
      * @param group 用于兼容原钉钉的分组
      */
     public URI uri(String group) {
+        if (group == null) {
+            return URI.create(URL + commonHook);
+        }
         String ticket;
         switch (group) {
             default:
