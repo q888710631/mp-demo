@@ -3,12 +3,13 @@ package com.honyee.app.config.log;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.config.Constants;
 import com.honyee.app.proxy.feishu.FeishuMessageRequest;
 import com.honyee.app.service.FeishuService;
 import com.honyee.app.utils.DateUtil;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.cloud.sleuth.instrument.async.LazyTraceExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -39,16 +40,16 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
     /**
      * 线程池
      */
-    private final ThreadPoolTaskExecutor executor;
+    private final LazyTraceExecutor executor;
 
 
-    public FeiShuAlertAppender(ObjectMapper objectMapper, FeishuService feishuService, String applicationName, String env) {
+    public FeiShuAlertAppender(BeanFactory beanFactory, ObjectMapper objectMapper, FeishuService feishuService, String applicationName, String env) {
         this.objectMapper = objectMapper;
         this.feishuService = feishuService;
         this.applicationName = applicationName;
         this.env = env;
 
-        this.executor = new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(1); //核心线程数
         executor.setMaxPoolSize(1);  //最大线程数
         executor.setQueueCapacity(1000); //队列大小
@@ -56,6 +57,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         executor.setThreadNamePrefix("my-feishu-Executor-"); // 指定用于新创建的线程名称的前缀
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy()); // 丢弃策略（一共四种，此处省略）
         executor.initialize();
+        this.executor = new LazyTraceExecutor(beanFactory, executor);
     }
 
     @Override
@@ -97,7 +99,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         }
 
         feishuMessageRequest.addMsg("错误信息", formattedMessage);
-        executor.submit(() -> feishuService.send(feishuMessageRequest));
+        executor.execute(() -> feishuService.send(feishuMessageRequest));
     }
 
 }
