@@ -37,9 +37,9 @@ public class FeishuCard {
     }
 
     public FeishuCard appendDivText(String content) {
-        Div div = new Div();
-        div.text.content = content;
-        this.elements.add(div);
+        Markdown markdown = new Markdown();
+        markdown.content = content;
+        this.elements.add(markdown);
         return this;
     }
 
@@ -50,13 +50,37 @@ public class FeishuCard {
      * @param content 内容
      */
     public List<CardElement> appendElement(String title, String content) {
-        Div div = new Div(title, content);
-        this.elements.add(div);
+        Markdown markdown = new Markdown(title, content);
+        this.elements.add(markdown);
         return this.elements;
     }
 
     public interface CardElement {
         String getTag();
+    }
+
+    public static class Markdown implements CardElement {
+        private String content;
+
+        public Markdown() {
+        }
+
+        public Markdown(String title, String text) {
+            this.content = String.format("**%s：**%s", title, text);
+        }
+
+        @Override
+        public String getTag() {
+            return "markdown";
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public void setContent(String content) {
+            this.content = content;
+        }
     }
 
     public static class Div implements CardElement {
@@ -100,6 +124,11 @@ public class FeishuCard {
 
     }
 
+    /**
+     * lark_md
+     * 1. 问题：英文引号会被转成中文引号
+     * 2. 功能：支持@
+     */
     public static class LarkMd implements CardElement {
         @Override
         public String getTag() {
