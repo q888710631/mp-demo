@@ -7,10 +7,12 @@ import com.honyee.app.config.Constants;
 import com.honyee.app.proxy.feishu.FeishuMessageRequest;
 import com.honyee.app.service.FeishuService;
 import com.honyee.app.utils.DateUtil;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
 
@@ -20,11 +22,25 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
 
     private final String env;
 
+    /**
+     * 线程池
+     */
+    private final ThreadPoolTaskExecutor executor;
+
 
     public FeiShuAlertAppender(FeishuService feishuService, String applicationName, String env) {
         this.feishuService = feishuService;
         this.applicationName = applicationName;
         this.env = env;
+
+        this.executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1); //核心线程数
+        executor.setMaxPoolSize(1);  //最大线程数
+        executor.setQueueCapacity(1000); //队列大小
+        executor.setKeepAliveSeconds(300); //线程最大空闲时间
+        executor.setThreadNamePrefix("my-feishu-Executor-"); // 指定用于新创建的线程名称的前缀
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.DiscardOldestPolicy()); // 丢弃策略（一共四种，此处省略）
+        executor.initialize();
     }
 
     @Override
@@ -48,7 +64,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         request.addMsg("spanId", mdcPropertyMap.get("spanId"));
         request.addMsg("错误信息", formattedMessage);
 
-        feishuService.send(request);
+        executor.submit(() -> feishuService.send(request));
     }
 
 }
