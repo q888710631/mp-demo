@@ -72,16 +72,16 @@ public class DelayTaskConfiguration implements DisposableBean {
         if (this.enableKafkaRun) {
             executor = null;
         } else {
-            ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-            threadPoolTaskExecutor.setCorePoolSize(5); //核心线程数
-            threadPoolTaskExecutor.setMaxPoolSize(10);  //最大线程数
-            threadPoolTaskExecutor.setQueueCapacity(1000); //队列大小
-            threadPoolTaskExecutor.setKeepAliveSeconds(300); //线程最大空闲时间
-            threadPoolTaskExecutor.setThreadNamePrefix("my-delay-task-Executor-"); // 指定用于新创建的线程名称的前缀
-            threadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // 拒绝策略（一共四种，此处省略）
-            threadPoolTaskExecutor.initialize();
+            ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+            executor.setCorePoolSize(5); //核心线程数
+            executor.setMaxPoolSize(10);  //最大线程数
+            executor.setQueueCapacity(1000); //队列大小
+            executor.setKeepAliveSeconds(300); //线程最大空闲时间
+            executor.setThreadNamePrefix("my-delay-task-Executor-"); // 指定用于新创建的线程名称的前缀
+            executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy()); // 拒绝策略（一共四种，此处省略）
+            executor.initialize();
             // sleuth包装自定义线程池：自定义的异步任务线程池，会导致Sleuth无法新创建一个Span，需要通过LazyTraceExecutor包裹一层
-            this.executor = new LazyTraceExecutor(beanFactory, threadPoolTaskExecutor);
+            this.executor = new LazyTraceExecutor(beanFactory, executor);
         }
 
         for (DelayTaskListener delayTaskListener : listenerList) {
