@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
     /**
      * 线程池
      */
-    private final LazyTraceExecutor executor;
+    private final Executor executor;
 
 
     public FeiShuAlertAppender(BeanFactory beanFactory, ObjectMapper objectMapper, FeishuService feishuService, String applicationName, String env) {
