@@ -83,9 +83,10 @@ application:
     # 通过kafka实际调用任务，前提是先启用kafka
     kafka-execute: true
   feishu:
-    # 飞书机器人hook
+    # 飞书机器人使能
     enable:
       log-notify: false
+    # 飞书机器人hook
     group:
       common: 飞书机器人的hook
       log-notify: 飞书机器人的hook

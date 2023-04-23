@@ -23,7 +23,18 @@ mp-demo
 └── cover 存放覆盖源码的类
 ```
 ## 2023.4.23
-新增日志异步输出到飞书功能`FeiShuAlertAppender`，当配置了`application.feishu.enable.log-notify`时启用。
+新增日志异步输出到飞书功能`FeiShuAlertAppender`
+
+```yaml
+application:
+  feishu:
+    # 飞书机器人使能
+    enable:
+      log-notify: true
+    # 飞书机器人hook
+    group:
+      log-notify: 飞书机器人的hook
+```
 
 通知示例：
 ```text
