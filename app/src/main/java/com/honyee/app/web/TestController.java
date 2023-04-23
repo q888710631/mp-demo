@@ -7,6 +7,7 @@ import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.service.CacheService;
 import com.honyee.app.service.TestService;
+import org.springframework.cloud.sleuth.TraceContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -64,31 +65,10 @@ public class TestController {
 
     @GetMapping("evict")
     public MyResponse<?> evictTest(@RequestParam(required = false) Map<String,Object> param) {
-//        Runnable runnable = new TaskContextDecorator().decorate(() -> {
-//            RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-//            if (requestAttributes != null) {
-//                ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
-//                HttpServletRequest request = attributes.getRequest();
-//                Object traceIdObj = request.getAttribute(Constants.TRACE_ID);
-//                System.out.println();
-//            }
-//
-//            System.out.println();
-//        });
-//        new Thread(runnable).start();
 
-//        testService.evictTest();
-//        return MyResponse.ok();
-//        throw new CommonException("故意的");
-        throw new IndexOutOfBoundsException("特地的");
+
+        testService.evictTest();
+        return MyResponse.ok();
     }
-
-    public static void main(String[] args) {
-        List<Integer> list = List.of(1, 2, 3);
-        List<Integer> integers = list.subList(0, 1);
-        System.out.println();
-
-    }
-
 
 }

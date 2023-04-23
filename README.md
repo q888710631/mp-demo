@@ -25,6 +25,25 @@ mp-demo
 ## 2023.4.23
 新增日志异步输出到飞书功能`FeiShuAlertAppender`，当配置了`application.feishu.enable.log-notify`时启用
 
+## 2023.4.21
+新增线程装饰器`TaskContextDecorator`，用于线程中获取上下文
+```java
+public class TestService{
+    public void test(){
+       Runnable runnable = new TaskContextDecorator().decorate(() -> {
+          RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+          if (requestAttributes != null) {
+             ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;
+             HttpServletRequest request = attributes.getRequest();
+             TraceContext traceContext = (TraceContext) request.getAttribute(TraceContext.class.getName());
+             String traceId = traceContext.traceId();
+          }
+       });
+       new Thread(runnable).start();
+    }
+}
+```
+
 ## 2023.4.14
 `@CacheEvict`支持模糊删除指定前缀的缓存（重写了`CacheAspectSupport`和`RedisCache`）
 
