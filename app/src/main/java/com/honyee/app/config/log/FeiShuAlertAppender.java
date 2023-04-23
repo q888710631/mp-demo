@@ -8,6 +8,8 @@ import com.honyee.app.config.Constants;
 import com.honyee.app.proxy.feishu.FeishuMessageRequest;
 import com.honyee.app.service.FeishuService;
 import com.honyee.app.utils.DateUtil;
+import com.honyee.app.utils.LogUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.instrument.async.LazyTraceExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -70,7 +72,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
             return;
         }
         String loggerName = event.getLoggerName();
-        if (!loggerName.startsWith(Constants.BASE_PACKAGE)) {
+        if (StringUtils.isBlank(loggerName) || !loggerName.startsWith(Constants.BASE_PACKAGE)) {
             return;
         }
         String formattedMessage = event.getFormattedMessage();
@@ -106,7 +108,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
                     .lines().collect(Collectors.joining(System.lineSeparator()));
                 feishuMessageRequest.addMsg("Request Body", body);
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                LogUtil.info("FeiShuAlertAppender异常", e);
             }
         }
 
