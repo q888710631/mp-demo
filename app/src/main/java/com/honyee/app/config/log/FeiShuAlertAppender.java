@@ -89,7 +89,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         String traceId = mdcPropertyMap.get("traceId");
         if (traceId != null) {
             feishuMessageRequest.addMsg("traceId", traceId);
-            feishuMessageRequest.addMsg("spanId", mdcPropertyMap.get("spanId"));
+            feishuMessageRequest.addMsg("spanId ", mdcPropertyMap.get("spanId"));
         }
 
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();

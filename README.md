@@ -32,7 +32,7 @@ mp-demo
 应用名称： honyee
 出现时间： 2023-04-23 13:42:13
 traceId： dca8a04bfdc376e4
-spanId： dca8a04bfdc376e4
+spanId ： dca8a04bfdc376e4
 Request URI： /api/test/evict
 Request Method： GET
 Request Param： {"ids":[1, 2, 3]}
