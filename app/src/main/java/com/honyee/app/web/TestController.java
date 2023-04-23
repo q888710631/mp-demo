@@ -65,8 +65,6 @@ public class TestController {
 
     @GetMapping("evict")
     public MyResponse<?> evictTest(@RequestParam(required = false) Map<String,Object> param) {
-
-
         testService.evictTest();
         return MyResponse.ok();
     }
