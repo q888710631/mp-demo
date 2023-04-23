@@ -23,7 +23,23 @@ mp-demo
 └── cover 存放覆盖源码的类
 ```
 ## 2023.4.23
-新增日志异步输出到飞书功能`FeiShuAlertAppender`，当配置了`application.feishu.enable.log-notify`时启用
+新增日志异步输出到飞书功能`FeiShuAlertAppender`，当配置了`application.feishu.enable.log-notify`时启用。
+
+通知示例：
+```text
+异常告警-ERROR
+告警环境： dev,exclude,kafka-single,websocket
+应用名称： honyee
+出现时间： 2023-04-23 13:42:13
+traceId： dca8a04bfdc376e4
+spanId： dca8a04bfdc376e4
+Request URI： /api/test/evict
+Request Method： GET
+Request Param： {"ids":[1, 2, 3]}
+Request Body：
+错误信息： IndexOutOfBoundsException：测试错误
+    at com.honyee.app.web.TestController.evictTest(83)
+```
 
 ## 2023.4.21
 新增线程装饰器`TaskContextDecorator`，用于线程中获取上下文
