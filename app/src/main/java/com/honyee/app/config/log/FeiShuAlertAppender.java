@@ -66,8 +66,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
     protected void append(ILoggingEvent event) {
         boolean isErrorLog = Objects.equals(Level.ERROR, event.getLevel());
         boolean isWarnLog = Objects.equals(Level.WARN, event.getLevel());
-        if (!isErrorLog && !isWarnLog
-        ) {
+        if (!isErrorLog && !isWarnLog) {
             return;
         }
         String loggerName = event.getLoggerName();
