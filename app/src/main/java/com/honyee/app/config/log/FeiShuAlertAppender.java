@@ -64,7 +64,10 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        if (!Objects.equals(Level.ERROR, event.getLevel())) {
+        boolean isErrorLog = Objects.equals(Level.ERROR, event.getLevel());
+        boolean isWarnLog = Objects.equals(Level.WARN, event.getLevel());
+        if (!isErrorLog && !isWarnLog
+        ) {
             return;
         }
         String loggerName = event.getLoggerName();
@@ -74,13 +77,21 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         String formattedMessage = event.getFormattedMessage();
         Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
         FeishuMessageRequest feishuMessageRequest = new FeishuMessageRequest();
-        feishuMessageRequest.error();
-        feishuMessageRequest.setTitle("异常告警");
+        if (isErrorLog) {
+            feishuMessageRequest.error();
+            feishuMessageRequest.setTitle("异常告警-ERROR");
+        } else if (isWarnLog) {
+            feishuMessageRequest.warn();
+            feishuMessageRequest.setTitle("异常告警-WARN");
+        }
         feishuMessageRequest.addMsg("告警环境", env);
         feishuMessageRequest.addMsg("应用名称", applicationName);
         feishuMessageRequest.addMsg("出现时间", DateUtil.COMMON_DATE_TIME_FORMATTER.format(LocalDateTime.now()));
-        feishuMessageRequest.addMsg("traceId", mdcPropertyMap.get("traceId"));
-        feishuMessageRequest.addMsg("spanId", mdcPropertyMap.get("spanId"));
+        String traceId = mdcPropertyMap.get("traceId");
+        if (traceId != null) {
+            feishuMessageRequest.addMsg("traceId", traceId);
+            feishuMessageRequest.addMsg("spanId", mdcPropertyMap.get("spanId"));
+        }
 
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         ServletRequestAttributes attributes = (ServletRequestAttributes) requestAttributes;

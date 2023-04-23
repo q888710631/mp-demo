@@ -74,29 +74,11 @@ public class LoggingAspect implements Ordered {
 
     @AfterThrowing(pointcut = "springBeanPointcut()", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-        List<String> logList = Arrays.stream(e.getStackTrace()).filter(stack -> {
-                String className = stack.getClassName();
-                return className.startsWith(Constants.BASE_PACKAGE) // 项目内的包名
-                    && !excludeClassName.contains(className)
-                    && !className.contains("$$");
-            })
-            .map(stack -> {
-                String className = stack.getClassName();
-                return String.format("%s.%s(%d)",
-                    className,
-                    stack.getMethodName(),
-                    stack.getLineNumber());
-            }).collect(Collectors.toList());
-        String message = e.getMessage();
-        String simpleName = e.getClass().getSimpleName();
+        String logContext = LogUtil.filterStackToString(e);
         if (e instanceof CommonException) {
-            logList.add(0, String.format("自定义异常 %s：%s", simpleName, message));
-            String logStr = String.join("\n\tat ", logList);
-            LogUtil.warn(logStr);
+            LogUtil.warn(logContext);
         } else {
-            logList.add(0, String.format("其他异常 %s：%s", simpleName, message));
-            String logStr = String.join("\n\tat ", logList);
-            LogUtil.error(logStr);
+            LogUtil.error(logContext);
         }
     }
 
