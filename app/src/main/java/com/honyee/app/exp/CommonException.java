@@ -28,4 +28,10 @@ public class CommonException extends RuntimeException {
         this.code = 500;
     }
 
+    /**
+     * 对外提示内容
+     */
+    public String getCommonMessage() {
+        return getMessage();
+    }
 }

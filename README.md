@@ -22,6 +22,9 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+## 2023.4.23
+新增日志异步输出到飞书功能`FeiShuAlertAppender`，当配置了`application.feishu.enable.log-notify`时启用
+
 ## 2023.4.14
 `@CacheEvict`支持模糊删除指定前缀的缓存（重写了`CacheAspectSupport`和`RedisCache`）
 

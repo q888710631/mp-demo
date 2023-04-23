@@ -19,7 +19,10 @@ public class FeishuService {
     public static final String URL = "https://open.feishu.cn/open-apis/bot/v2/hook/";
 
     @Value("${application.feishu.group.common}")
-    private String commonHook;
+    private String hookCommon;
+
+    @Value("${application.feishu.group.log-notify}")
+    private String hookLogNotify;
 
     @Resource
     private FeishuProxy feishuProxy;
@@ -31,12 +34,15 @@ public class FeishuService {
      */
     public URI uri(String group) {
         if (group == null) {
-            return URI.create(URL + commonHook);
+            return URI.create(URL + hookCommon);
         }
         String ticket;
         switch (group) {
+            case "logNotify":
+                ticket = hookLogNotify;
+                break;
             default:
-                ticket = commonHook;
+                ticket = hookCommon;
         }
         return URI.create(URL + ticket);
     }
