@@ -53,33 +53,8 @@ public class LoggingAspect implements Ordered {
         return LOWEST_PRECEDENCE;
     }
 
-    @Pointcut(
-        "within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.web.bind.annotation.RestController *)"
-    )
-    public void springBeanPointcut() {
-        // Method is empty as this is just a Pointcut, the implementations are in the advices.
-    }
-
     private Logger logger(JoinPoint joinPoint) {
         return LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringTypeName());
-    }
-
-    private static final Set<String> excludeClassName = Set.of(
-        "com.honyee.app.config.log.FeiShuAlertAppender",
-        "com.honyee.app.config.log.LoggingAspect",
-        "com.honyee.app.config.lock.RedisLockAspect",
-        "com.honyee.app.config.jwt.JwtFilter"
-    );
-
-    @AfterThrowing(pointcut = "springBeanPointcut()", throwing = "e")
-    public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-        String logContext = LogUtil.filterStackToString(e);
-        if (e instanceof CommonException) {
-            LogUtil.warn(logContext);
-        } else {
-            LogUtil.error(logContext);
-        }
     }
 
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || within(@org.springframework.stereotype.Controller *)")

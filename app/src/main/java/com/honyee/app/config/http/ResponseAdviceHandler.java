@@ -2,6 +2,7 @@ package com.honyee.app.config.http;
 
 import com.honyee.app.config.Constants;
 import com.honyee.app.exp.CommonException;
+import com.honyee.app.utils.LogUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -80,7 +81,17 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
     @ExceptionHandler(value = CommonException.class)
     @ResponseBody
     public MyResponse<?> handler(CommonException e) {
-        return new MyResponse<>(MyResponseCodeEnums.COMMON_EXCEPTION.getCode(), e.getCommonMessage());
+        String logContext = LogUtil.filterStackToString(e);
+        LogUtil.warn(logContext);
+        return new MyResponse<>(e.getCode(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = Exception.class)
+    @ResponseBody
+    public MyResponse<?> handler(Exception e) {
+        String logContext = LogUtil.filterStackToString(e);
+        LogUtil.error(logContext);
+        return new MyResponse<>(MyResponseCodeEnums.COMMON_EXCEPTION.getCode(), e.getMessage());
     }
 
 
