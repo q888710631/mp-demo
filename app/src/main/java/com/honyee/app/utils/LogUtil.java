@@ -92,21 +92,20 @@ public class LogUtil {
         get().info(format, arguments);
     }
 
-
-    public static String filterStackToString(Throwable e) {
-        String message = e.getMessage();
-        String simpleName = e.getClass().getSimpleName();
-        List<String> logList = filterStack(e.getStackTrace());
-        logList.add(0, String.format("%s：%s", simpleName, message));
-        return String.join("\n\tat ", logList);
-    }
-
     private static final Set<String> excludeClassName = Set.of(
         FeiShuAlertAppender.class.getName(),
         LoggingAspect.class.getName(),
         RedisLockAspect.class.getName(),
         JwtFilter.class.getName()
     );
+
+    public static String filterStackToString(Throwable e) {
+        String message = e.getMessage();
+        String simpleName = e.getClass().getSimpleName();
+        List<String> logList = filterStack(e);
+        logList.add(0, String.format("%s：%s", simpleName, message));
+        return String.join("\n\tat ", logList);
+    }
 
     public static List<String> filterStack(Throwable e) {
         return filterStack(e.getStackTrace());
