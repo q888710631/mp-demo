@@ -22,6 +22,12 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+## 2023.4.24
+新增json工具类`JsonUtil.merge`用于合并json对象
+
+参考`JsonPathTests`
+
+
 ## 2023.4.23
 新增日志异步输出到飞书功能`FeiShuAlertAppender`
 
