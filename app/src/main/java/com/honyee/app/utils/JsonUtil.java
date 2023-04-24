@@ -14,7 +14,7 @@ public class JsonUtil {
      *
      * @param source 源对象
      * @param target 目标对象
-     * @param paths  指定目标，为空则执行全覆盖
+     * @param paths  指定目标，为空则执行全覆盖，格式为jsonpath
      * @return 合并结果
      */
     public static String merge(@NotNull String source, @NotNull String target, @Nullable String... paths) {
