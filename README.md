@@ -25,7 +25,7 @@ mp-demo
 ## 2023.4.24
 新增json工具类`JsonUtil.merge`用于合并json对象
 
-参考`JsonPathTests`
+参考`JsonTests`
 
 
 ## 2023.4.23

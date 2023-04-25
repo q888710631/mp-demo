@@ -4,9 +4,10 @@ import com.honyee.app.utils.JsonUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
+import org.noear.snack.ONode;
 
-public class JsonPathTests {
-    private static final Logger log = LoggerFactory.getLogger(JsonPathTests.class);
+public class JsonTests {
+    private static final Logger log = LoggerFactory.getLogger(JsonTests.class);
 
 
     @Test
@@ -34,5 +35,14 @@ public class JsonPathTests {
         log.info(() -> "source:\n" + source);
         log.info(() -> "target:\n" + target);
         log.info(() -> "result:\n" + result);
+    }
+
+    @Test
+    public void testLoadJson() {
+        String json = null;
+        ONode oNode = ONode.loadStr(json);
+        ONode decoration = oNode.select("$.LAUNCH");
+        int anInt = decoration.getInt();
+        System.out.println();
     }
 }
