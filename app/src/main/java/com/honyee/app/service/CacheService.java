@@ -1,5 +1,6 @@
 package com.honyee.app.service;
 
+import com.honyee.app.dto.TestDTO;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -7,15 +8,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class CacheService {
 
-    @Cacheable(value = "cache-redis#60", key = "#key")
-    public void cacheRedis(String key) {
+    @Cacheable(value = "cache-redis#60", key = "#key", cacheManager = "redisCacheManager")
+    public TestDTO cacheRedis(String key) {
         System.out.println("cache-redis");
+        return new TestDTO();
     }
 
-
     @Cacheable(value = "cache-memory", key = "#key", cacheManager = "memoryCacheManager")
-    public void cacheMemory(String key) {
+    public TestDTO cacheMemory(String key) {
         System.out.println("cache-memory");
+        return new TestDTO();
     }
 
     @Cacheable(value = "cache-test", key = "#prefix + '_' + #key")

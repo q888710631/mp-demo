@@ -1,6 +1,7 @@
 package com.honyee.app;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.github.rholder.retry.*;
 import com.honyee.app.config.mybatis.MybatisPlusTenantHandler;
 import com.honyee.app.mapper.RoleMapper;
 import com.honyee.app.mapper.UserMapper;
@@ -12,9 +13,14 @@ import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 //@InterceptorIgnore(tenantLine = "true")
@@ -63,4 +69,36 @@ class MyApplicationTests {
         log.info(() -> "userTest");
     }
 
+    @Test
+    @Transactional
+    public void transactionalAfter() {
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                // 事务提交后执行
+            }
+        });
+
+    }
+
+    @Test
+    public void retryTest() {
+        RetryerBuilder<Void> retryBuilder = RetryerBuilder.newBuilder();
+        Retryer<Void> retry = retryBuilder
+            .withWaitStrategy(WaitStrategies.fixedWait(5, TimeUnit.SECONDS))
+            .withStopStrategy(StopStrategies.stopAfterAttempt(3))
+            .retryIfException()
+            .build();
+
+        try {
+            retry.call(
+                () -> {
+                    // do something
+                    return null;
+                }
+            );
+        } catch (ExecutionException | RetryException ex) {
+            log.error(ex::getMessage);
+        }
+    }
 }
