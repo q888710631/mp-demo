@@ -1,27 +1,18 @@
 package com.honyee.app.web;
 
-import com.honyee.app.config.Constants;
 import com.honyee.app.config.http.MyResponse;
-import com.honyee.app.config.http.TaskContextDecorator;
 import com.honyee.app.config.limit.RateLimit;
-import com.honyee.app.exp.CommonException;
 import com.honyee.app.service.CacheService;
 import com.honyee.app.service.TestService;
-import org.springframework.cloud.sleuth.TraceContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -64,7 +55,7 @@ public class TestController {
     }
 
     @GetMapping("evict")
-    public MyResponse<?> evictTest(@RequestParam(required = false) Map<String,Object> param) {
+    public MyResponse<?> evictTest(@RequestParam(required = false) Map<String, Object> param) throws IllegalArgumentException{
         testService.evictTest();
         return MyResponse.ok();
     }

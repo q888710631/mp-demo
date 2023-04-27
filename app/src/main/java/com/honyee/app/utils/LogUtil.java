@@ -8,10 +8,7 @@ import com.honyee.app.config.log.LoggingAspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -93,12 +90,16 @@ public class LogUtil {
     }
 
     private static final Set<String> excludeClassName = Set.of(
+        LogUtil.class.getName(),
         FeiShuAlertAppender.class.getName(),
         LoggingAspect.class.getName(),
         RedisLockAspect.class.getName(),
         JwtFilter.class.getName()
     );
 
+    /**
+     * 获取当前异常的堆栈
+     */
     public static String filterStackToString(Throwable e) {
         String message = e.getMessage();
         String simpleName = e.getClass().getSimpleName();
@@ -107,10 +108,16 @@ public class LogUtil {
         return String.join("\n\tat ", logList);
     }
 
+    /**
+     * 获取当前异常的堆栈
+     */
     public static List<String> filterStack(Throwable e) {
         return filterStack(e.getStackTrace());
     }
 
+    /**
+     * 获取当前异常的堆栈
+     */
     public static List<String> filterStack(StackTraceElement[] stackTraceElements) {
         return Arrays.stream(stackTraceElements).filter(stack -> {
                 String className = stack.getClassName();
@@ -125,5 +132,27 @@ public class LogUtil {
                     stack.getMethodName(),
                     stack.getLineNumber());
             }).collect(Collectors.toList());
+    }
+
+    /**
+     * 打印当前方法调用堆栈
+     *
+     * @param mark 标识
+     * @param descript 描述
+     */
+    public static void printCallStackTrace(String mark, String descript) {
+        List<String> logList = new ArrayList<>();
+
+        Throwable t = new Throwable();
+        logList.add(String.format("\n调用堆栈 [%s][%s]", mark, descript));
+        for (StackTraceElement stack : t.getStackTrace()) {
+            String className = stack.getClassName();
+            if (className.startsWith(Constants.BASE_PACKAGE) // 项目内的包名
+                && !excludeClassName.contains(className)
+                && !className.contains("$")) {
+                logList.add(stack.toString());
+            }
+        }
+        info(String.join("\n", logList));
     }
 }
