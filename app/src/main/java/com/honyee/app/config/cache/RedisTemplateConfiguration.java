@@ -7,9 +7,12 @@ import com.fasterxml.jackson.core.JsonFactoryBuilder;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.honyee.app.config.objectmapper.InstantJsonDeserializer;
 import com.honyee.app.config.objectmapper.InstantJsonSerializer;
@@ -25,6 +28,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -36,7 +40,7 @@ public class RedisTemplateConfiguration {
         RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
-        // Key序列话
+        // Key序列化
         redisTemplate.setKeySerializer(stringRedisSerializer);
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
 
@@ -46,17 +50,9 @@ public class RedisTemplateConfiguration {
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         // 解决 LinkedHashMap cannot be cast to
         objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
-        // 解决日期类无法序列化问题，方式1
-        // objectMapper.registerModule(new JavaTimeModule());
-        // 解决日期类无法序列化问题，方式2：自定义实现
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(Sort.class, new SortJsonComponent.SortSerializer());
-        module.addDeserializer(Sort.class, new SortJsonComponent.SortDeserializer());
-        module.addSerializer(Instant.class, new InstantJsonSerializer());
-        module.addDeserializer(Instant.class, new InstantJsonDeserializer());
-        module.addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
-        module.addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
-        objectMapper.registerModule(module);
+        // 解决日期类无法序列化问题
+        objectMapper.registerModule(new MyJavaTimeModule());
+        //
         objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
         objectMapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
 
