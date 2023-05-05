@@ -21,10 +21,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <!-- profile默认值 -->
-        <profile.exclude/>
         <profile.no-verify-token/>
-        <profile.kafka-mul>,kafka-single</profile.kafka-mul>
-        <profile.websocket/>
     </properties>
 
     <!-- 统一的依赖   -->
@@ -236,35 +233,10 @@
             </dependency>
 
             <dependency>
-                <groupId>org.springframework.kafka</groupId>
-                <artifactId>spring-kafka</artifactId>
-                <version>2.9.6</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.noear</groupId>
                 <artifactId>snack3</artifactId>
                 <version>3.2.61</version>
             </dependency>
-
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-                <version>2021.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.alibaba.cloud</groupId>
-                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-                <version>2021.1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-websocket</artifactId>
-                <version>${spring.boot.veresion}</version>
-            </dependency>
-
 
         </dependencies>
     </dependencyManagement>
@@ -295,7 +267,7 @@
             <properties>
                 <env>dev</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}${profile.websocket}
+                    ${env}${profile.no-verify-token}
                 </spring.profiles.active>
             </properties>
             <activation>
@@ -307,32 +279,14 @@
             <properties>
                 <env>prod</env>
                 <spring.profiles.active>
-                    ${env}${profile.exclude}${profile.no-verify-token}${profile.kafka-mul}${profile.websocket}
+                    ${env}${profile.no-verify-token}
                 </spring.profiles.active>
-            </properties>
-        </profile>
-        <profile>
-            <id>exclude</id>
-            <properties>
-                <profile.exclude>,exclude</profile.exclude>
             </properties>
         </profile>
         <profile>
             <id>no-verify-token</id>
             <properties>
                 <profile.no-verify-token>,no-verify-token</profile.no-verify-token>
-            </properties>
-        </profile>
-        <profile>
-            <id>kafka-mul</id>
-            <properties>
-                <profile.kafka-mul>,kafka-mul</profile.kafka-mul>
-            </properties>
-        </profile>
-        <profile>
-            <id>websocket</id>
-            <properties>
-                <profile.websocket>,websocket</profile.websocket>
             </properties>
         </profile>
     </profiles>

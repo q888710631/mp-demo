@@ -4,10 +4,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.honyee.app.AppApplication;
 import com.honyee.app.config.Constants;
-import com.honyee.app.config.nacos.NacosConfiguration;
-import com.honyee.app.config.nacos.NacosCustomProperties;
 import com.honyee.app.proxy.feishu.FeishuMessageRequest;
 import com.honyee.app.service.FeishuService;
 import com.honyee.app.utils.DateUtil;
@@ -28,7 +25,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -50,18 +46,14 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
      */
     private final Executor executor;
 
-    private final NacosConfiguration nacosConfiguration;
-
 
     public FeiShuAlertAppender(BeanFactory beanFactory,
                                ObjectMapper objectMapper,
                                FeishuService feishuService,
-                               NacosConfiguration nacosConfiguration,
                                String applicationName,
                                String env) {
         this.objectMapper = objectMapper;
         this.feishuService = feishuService;
-        this.nacosConfiguration = nacosConfiguration;
         this.applicationName = applicationName;
         this.env = env;
 
@@ -99,19 +91,6 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         }
 
         String formattedMessage = event.getFormattedMessage();
-
-        // 过滤不通知的信息
-        if (formattedMessage != null && this.nacosConfiguration != null) {
-            NacosCustomProperties customProperties = this.nacosConfiguration.getCustomProperties();
-            if (customProperties != null) {
-                List<String> feishuLogFilter = customProperties.getFeishuLogFilter();
-                if (feishuLogFilter != null) {
-                    if (feishuLogFilter.stream().anyMatch(formattedMessage::contains)) {
-                        return;
-                    }
-                }
-            }
-        }
 
         Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
         FeishuMessageRequest feishuMessageRequest = new FeishuMessageRequest();

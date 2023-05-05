@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.core.Ordered;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
@@ -136,9 +135,6 @@ public class LoggingAspect implements Ordered {
             Method method = (Method) ReflectionUtils.getField(methodField, field);
             String params = Arrays.stream(method.getParameterTypes()).map(Class::getSimpleName).collect(Collectors.joining(","));
             logEntity.method = String.format("%s(%s)", method.getName(), params);
-            MessageMapping messageMappingAnn = method.getAnnotation(MessageMapping.class);
-            logEntity.isWebsocket = messageMappingAnn != null;
-            logEntity.requestURI = messageMappingAnn == null ? null : String.join(",", messageMappingAnn.value());
         }
         logEntity.method = point.getSignature().getName() + "()";
     }
@@ -189,7 +185,6 @@ public class LoggingAspect implements Ordered {
      * 日志记录
      */
     public static class LogEntity {
-        private boolean isWebsocket = false;
         // 类名
         private String className;
         // 方法名
@@ -237,68 +232,42 @@ public class LoggingAspect implements Ordered {
         }
 
         private void logPrint(Logger logger) {
-            if (isWebsocket) {
-                logger.info(
-                    "\r\n" +
-                        "\r\n   Websocket Request " +
-                        "\r\n   Request URI : {}" +
-                        "\r\n   Method Args : {}" +
-                        "\r\n   Http Headers : {}" +
-                        "\r\n   Class name : {}" +
-                        "\r\n   Method Name : {}" +
-                        "\r\n   Execution Time : {}ms" +
-                        "\r\n   WithThrows : {}" +
-                        "\r\n   Result : {}" +
-                        "\r\n",
-                    requestURI,
-                    methodArgs,
-                    headers,
-                    className,
-                    method,
-                    executeMs,
-                    wrapThrowMessage(),
-                    wrapResult(result)
-                );
-            } else {
-                logger.info(
-                    "\r\n" +
-                        "\r\n   Request URL : {}" +
-                        "\r\n   Http Method : {}" +
-                        "\r\n   Request URI : {}" +
-                        "\r\n   Request Params : {}" +
-                        "\r\n   Request Body : {}" +
-                        "\r\n   Method Args : {}" +
-                        "\r\n   Http Headers : {}" +
-                        "\r\n   Content-Type : {}" +
-                        "\r\n   Class name : {}" +
-                        "\r\n   Method Name : {}" +
-                        "\r\n   Request IP : {}" +
-                        "\r\n   Real IP : {}" +
-                        "\r\n   User Agent : {}" +
-                        "\r\n   Execution Time : {}ms" +
-                        "\r\n   WithThrows : {}" +
-                        "\r\n   Result : {}" +
-                        "\r\n",
-                    requestURL,
-                    requestMethod,
-                    requestURI,
-                    params,
-                    body,
-                    methodArgs,
-                    headers,
-                    contentType,
-                    className,
-                    method,
-                    ip,
-                    realIp,
-                    userAgent,
-                    executeMs,
-                    wrapThrowMessage(),
-                    wrapResult(result)
-                );
-
-            }
-
+            logger.info(
+                "\r\n" +
+                    "\r\n   Request URL : {}" +
+                    "\r\n   Http Method : {}" +
+                    "\r\n   Request URI : {}" +
+                    "\r\n   Request Params : {}" +
+                    "\r\n   Request Body : {}" +
+                    "\r\n   Method Args : {}" +
+                    "\r\n   Http Headers : {}" +
+                    "\r\n   Content-Type : {}" +
+                    "\r\n   Class name : {}" +
+                    "\r\n   Method Name : {}" +
+                    "\r\n   Request IP : {}" +
+                    "\r\n   Real IP : {}" +
+                    "\r\n   User Agent : {}" +
+                    "\r\n   Execution Time : {}ms" +
+                    "\r\n   WithThrows : {}" +
+                    "\r\n   Result : {}" +
+                    "\r\n",
+                requestURL,
+                requestMethod,
+                requestURI,
+                params,
+                body,
+                methodArgs,
+                headers,
+                contentType,
+                className,
+                method,
+                ip,
+                realIp,
+                userAgent,
+                executeMs,
+                wrapThrowMessage(),
+                wrapResult(result)
+            );
 
         }
     }
