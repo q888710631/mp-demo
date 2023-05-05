@@ -4,7 +4,7 @@ package com.honyee.app.config.http;
  * 自定义响应码
  */
 public enum MyResponseCodeEnums {
-    OK(0, "success"),
+    OK(200, "success"),
     COMMON_EXCEPTION(500, "failure");
 
     private final int code;
