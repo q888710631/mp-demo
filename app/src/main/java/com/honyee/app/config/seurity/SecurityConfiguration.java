@@ -63,6 +63,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         this.objectMapper = objectMapper;
     }
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        authenticationManager = super.authenticationManagerBean();
+        this.jwtFilter = new JwtFilter(objectMapper, super.authenticationManagerBean());
+
+        // 读取权限配置文件
+        Yaml yaml = new Yaml();
+        ClassPathResource application = new ClassPathResource("authentication.yml");
+        Map<String, Object> data = yaml.load(new FileInputStream(application.getFile()));
+        String json = objectMapper.writeValueAsString(data);
+        authenticateProperties = objectMapper.readValue(json, AuthenticateProperties.class);
+    }
+
     // 配置认证管理器
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -114,19 +127,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
             }
         };
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        authenticationManager = super.authenticationManagerBean();
-        this.jwtFilter = new JwtFilter(objectMapper, super.authenticationManagerBean());
-
-        // 读取权限配置文件
-        Yaml yaml = new Yaml();
-        ClassPathResource application = new ClassPathResource("authentication.yml");
-        Map<String, Object> data = yaml.load(new FileInputStream(application.getFile()));
-        String json = objectMapper.writeValueAsString(data);
-        authenticateProperties = objectMapper.readValue(json, AuthenticateProperties.class);
     }
 
     public AuthenticationManager getAuthenticationManager() {

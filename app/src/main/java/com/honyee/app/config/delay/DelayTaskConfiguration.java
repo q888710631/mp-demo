@@ -6,6 +6,7 @@ import com.honyee.app.AppApplication;
 import com.honyee.app.delay.MyDelayParam;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.LogUtil;
+import com.honyee.app.utils.SpringUtil;
 import org.redisson.RedissonShutdownException;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
@@ -158,7 +159,7 @@ public class DelayTaskConfiguration implements DisposableBean {
         if (!QUEUE.containsKey(e.getClass().getName())) {
             throw new CommonException(e.getClass().getName() + "缺少对应的DelayTaskListener<T>实现");
         }
-        RedissonClient redissonClient = AppApplication.getBean(RedissonClient.class);
+        RedissonClient redissonClient = SpringUtil.getBean(RedissonClient.class);
         RBlockingQueue<Object> blockingFairQueue = redissonClient.getBlockingQueue(queueName);
         RDelayedQueue<Object> delayedQueue = redissonClient.getDelayedQueue(blockingFairQueue);
         delayedQueue.offer(e, delay, timeUnit);

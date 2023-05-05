@@ -4,11 +4,15 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.honyee.app.AppApplication;
 import com.honyee.app.config.Constants;
+import com.honyee.app.config.nacos.NacosConfiguration;
+import com.honyee.app.config.nacos.NacosCustomProperties;
 import com.honyee.app.proxy.feishu.FeishuMessageRequest;
 import com.honyee.app.service.FeishuService;
 import com.honyee.app.utils.DateUtil;
 import com.honyee.app.utils.LogUtil;
+import com.honyee.app.utils.SpringUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.instrument.async.LazyTraceExecutor;
@@ -24,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -45,10 +50,18 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
      */
     private final Executor executor;
 
+    private final NacosConfiguration nacosConfiguration;
 
-    public FeiShuAlertAppender(BeanFactory beanFactory, ObjectMapper objectMapper, FeishuService feishuService, String applicationName, String env) {
+
+    public FeiShuAlertAppender(BeanFactory beanFactory,
+                               ObjectMapper objectMapper,
+                               FeishuService feishuService,
+                               NacosConfiguration nacosConfiguration,
+                               String applicationName,
+                               String env) {
         this.objectMapper = objectMapper;
         this.feishuService = feishuService;
+        this.nacosConfiguration = nacosConfiguration;
         this.applicationName = applicationName;
         this.env = env;
 
@@ -66,6 +79,15 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
+        // 项目未启动完毕时执行feign请求会错误
+        if (!SpringUtil.isStartComplete()) {
+            return;
+        }
+        // 避免死循环
+        if (FeishuService.class.getName().equals(event.getLoggerName())) {
+            return;
+        }
+
         boolean isErrorLog = Objects.equals(Level.ERROR, event.getLevel());
         boolean isWarnLog = Objects.equals(Level.WARN, event.getLevel());
         if (!isErrorLog && !isWarnLog) {
@@ -75,7 +97,22 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
         if (StringUtils.isBlank(loggerName) || !loggerName.startsWith(Constants.BASE_PACKAGE)) {
             return;
         }
+
         String formattedMessage = event.getFormattedMessage();
+
+        // 过滤不通知的信息
+        if (formattedMessage != null && this.nacosConfiguration != null) {
+            NacosCustomProperties customProperties = this.nacosConfiguration.getCustomProperties();
+            if (customProperties != null) {
+                List<String> feishuLogFilter = customProperties.getFeishuLogFilter();
+                if (feishuLogFilter != null) {
+                    if (feishuLogFilter.stream().anyMatch(formattedMessage::contains)) {
+                        return;
+                    }
+                }
+            }
+        }
+
         Map<String, String> mdcPropertyMap = event.getMDCPropertyMap();
         FeishuMessageRequest feishuMessageRequest = new FeishuMessageRequest();
         if (isErrorLog) {

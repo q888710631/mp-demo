@@ -8,6 +8,7 @@ import com.alibaba.nacos.client.naming.utils.NetUtils;
 import com.alibaba.nacos.common.notify.NotifyCenter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.honyee.app.utils.LogUtil;
+import com.honyee.app.utils.YamlUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 import org.yaml.snakeyaml.Yaml;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,6 +52,8 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
 
     private NacosInstancesChangeNotifier nacosInstancesChangeNotifier;
 
+    private NacosCustomProperties customProperties = null;
+
     // 线程，仅在spring.cloud.nacos.discovery.enabled=true时有效
     private ScheduledExecutorService executor = null;
 
@@ -69,9 +73,9 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
         if (Boolean.TRUE.equals(enable)) {
             this.executor = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder().setNameFormat("my-nacos-discover-%d").build());
             init();
-
+            this.nacosInstancesChangeNotifier = new NacosInstancesChangeNotifier();
             // 订阅
-            NotifyCenter.registerSubscriber(new NacosInstancesChangeNotifier());
+            NotifyCenter.registerSubscriber(nacosInstancesChangeNotifier);
         }
     }
 
@@ -118,8 +122,12 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
             LogUtil.warn("nacos 没有读取到配置文件，可能未连接成功或没有该配置文件");
             return false;
         }
-        Yaml yaml = new Yaml();
-        Map map = yaml.loadAs(configInfo, Map.class);
+        try {
+            this.customProperties = YamlUtil.loadAs(configInfo, NacosCustomProperties.class);
+        } catch (Exception e) {
+            LogUtil.error("加载nacos配置文件失败：" + e.getMessage());
+            return false;
+        }
         return true;
     }
 
@@ -127,4 +135,7 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
         return this.applicationName;
     }
 
+    public NacosCustomProperties getCustomProperties() {
+        return customProperties;
+    }
 }

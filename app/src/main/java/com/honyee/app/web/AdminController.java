@@ -12,6 +12,7 @@ import com.honyee.app.mapper.RoleMapper;
 import com.honyee.app.mapper.UserMapper;
 import com.honyee.app.service.MyUserDetailService;
 import com.honyee.app.utils.LogUtil;
+import com.honyee.app.utils.SpringUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Pageable;
@@ -92,7 +93,7 @@ public class AdminController {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            SpringApplication.exit(AppApplication.context);
+            SpringApplication.exit(SpringUtil.CONTEXT);
         }).start();
         return new MyResponse<>();
     }

@@ -1,10 +1,18 @@
 package com.honyee.app;
 
+import com.honyee.app.config.nacos.NacosCustomProperties;
 import com.honyee.app.utils.JsonUtil;
+import com.honyee.app.utils.YamlUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.noear.snack.ONode;
+import org.yaml.snakeyaml.Yaml;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class JsonTests {
     private static final Logger log = LoggerFactory.getLogger(JsonTests.class);
@@ -47,4 +55,6 @@ public class JsonTests {
         ONode select = ONode.loadStr(json).select("$.data.prods.id");
         System.out.println(select.ary());
     }
+
+
 }

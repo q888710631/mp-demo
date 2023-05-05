@@ -22,6 +22,24 @@ mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
+
+## 2023.5.5
+通过Nacos增强飞书日志通知功能
+
+Nacos中增加如下配置，可用于过滤（String.contains）不需要的日志通知
+
+例如有日志：
+1. 校验错误：身份证格式不正确
+2. 校验错误：手机号格式不正确
+3. ...
+
+在nacos配置文件（对应配置类NacosCustomProperties）中：
+```yaml
+feishu-log-filter:
+  - 校验错误
+```
+
+
 ## 2023.4.24
 新增json工具类`JsonUtil.merge`用于合并json对象
 
