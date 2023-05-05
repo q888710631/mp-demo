@@ -1,12 +1,13 @@
 package com.honyee.app.model;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.honyee.app.model.base.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(title = "问卷")
 @TableName("questionnaire")
 @InterceptorIgnore(tenantLine = "true")
-public class Questionnaire {
+public class Questionnaire extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
