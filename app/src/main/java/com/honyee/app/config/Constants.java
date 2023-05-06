@@ -23,5 +23,9 @@ public class Constants {
     // trace id
     public static final String TRACE_ID = "traceId";
 
+    // 正则 手机号
+    public static final String REGEXP_PHONE_NUMBER = "^[1-9][0-9]{10}$";
+
+
 
 }

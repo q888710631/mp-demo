@@ -1,33 +1,38 @@
 package com.honyee.app.utils;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class YamlUtil {
-    public static <T> T loadAs(String config, Class<T> clz) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public static <T> T loadAs(InputStream input, Class<T> clz) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         Yaml yaml = new Yaml();
-        Map map = yaml.loadAs(config, Map.class);
-        Map<String, Object> result = dealKey(map);
+        Map map = yaml.loadAs(input, Map.class);
+        Map<String, Object> result = dealMapKey(map);
         return DataBindUtil.bind(clz, result);
     }
 
-    private static Map<String, Object> dealKey(Map map) {
+    public static <T> T loadAs(String config, Class<T> clz) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        Yaml yaml = new Yaml();
+        Map map = yaml.loadAs(config, Map.class);
+        Map<String, Object> result = dealMapKey(map);
+        return DataBindUtil.bind(clz, result);
+    }
+
+    private static Map<String, Object> dealMapKey(Map map) {
         Set set = map.keySet();
         Iterator iterator = set.iterator();
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>();
         while (iterator.hasNext()) {
             Object next = iterator.next();
             if (next instanceof String) {
                 Object value = map.get(next);
                 if (value instanceof Map) {
-                    value = dealKey((Map) value);
+                    value = dealMapKey((Map) value);
+                } else if (value instanceof Collection) {
+                    value = dealCollection(value);
                 }
                 String key = DataBindUtil.toCamelCase(next.toString());
                 result.put(key, value);
@@ -36,5 +41,19 @@ public class YamlUtil {
             }
         }
         return result;
+    }
+
+    private static Object dealCollection(Object value) {
+        if (value instanceof Map) {
+            return dealMapKey((Map) value);
+        } else if (value instanceof Collection) {
+            Collection collection = (Collection) value;
+            List collectionResult = new ArrayList();
+            for (Object child : collection) {
+                collectionResult.add(dealCollection(child));
+            }
+            return collectionResult;
+        }
+        return value;
     }
 }

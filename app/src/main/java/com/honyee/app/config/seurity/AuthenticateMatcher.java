@@ -1,6 +1,5 @@
 package com.honyee.app.config.seurity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpMethod;
 
 import java.util.ArrayList;
@@ -11,31 +10,26 @@ public class AuthenticateMatcher {
     /**
      * 映射路径
      */
-    @JsonProperty("path-matchers")
     List<String> pathMatchers;
 
     /**
      * 匹配方法
      */
-    @JsonProperty("http-method")
     private HttpMethod httpMethod;
 
     /**
      * 是否需要授权
      */
-    @JsonProperty("authenticated")
     private Boolean authenticated;
 
     /**
      * 指定角色
      */
-    @JsonProperty("has-any-role")
     private List<String> hasAnyRole;
 
     /**
      * 指定权限
      */
-    @JsonProperty("has-any-authority")
     private List<String> hasAnyAuthority;
 
     public AuthenticateMatcher() {

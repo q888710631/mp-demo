@@ -1,17 +1,12 @@
 package com.honyee.app.config.seurity;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
 
 public class AuthenticateProperties {
     // url权限配置
-    @JsonProperty("authenticate-matchers")
     private List<AuthenticateMatcher> authenticateMatchers;
 
     // menu权限配置
-    @JsonAlias("menu-matchers")
     private List<AuthenticateMatcher> menuMatchers;
 
     public List<AuthenticateMatcher> getAuthenticateMatchers() {
