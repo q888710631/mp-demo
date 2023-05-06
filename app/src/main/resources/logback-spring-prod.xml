@@ -2,6 +2,14 @@
 <!--<!DOCTYPE configuration>-->
 
 <configuration scan="true">
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>
+                %d %highlight(${LOG_LEVEL_PATTERN:-%5p}) %cyan([%thread]) %green(%logger{0}[%line]) %msg%n</Pattern>
+        </encoder>
+    </appender>
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!-- 输出目录在启动目录下开始计算，开头有/则从根目录开始 -->
@@ -26,6 +34,7 @@
 
     <root level="INFO">
         <appender-ref ref="ASYNC"/>
+        <appender-ref ref="CONSOLE"/>
     </root>
     <!--  # 打印SQL  -->
     <logger name="com.honyee.app.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
