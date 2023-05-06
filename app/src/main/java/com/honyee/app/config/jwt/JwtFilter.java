@@ -10,9 +10,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
@@ -55,24 +53,29 @@ public class JwtFilter extends GenericFilter {
                 Object loginKey = claims.get(JwtConstants.LOGIN_KEY);
                 if (Objects.equals(loginType, LoginTypeEnum.COMMON.name())) {
                     authentication = new MyAuthenticationToken(Long.valueOf(loginKey.toString()));
+                } else {
+                    resolveAuthenticationFailure("token无效-1", response);
+                    return;
                 }
                 authentication = authenticationManager.authenticate(authentication);
 
                 if (null == authentication) {
-                    logger.error("token认证失败,未找到合适的认证类型");
-                    throw new AuthenticationCredentialsNotFoundException("token认证失败,未找到合适的认证类型");
+                    resolveAuthenticationFailure("token无效-2", response);
+                    return;
                 }
                 if (Boolean.FALSE.equals(authentication.isAuthenticated())) {
-                    logger.error("授权认证失败");
-                    throw new BadCredentialsException("token认证失败");
+                    resolveAuthenticationFailure("token无效-3", response);
+                    return;
                 }
                 securityContext.setAuthentication(authentication);
 
             } catch (JwtException | IllegalArgumentException e) {
-                logger.info("Invalid JWT token.");
+                LogUtil.info("Invalid JWT token.");
+                resolveAuthenticationFailure("token无效-4", response);
+                return;
             } catch (AuthenticationException e) {
-                logger.error("token 认证授权失败:{}", e.getMessage());
-                resolveAuthenticationException(e, response);
+                logger.warn("", e);
+                resolveAuthenticationFailure(e.getMessage(), response);
                 return;
             }
         }
@@ -97,15 +100,14 @@ public class JwtFilter extends GenericFilter {
         return null;
     }
 
-
-    private void resolveAuthenticationException(AuthenticationException ex, ServletResponse servletResponse) {
+    private void resolveAuthenticationFailure(String message, ServletResponse servletResponse) {
 
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
-            response.getWriter().print(objectMapper.writeValueAsString(new MyResponse<>(HttpStatus.UNAUTHORIZED.value(), ex.getMessage(), null)));
+            response.getWriter().print(objectMapper.writeValueAsString(new MyResponse<>(HttpStatus.UNAUTHORIZED.value(), message, null)));
         } catch (IOException e) {
             LogUtil.get().error("### resolvePermissionFailException 处理权限异常返回失败", e);
         }

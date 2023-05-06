@@ -74,12 +74,7 @@ public class TokenProvider {
     }
 
     public static Claims getClaims(String authToken) {
-        try {
-            return INSTANT.jwtParser.parseClaimsJws(authToken).getBody();
-        } catch (JwtException | IllegalArgumentException e) {
-            LogUtil.get().info("Invalid JWT token.");
-            throw e;
-        }
+        return INSTANT.jwtParser.parseClaimsJws(authToken).getBody();
     }
 
 }
