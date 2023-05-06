@@ -1,7 +1,9 @@
 authenticate-matchers:
   # 测试
   - path-matchers:
+    - /api/ping
     - /api/test/**
+    - /api/questionnaire/**
     authenticated: false
   # websocket,考虑连接时携带token
   - path-matchers:
