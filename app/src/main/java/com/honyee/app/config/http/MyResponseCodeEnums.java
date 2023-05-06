@@ -5,6 +5,7 @@ package com.honyee.app.config.http;
  */
 public enum MyResponseCodeEnums {
     OK(200, "success"),
+    NOT_AUTH(401, "无权限访问"),
     COMMON_EXCEPTION(500, "failure");
 
     private final int code;
