@@ -1,31 +1,18 @@
-package com.honyee.app.model;
+package com.honyee.app.dto;
 
-import com.baomidou.mybatisplus.annotation.*;
-import com.honyee.app.model.base.BaseEntity;
+import com.honyee.app.config.Constants;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(title = "问卷")
-@TableName("questionnaire")
-@InterceptorIgnore(tenantLine = "true")
-public class Questionnaire extends BaseEntity {
-    @TableId(type = IdType.AUTO)
-    private Long id;
+import javax.validation.constraints.Pattern;
 
+@Schema(title = "问卷")
+public class QuestionnaireCreateDTO{
     @Schema(title = "姓名")
-    @TableField("full_name")
     private String fullName;
 
     @Schema(title = "手机号")
-    @TableField("phone_number")
+    @Pattern(regexp = Constants.REGEXP_PHONE_NUMBER, message = "手机号格式异常")
     private String phoneNumber;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getFullName() {
         return fullName;

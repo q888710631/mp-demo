@@ -1,5 +1,6 @@
 package com.honyee.app.web;
 
+import com.honyee.app.dto.QuestionnaireCreateDTO;
 import com.honyee.app.model.Questionnaire;
 import com.honyee.app.service.QuestionnaireService;
 import com.honyee.app.utils.HttpUtil;
@@ -20,8 +21,8 @@ public class QuestionnaireController {
     private QuestionnaireService questionnaireService;
 
     @PostMapping("create")
-    public void create(@Valid @RequestBody Questionnaire questionnaire, HttpServletRequest request) {
-        questionnaireService.create(questionnaire, HttpUtil.getIpAddress(request));
+    public void create(@Valid @RequestBody QuestionnaireCreateDTO dto) {
+        questionnaireService.create(dto);
 
     }
 }
