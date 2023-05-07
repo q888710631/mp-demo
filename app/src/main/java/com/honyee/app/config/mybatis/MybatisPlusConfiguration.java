@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.honyee.app.config.Constants;
-import com.honyee.app.config.TenantHelper;
+import com.honyee.app.utils.TenantHelper;
 import com.honyee.app.enums.UserStateEnum;
 import com.honyee.app.model.User;
 import com.honyee.app.model.base.BaseTenantEntity;

@@ -1,6 +1,6 @@
 package com.honyee.app.web;
 
-import com.honyee.app.config.TenantHelper;
+import com.honyee.app.utils.TenantHelper;
 import com.honyee.app.service.GenericService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.GetMapping;
