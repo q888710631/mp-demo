@@ -3,10 +3,14 @@ package com.honyee.app.config.seurity;
 import java.util.List;
 
 public class AuthenticateProperties {
-    // url权限配置
+    /**
+     * url权限配置
+     */
     private List<AuthenticateMatcher> authenticateMatchers;
 
-    // menu权限配置
+    /**
+     * menu权限配置
+     */
     private List<AuthenticateMatcher> menuMatchers;
 
     public List<AuthenticateMatcher> getAuthenticateMatchers() {
