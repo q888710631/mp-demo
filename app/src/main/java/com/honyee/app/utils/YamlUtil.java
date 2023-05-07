@@ -4,7 +4,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Map;
 
 public class YamlUtil {
     public static <T> T loadAs(InputStream input, Class<T> clz) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
