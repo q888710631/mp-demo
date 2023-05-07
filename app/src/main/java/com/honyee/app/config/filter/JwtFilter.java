@@ -82,11 +82,7 @@ public class JwtFilter extends GenericFilter {
                 return;
             }
         }
-        try {
-            chain.doFilter(request, response);
-        } finally {
-            MybatisPlusTenantHandler.removeTenantValue();
-        }
+        chain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
