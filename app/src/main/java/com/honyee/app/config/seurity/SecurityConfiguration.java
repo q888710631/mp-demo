@@ -1,7 +1,8 @@
 package com.honyee.app.config.seurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.honyee.app.config.jwt.JwtFilter;
+import com.honyee.app.config.filter.JwtFilter;
+import com.honyee.app.config.filter.RequestWrapperFilter;
 import com.honyee.app.config.jwt.my.MyAuthenticationProvider;
 import com.honyee.app.service.MyUserDetailService;
 import com.honyee.app.utils.YamlUtil;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -28,12 +28,7 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.yaml.snakeyaml.Yaml;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -70,22 +65,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        authenticationManager = super.authenticationManagerBean();
+        this.authenticationManager = super.authenticationManagerBean();
         this.jwtFilter = new JwtFilter(objectMapper, super.authenticationManagerBean());
 
         // 读取权限配置文件
-//        ClassPathResource application = new ClassPathResource("authentication.yml");
-//        Map<String, Object> data = yaml.load(new FileInputStream(application.getFile()));
-//        String json = objectMapper.writeValueAsString(data);
-//        authenticateProperties = objectMapper.readValue(json, AuthenticateProperties.class);
         // 获得文件流时，因为读取的文件是在打好jar文件里面，不能直接通过文件资源路径拿到文件，但是可以在jar包中拿到文件流
         // ResourcePatternResolver的实现方法，可以匹配到各种部署时的各种文件类型例如war，jar，zip等等findPathMatchingResources
         ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resolver.getResources("authentication.yml");
         Resource resource = resources[0];
         authenticateProperties = YamlUtil.loadAs(resource.getInputStream(), AuthenticateProperties.class);
-        System.out.println();
-
     }
 
     // 配置认证管理器
@@ -137,6 +126,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
             @Override
             public void configure(HttpSecurity http) {
                 http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                http.addFilterBefore(new RequestWrapperFilter(), JwtFilter.class);
             }
         };
     }

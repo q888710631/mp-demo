@@ -1,7 +1,7 @@
 package com.honyee.app.utils;
 
 import com.honyee.app.config.Constants;
-import com.honyee.app.config.jwt.JwtFilter;
+import com.honyee.app.config.filter.JwtFilter;
 import com.honyee.app.config.lock.RedisLockAspect;
 import com.honyee.app.config.log.FeiShuAlertAppender;
 import com.honyee.app.config.log.LoggingAspect;
