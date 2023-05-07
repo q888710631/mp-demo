@@ -1,6 +1,7 @@
 package com.honyee.app.config.seurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.honyee.app.config.filter.FinallyFilter;
 import com.honyee.app.config.filter.JwtFilter;
 import com.honyee.app.config.filter.RequestWrapperFilter;
 import com.honyee.app.config.jwt.my.MyAuthenticationProvider;
@@ -90,33 +91,33 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 
         // 设置路径及要求的权限，支持 ant 风格路径写法
         http.csrf().disable()
-            .exceptionHandling()
-            .authenticationEntryPoint(problemSupport)
-            .and()
-            .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            .and()
-            .authorizeRequests()
-            // 设置 OPTIONS 尝试请求直接通过
-            .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
-                @Override
-                public <O extends FilterSecurityInterceptor> O postProcess(O object) {
-                    FilterInvocationSecurityMetadataSource securityMetadataSource = object.getSecurityMetadataSource();
-                    object.setSecurityMetadataSource(
-                        new MyFilterInvocationSecurityMetadataSource(env, securityMetadataSource, authenticateProperties));
-                    object.setAccessDecisionManager(new MyFilterAccessDecisionManager());
-                    return object;
-                }
-            })
+                .exceptionHandling()
+                .authenticationEntryPoint(problemSupport)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                // 设置 OPTIONS 尝试请求直接通过
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+                    @Override
+                    public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+                        FilterInvocationSecurityMetadataSource securityMetadataSource = object.getSecurityMetadataSource();
+                        object.setSecurityMetadataSource(
+                                new MyFilterInvocationSecurityMetadataSource(env, securityMetadataSource, authenticateProperties));
+                        object.setAccessDecisionManager(new MyFilterAccessDecisionManager());
+                        return object;
+                    }
+                })
 //            .antMatchers("/api/authenticate").permitAll()
 //            .antMatchers("/api/test/**").permitAll()
-            .and()
-            .authorizeRequests()
-            .anyRequest()
-            .authenticated()
-            .and()
-            .apply(securityConfigurerAdapter())
+                .and()
+                .authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .apply(securityConfigurerAdapter())
         ;
 
     }
@@ -125,8 +126,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         return new SecurityConfigurerAdapter<>() {
             @Override
             public void configure(HttpSecurity http) {
-                http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-                http.addFilterBefore(new RequestWrapperFilter(), JwtFilter.class);
+                http.addFilterBefore(new FinallyFilter(), UsernamePasswordAuthenticationFilter.class);
+                http.addFilterAfter(new RequestWrapperFilter(), FinallyFilter.class);
+                http.addFilterAfter(jwtFilter, RequestWrapperFilter.class);
             }
         };
     }
