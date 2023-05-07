@@ -8,12 +8,11 @@ springdoc:
 
 spring:
   redis:
-    # 49.232.119.51
     host: 127.0.0.1
     port: 6379
-    password: redis..123
+    password:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://127.0.0.1/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
-    password: mysql..123
+    password: root
