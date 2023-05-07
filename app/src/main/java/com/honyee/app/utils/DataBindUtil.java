@@ -11,8 +11,8 @@ import java.util.*;
 public class DataBindUtil {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public DataBindUtil() {
-        OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, true);
+    static {
+        OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
     }
 
     public static <T> T bind(Class<T> clz, Map<String, Object> data) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
