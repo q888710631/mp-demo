@@ -1,8 +1,11 @@
-package com.honyee.app.config.jwt;
+package com.honyee.app.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.config.http.MyHttpRequestWrapper;
 import com.honyee.app.config.http.MyResponse;
+import com.honyee.app.config.jwt.JwtConstants;
+import com.honyee.app.config.jwt.LoginTypeEnum;
+import com.honyee.app.config.jwt.TokenProvider;
 import com.honyee.app.config.jwt.my.MyAuthenticationToken;
 import com.honyee.app.config.mybatis.MybatisPlusTenantHandler;
 import com.honyee.app.utils.LogUtil;
@@ -80,8 +83,7 @@ public class JwtFilter extends GenericFilter {
             }
         }
         try {
-            // 装饰Request，用来反复获取body
-            chain.doFilter(new MyHttpRequestWrapper(httpServletRequest), response);
+            chain.doFilter(request, response);
         } finally {
             MybatisPlusTenantHandler.removeTenantValue();
         }
