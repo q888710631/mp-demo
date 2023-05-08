@@ -10,9 +10,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * <pre>
- * request 限流模式分为两种：
+ * 限流模式分为两种：
  * 1. 强力模式：成功锁定后不解锁，等待时间自动解锁
- * 2. 通用限流和根据ip限流：使用漏桶模式
+ * 2. 通用限流：使用漏桶模式
+ * 3. ip限流：使用漏桶模式
  * </pre>
  */
 @Target({METHOD})
