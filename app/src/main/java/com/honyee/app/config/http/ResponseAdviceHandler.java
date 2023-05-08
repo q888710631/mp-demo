@@ -82,7 +82,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
     @ResponseBody
     public MyResponse<?> handler(CommonException e) {
         String logContext = LogUtil.filterStackToString(e);
-        LogUtil.warn(logContext);
+        LogUtil.info(logContext);
         return new MyResponse<>(e.getCode(), e.getCommonMessage());
     }
 
