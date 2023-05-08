@@ -1,7 +1,10 @@
 package com.honyee.app.utils;
 
 import com.honyee.app.config.Constants;
+import com.honyee.app.config.filter.FinallyFilter;
 import com.honyee.app.config.filter.JwtFilter;
+import com.honyee.app.config.filter.RequestWrapperFilter;
+import com.honyee.app.config.limit.RateLimitAspect;
 import com.honyee.app.config.lock.RedisLockAspect;
 import com.honyee.app.config.log.FeiShuAlertAppender;
 import com.honyee.app.config.log.LoggingAspect;
@@ -94,7 +97,11 @@ public class LogUtil {
         FeiShuAlertAppender.class.getName(),
         LoggingAspect.class.getName(),
         RedisLockAspect.class.getName(),
-        JwtFilter.class.getName()
+        JwtFilter.class.getName(),
+        RequestWrapperFilter.class.getName(),
+        FinallyFilter.class.getName(),
+        RateLimitAspect.class.getName()
+
     );
 
     /**
