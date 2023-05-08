@@ -22,7 +22,6 @@ public class QuestionnaireController {
 
     @PostMapping("create")
     public void create(@Valid @RequestBody QuestionnaireCreateDTO dto) {
-        questionnaireService.create(dto);
-
+        questionnaireService.create(dto, dto.getPhoneNumber());
     }
 }

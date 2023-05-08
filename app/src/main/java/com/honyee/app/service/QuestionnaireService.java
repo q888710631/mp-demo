@@ -18,22 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class QuestionnaireService extends ServiceImpl<QuestionnaireMapper, Questionnaire> {
 
-    @Autowired
-    private RedissonClient redissonClient;
-
-    public void create(QuestionnaireCreateDTO dto) {
-        String key = dto.getPhoneNumber();
-        RLock lock = redissonClient.getLock("lock_questionnaire_create_" + key);
-        try {
-            // 锁定5秒，不解锁
-            if (lock.isLocked()) {
-                throw new CommonException("请勿频繁提交");
-            }
-            if (lock.tryLock(1L,5L, TimeUnit.SECONDS)) {
-                LogUtil.info("我拿到执行权了");
-            }
-        } catch (InterruptedException e) {
-            throw new CommonException(e);
-        }
+    @RateLimit(strongLimit = true, strongKey = "#lockKey")
+    public void create(QuestionnaireCreateDTO dto, String lockKey) {
+        System.out.println("QuestionnaireService.create.........");
     }
 }
