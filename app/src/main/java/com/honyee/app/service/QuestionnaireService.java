@@ -18,8 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @Service
 public class QuestionnaireService extends ServiceImpl<QuestionnaireMapper, Questionnaire> {
 
-    @RateLimit(strongLimit = true, strongKey = "#lockKey")
-    public void create(QuestionnaireCreateDTO dto, String lockKey) {
+    @RateLimit(mode = RateLimit.LimitMode.LOCK, lockKey = "#dto.phoneNumber")
+    public void create(QuestionnaireCreateDTO dto) {
         System.out.println("QuestionnaireService.create.........");
     }
 }

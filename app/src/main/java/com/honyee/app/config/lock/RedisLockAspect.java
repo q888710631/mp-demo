@@ -2,6 +2,7 @@ package com.honyee.app.config.lock;
 
 import com.honyee.app.exp.LockOutOfTimeException;
 import com.honyee.app.utils.LogUtil;
+import com.honyee.app.utils.SpelUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -45,7 +46,7 @@ public class RedisLockAspect {
         Method method = signature.getMethod();
         RedisLock annotation = method.getAnnotation(RedisLock.class);
 
-        EvaluationContext context = contextVariable(point);
+        EvaluationContext context = SpelUtil.contextVariable(point);
         String key = parseSpel(context, annotation, annotation.key());
         String value = annotation.valueSpel() ? parseSpel(context, annotation, annotation.value()) : annotation.value();
 
@@ -84,22 +85,6 @@ public class RedisLockAspect {
     }
 
     /**
-     * 创建EvaluationContext，并填充参数
-     */
-    private EvaluationContext contextVariable(ProceedingJoinPoint point) {
-        MethodSignature signature = (MethodSignature) point.getSignature();
-        EvaluationContext context = new StandardEvaluationContext();
-        String[] parameterNames = signature.getParameterNames();
-        if (parameterNames != null) {
-            Object[] args = point.getArgs();
-            for (int i = 0; i < parameterNames.length; i++) {
-                context.setVariable(parameterNames[i], args[i]);
-            }
-        }
-        return context;
-    }
-
-    /**
      * 解析el
      */
     private Expression parseExpression(RedisLock annotation, String el) {
@@ -110,4 +95,7 @@ public class RedisLockAspect {
             return parser.parseExpression(el);
         }
     }
+
+
+
 }
