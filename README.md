@@ -23,6 +23,28 @@ mp-demo
 └── cover 存放覆盖源码的类
 ```
 
+## 2023.5.8
+新增限流注解`@RateLimit`
+
+限流模式： 
+1. 强力模式：成功锁定后不解锁，等待时间自动解锁 
+2. 通用限流：使用漏桶模式
+3. ip限流：使用漏桶模式
+
+```java
+@RestController
+@RequestMapping("/api/test")
+public class TestController {
+    
+    @RateLimit
+    @PostMapping
+    public ResponseEntity<?> test() {
+        return ResponseEntity.ok(new HashMap<>());
+    }
+
+}
+```
+
 ## 2023.5.5
 通过Nacos增强飞书日志通知功能
 
@@ -267,23 +289,6 @@ public class TestService {
         DelayTaskConfiguration.submit(myDelayParam, 5, TimeUnit.SECONDS);
         // 指定时间
         DelayTaskConfiguration.submit(myDelayParam, Instant.now().plusSeconds(5));
-    }
-
-}
-```
-
-## 2023.3.29
-新增限流注解`@RateLimit`
-
-```java
-@RestController
-@RequestMapping("/api/test")
-public class TestController {
-    
-    @RateLimit
-    @PostMapping
-    public ResponseEntity<?> test() {
-        return ResponseEntity.ok(new HashMap<>());
     }
 
 }

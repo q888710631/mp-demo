@@ -49,7 +49,6 @@ public class TestController {
         System.out.println("结束");
     }
 
-    @RateLimit(limitIp = true)
     @PostMapping
     public ResponseEntity<?> test(@RequestBody(required = false) Object obj) {
         testService.lockTest("honyee");

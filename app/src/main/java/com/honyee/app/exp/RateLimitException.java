@@ -3,13 +3,13 @@ package com.honyee.app.exp;
 /**
  * 异常：请求频率限制
  */
-public class RateLimitExistsException extends CommonException {
+public class RateLimitException extends CommonException {
 
-    public RateLimitExistsException() {
+    public RateLimitException() {
         super("限流");
     }
 
-    public RateLimitExistsException(Object obj) {
+    public RateLimitException(Object obj) {
         super("限流：" + obj);
     }
 
