@@ -119,7 +119,7 @@ public class RateLimitAspect {
 
     private void throwRateLimitException(String key) {
         RateLimitException rateLimitException = new RateLimitException(key);
-        LogUtil.warn(rateLimitException.getMessage());
+        LogUtil.info(rateLimitException.getMessage());
         throw rateLimitException;
     }
 
