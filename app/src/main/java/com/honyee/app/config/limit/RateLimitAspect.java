@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.util.concurrent.RateLimiter;
 import com.honyee.app.exp.RateLimitException;
 import com.honyee.app.utils.HttpUtil;
-import com.honyee.app.utils.LogUtil;
 import com.honyee.app.utils.SpelUtil;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -80,7 +79,6 @@ public class RateLimitAspect {
                     throwRateLimitException(key);
                 }
                 if (lock.tryLock(0L, annotation.timeLong(), annotation.timeUnit())) {
-                    LogUtil.info("我拿到执行权了");
                     return point.proceed();
                 }
             } catch (InterruptedException e) {
@@ -119,7 +117,6 @@ public class RateLimitAspect {
 
     private void throwRateLimitException(String key) {
         RateLimitException rateLimitException = new RateLimitException(key);
-        LogUtil.info(rateLimitException.getMessage());
         throw rateLimitException;
     }
 
