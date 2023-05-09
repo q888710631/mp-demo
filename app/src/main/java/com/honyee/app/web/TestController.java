@@ -50,10 +50,10 @@ public class TestController {
     public ResponseEntity<?> test(TestDTO dto,  @RequestBody(required = false) Object obj) throws JsonProcessingException {
 //        testService.lockTest("honyee");
         // 测试缓存
-        cacheService.cacheMemory("123");
-        TestDTO testDTO = cacheService.cacheRedis("123");
-        String json = objectMapper.writeValueAsString(dto);
-        TestDTO testDTO1 = objectMapper.readValue(json, TestDTO.class);
+//        cacheService.cacheMemory("123");
+//        TestDTO testDTO = cacheService.cacheRedis("123");
+//        String json = objectMapper.writeValueAsString(dto);
+//        TestDTO testDTO1 = objectMapper.readValue(json, TestDTO.class);
         return ResponseEntity.ok(dto);
     }
 
