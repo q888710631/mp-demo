@@ -31,17 +31,18 @@ import java.util.concurrent.TimeUnit;
 @Component
 @Aspect
 public class RateLimitAspect {
+    private static final String LOCK_KEY = "lock_rate_limit_";
     /**
      * 通用限流
      */
-    Cache<Object, Object> rateLimiterCacheCommon = Caffeine.newBuilder()
+    Cache<String, RateLimiter> rateLimiterCacheCommon = Caffeine.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
         .recordStats()
         .build();
     /**
      * 根据IP限流
      */
-    Cache<Object, Object> rateLimiterCacheIp = Caffeine.newBuilder()
+    Cache<String, RateLimiter> rateLimiterCacheIp = Caffeine.newBuilder()
         .expireAfterAccess(10, TimeUnit.MINUTES)
         .recordStats()
         .build();
@@ -72,17 +73,17 @@ public class RateLimitAspect {
         if (mode == RateLimit.LimitMode.LOCK) {
             EvaluationContext context = SpelUtil.contextVariable(point);
             String key = parseSpel(context, annotation, annotation.lockKey());
-            RLock lock = redissonClient.getLock("lock_strong_limit_" + key);
+            RLock lock = redissonClient.getLock(LOCK_KEY + key);
             try {
                 // 锁定5秒，不解锁
                 if (lock.isLocked()) {
-                    throwRateLimitException(key);
+                    throwRateLimitException(req, key);
                 }
                 if (lock.tryLock(0L, annotation.timeLong(), annotation.timeUnit())) {
                     return point.proceed();
                 }
             } catch (InterruptedException e) {
-                throwRateLimitException(key);
+                throwRateLimitException(req, key);
             }
         }
 
@@ -91,32 +92,34 @@ public class RateLimitAspect {
             HttpServletRequest request = req.getRequest();
             String ip = request.getRemoteAddr();
             String realIp = HttpUtil.getIpAddress(request);
-            String keyIp = String.format("%s=>%s", ip, realIp);
-            check(keyIp, annotation.rate(), annotation.timeLong(), annotation.timeUnit(), rateLimiterCacheIp);
+            String key = String.format("%s=>%s", ip, realIp);
+            check(req, key, annotation.rate(), annotation.timeLong(), annotation.timeUnit(), rateLimiterCacheIp);
         }
         // 通用限流
         if (mode == RateLimit.LimitMode.IP) {
             String key = String.format("%s.%s", target.getClass().getName(), method.getName());
-            check(key, annotation.rate(), annotation.timeLong(), annotation.timeUnit(), rateLimiterCacheCommon);
+            check(req, key, annotation.rate(), annotation.timeLong(), annotation.timeUnit(), rateLimiterCacheCommon);
         }
 
         return point.proceed();
     }
 
-    private void check(String key, double rate, long timeout, TimeUnit timeUnit, Cache<Object, Object> rateLimiterCache) {
-        Object ifPresent = rateLimiterCache.getIfPresent(key);
+    private void check(ServletRequestAttributes req, String key, double rate, long timeout, TimeUnit timeUnit, Cache<String, RateLimiter> rateLimiterCache) {
+        RateLimiter ifPresent = rateLimiterCache.getIfPresent(key);
         if (ifPresent == null) {
             ifPresent = RateLimiter.create(rate);
             rateLimiterCache.put(key, ifPresent);
         }
-        RateLimiter rateLimiter = (RateLimiter) ifPresent;
+        RateLimiter rateLimiter = ifPresent;
         if (!rateLimiter.tryAcquire(timeout, timeUnit)) {
-            throwRateLimitException(key);
+            throwRateLimitException(req, key);
         }
     }
 
-    private void throwRateLimitException(String key) {
-        RateLimitException rateLimitException = new RateLimitException(key);
+    private void throwRateLimitException(ServletRequestAttributes req, String key) {
+        String requestURI = req.getRequest().getRequestURI();
+        String message = String.format("%s => %s", requestURI, key);
+        RateLimitException rateLimitException = new RateLimitException(message);
         throw rateLimitException;
     }
 

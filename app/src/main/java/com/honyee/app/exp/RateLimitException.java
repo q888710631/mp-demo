@@ -9,8 +9,8 @@ public class RateLimitException extends CommonException {
         super("限流");
     }
 
-    public RateLimitException(Object obj) {
-        super("限流：" + obj);
+    public RateLimitException(String message) {
+        super("限流：" + message);
     }
 
     @Override
