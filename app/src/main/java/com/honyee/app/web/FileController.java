@@ -1,10 +1,9 @@
 package com.honyee.app.web;
 
 import com.aliyun.oss.model.ObjectMetadata;
-import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.config.oss.MultipartFileUtils;
 import com.honyee.app.config.oss.OssFolderEnum;
-import com.honyee.app.config.oss.OssUtils;
+import com.honyee.app.config.oss.OssUtil;
 import com.honyee.app.dto.file.FileResDTO;
 import com.honyee.app.dto.file.UploadImageDTO;
 import com.honyee.app.dto.file.UploadImageResultDTO;
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 public class FileController {
 
     @Autowired
-    private OssUtils ossUtils;
+    private OssUtil ossUtils;
 
     @Schema(name = "图片上传接口")
     @PostMapping(value = "/image")
