@@ -105,6 +105,7 @@ public final class TemporalAccessorParser implements Parser<TemporalAccessor> {
 	}
 
 	private TemporalAccessor doParse(String text, Locale locale, DateTimeFormatter formatter) throws DateTimeParseException {
+		// 改动此处，添加yyyy-MM-dd HH:mm:ss支持
 		DateTimeFormatter formatterToUse = DateTimeContextHolder.getFormatter(formatter, locale);
 		if (text.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$")) {
 			formatterToUse = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
