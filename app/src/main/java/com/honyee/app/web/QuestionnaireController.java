@@ -1,5 +1,7 @@
 package com.honyee.app.web;
 
+import com.honyee.app.config.http.MyResponse;
+import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.dto.QuestionnaireCreateDTO;
 import com.honyee.app.model.Questionnaire;
 import com.honyee.app.service.QuestionnaireService;
@@ -21,7 +23,9 @@ public class QuestionnaireController {
     private QuestionnaireService questionnaireService;
 
     @PostMapping("create")
-    public void create(@Valid @RequestBody QuestionnaireCreateDTO dto) {
+    @RateLimit(mode = RateLimit.LimitMode.LOCK, lockKey = "#dto.phoneNumber")
+    public Object create(@Valid @RequestBody QuestionnaireCreateDTO dto) {
         questionnaireService.create(dto);
+        return MyResponse.ok(dto);
     }
 }
