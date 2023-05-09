@@ -11,8 +11,8 @@ public class Constants {
     public static final String PROXY_PACKAGE = BASE_PACKAGE + ".proxy";
 
     // 实体属性名
-    public static final String FIELD_CREATE_TIME = "createTime";
-    public static final String FIELD_UPDATE_TIME = "updateTime";
+    public static final String FIELD_CREATE_DATE = "createDate";
+    public static final String FIELD_UPDATE_DATE = "updateDate";
     public static final String FIELD_TENANT_ID = "tenantId";
 
     // 表字段名

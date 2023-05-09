@@ -5,17 +5,17 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.honyee.app.config.Constants;
-import com.honyee.app.utils.TenantHelper;
 import com.honyee.app.enums.UserStateEnum;
 import com.honyee.app.model.User;
+import com.honyee.app.model.base.BaseEntity;
 import com.honyee.app.model.base.BaseTenantEntity;
+import com.honyee.app.utils.TenantHelper;
 import org.apache.ibatis.reflection.MetaObject;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Configuration
 @MapperScan(Constants.MAPPER_PACKAGE)
@@ -26,21 +26,29 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setFieldValByName(Constants.FIELD_CREATE_TIME, LocalDateTime.now(), metaObject);
-        this.setFieldValByName(Constants.FIELD_UPDATE_TIME, LocalDateTime.now(), metaObject);
+        this.setFieldValByName(Constants.FIELD_CREATE_DATE, LocalDateTime.now(), metaObject);
+        this.setFieldValByName(Constants.FIELD_UPDATE_DATE, LocalDateTime.now(), metaObject);
 
         // entity
         Object originalObject = metaObject.getOriginalObject();
 
-        // 填充租户
         Long tenantId = TenantHelper.getTenantId();
         if (tenantId != null) {
             if (originalObject instanceof BaseTenantEntity) {
                 BaseTenantEntity baseTenantEntity = (BaseTenantEntity) originalObject;
                 if (baseTenantEntity.getTenantId() == null) {
+                    // 填充租户
                     baseTenantEntity.setTenantId(tenantId);
                 }
             }
+            if (originalObject instanceof BaseEntity) {
+                BaseEntity baseEntity = (BaseEntity) originalObject;
+                if (baseEntity.getCreateBy() == null) {
+                    baseEntity.setCreateBy(tenantId.toString());
+                }
+                baseEntity.setUpdateBy(tenantId.toString());
+            }
+
         }
 
         // User填充默认state
@@ -57,7 +65,18 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
      */
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName(Constants.FIELD_UPDATE_TIME, new Date(), metaObject);
+        this.setFieldValByName(Constants.FIELD_UPDATE_DATE, LocalDateTime.now(), metaObject);
+
+        // entity
+        Object originalObject = metaObject.getOriginalObject();
+
+        Long tenantId = TenantHelper.getTenantId();
+        if (tenantId != null) {
+            if (originalObject instanceof BaseEntity) {
+                BaseEntity baseEntity = (BaseEntity) originalObject;
+                baseEntity.setUpdateBy(tenantId.toString());
+            }
+        }
     }
 
     /**
