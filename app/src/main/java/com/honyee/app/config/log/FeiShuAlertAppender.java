@@ -79,10 +79,6 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
 
     @Override
     protected void append(ILoggingEvent event) {
-        // 项目未启动完毕时执行feign请求会错误
-        if (!SpringUtil.isStartComplete()) {
-            return;
-        }
         // 避免死循环
         if (FeishuService.class.getName().equals(event.getLoggerName())) {
             return;

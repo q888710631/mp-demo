@@ -12,12 +12,4 @@ public class SpringUtil {
         return CONTEXT.getBean(var1);
     }
 
-    /**
-     * 项目启动完毕判定
-     * @return true 启动完毕
-     */
-    public static boolean isStartComplete() {
-        return CONTEXT != null;
-    }
-
 }
