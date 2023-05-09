@@ -5,9 +5,9 @@ CREATE TABLE honyee.`user` (
    nickname varchar(100),
    username varchar(100) unique,
    password varchar(255),
-	 state int default 1,
-	 lock_begin_date timestamp,
-	 lock_end_date timestamp,
+   state int default 1,
+   lock_begin_date timestamp,
+   lock_end_date timestamp,
    create_by varchar(32),
    create_date timestamp,
    update_by varchar(32),
@@ -34,8 +34,10 @@ ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
 
-insert into honyee.`role` (role_key,role_name,create_by,create_date) values('admin', '管理员', 'init', now());
-insert into honyee.`role` (role_key,role_name,create_by,create_date) values('tenant', '租户', 'init', now());
+insert into honyee.`role` (role_key,role_name,create_by,create_date) values('admin', '管理员', 'init', now(), 'init', now());
+insert into honyee.`role` (role_key,role_name,create_by,create_date) values('tenant', '租户', 'init', now(), 'init', now());
+INSERT INTO honyee.`role` (role_key,role_name,create_by,create_date) VALUES ('client', '普通用户', 'init', now(), 'init', now());
+
 
 drop table if exists honyee.`user_role`;
 
@@ -51,6 +53,8 @@ CREATE TABLE honyee.`user_role` (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_0900_ai_ci;
+
+alter table honyee.`user_role` add index `idx_user_id`(user_id);
 
 alter table honyee.`user_role` add unique `union_user_role`(user_id, role_id);
 
