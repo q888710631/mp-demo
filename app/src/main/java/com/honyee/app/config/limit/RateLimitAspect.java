@@ -117,10 +117,7 @@ public class RateLimitAspect {
     }
 
     private void throwRateLimitException(ServletRequestAttributes req, String key) {
-        String requestURI = req.getRequest().getRequestURI();
-        String message = String.format("%s => %s", requestURI, key);
-        RateLimitException rateLimitException = new RateLimitException(message);
-        throw rateLimitException;
+        throw new RateLimitException(String.format("%s => %s", req.getRequest().getRequestURI(), key));
     }
 
     /**
