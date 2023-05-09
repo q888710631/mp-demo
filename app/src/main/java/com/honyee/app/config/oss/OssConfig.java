@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@ConfigurationProperties(prefix = "oss")
+@ConfigurationProperties(prefix = "application.oss")
 public class OssConfig {
 
     /**
@@ -48,8 +48,8 @@ public class OssConfig {
     private ClientBuilderConfiguration client = new ClientBuilderConfiguration();
 
     @Bean
-    public OssUtils getOSSClient() {
-        return new OssUtils(new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret, client), this);
+    public OssUtil ossUtil() {
+        return new OssUtil(new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret, client), this);
     }
 
     public String getUrlProtocol() {

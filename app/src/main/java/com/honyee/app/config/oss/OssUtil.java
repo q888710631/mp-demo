@@ -17,7 +17,7 @@ import java.net.URL;
 /**
  * 阿里云OSS工具
  */
-public class OssUtils {
+public class OssUtil {
 
     private final OSS oss;
 
@@ -27,9 +27,13 @@ public class OssUtils {
 
     private static final String URL_HOST_SEPARATOR = ".";
 
-    public OssUtils(OSS oss, OssConfig ossConfig) {
+    public OssUtil(OSS oss, OssConfig ossConfig) {
         this.oss = oss;
         this.ossConfig = ossConfig;
+    }
+
+    public String getUrl(String key) {
+        return getUrl(OssFolderEnum.COMMON, key);
     }
 
     public String getUrl(OssFolderEnum folder, String key) {
