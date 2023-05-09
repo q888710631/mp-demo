@@ -18,6 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.*;
 import com.fasterxml.jackson.datatype.jsr310.ser.key.ZonedDateTimeKeySerializer;
 import com.honyee.app.config.objectmapper.InstantJsonDeserializer;
 import com.honyee.app.config.objectmapper.InstantJsonSerializer;
+import com.honyee.app.utils.DateUtil;
 
 import java.time.*;
 
@@ -30,14 +31,15 @@ public class MyJavaTimeModule extends SimpleModule {
         // First deserializers
 
         // Instant variants:
-        // addDeserializer(Instant.class, InstantDeserializer.INSTANT);
+//         addDeserializer(Instant.class, InstantDeserializer.INSTANT);
         addDeserializer(Instant.class, new InstantJsonDeserializer());
         addDeserializer(OffsetDateTime.class, InstantDeserializer.OFFSET_DATE_TIME);
         addDeserializer(ZonedDateTime.class, InstantDeserializer.ZONED_DATE_TIME);
 
         // Other deserializers
         addDeserializer(Duration.class, DurationDeserializer.INSTANCE);
-        addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
+//        addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
+        addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateUtil.COMMON_DATE_TIME_FORMATTER));
         addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
         addDeserializer(LocalTime.class, LocalTimeDeserializer.INSTANCE);
         addDeserializer(MonthDay.class, MonthDayDeserializer.INSTANCE);
@@ -50,9 +52,10 @@ public class MyJavaTimeModule extends SimpleModule {
 
         // then serializers:
         addSerializer(Duration.class, DurationSerializer.INSTANCE);
-        // addSerializer(Instant.class, InstantSerializer.INSTANCE);
+//        addSerializer(Instant.class, InstantSerializer.INSTANCE);
         addSerializer(Instant.class, new InstantJsonSerializer());
-        addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
+//        addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
+        addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateUtil.COMMON_DATE_TIME_FORMATTER));
         addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
         addSerializer(LocalTime.class, LocalTimeSerializer.INSTANCE);
         addSerializer(MonthDay.class, MonthDaySerializer.INSTANCE);

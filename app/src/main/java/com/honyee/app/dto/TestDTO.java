@@ -8,7 +8,13 @@ import java.time.LocalDateTime;
 public class TestDTO implements Serializable {
     private String data = "123123";
     private BigDecimal bigDecimal = BigDecimal.valueOf(1234);
+    /**
+     * 输入输出格式：2021-05-09 12:26:26
+     */
     private Instant instant = Instant.now();
+    /**
+     * 输入输出格式：2021-05-09 12:26:26
+     */
     private LocalDateTime localDateTime = LocalDateTime.now();
 
     public String getData() {
