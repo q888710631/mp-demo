@@ -50,8 +50,10 @@ public class InstantFormatter implements Formatter<Instant> {
 		}
 		else {
 			// assuming UTC instant a la "2007-12-03T10:15:30.00Z"
-//			return Instant.parse(text);
-			return LocalDateTime.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toInstant(ZoneOffset.UTC);
+			if (text.matches("^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$")) {
+				return LocalDateTime.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toInstant(ZoneOffset.UTC);
+			}
+			return Instant.parse(text);
 		}
 	}
 

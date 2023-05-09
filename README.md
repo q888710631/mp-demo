@@ -24,9 +24,9 @@ mp-demo
 ```
 
 ## 2023.5.9
-调整Instant和LocalDateTime格式化为yyyy-MM-dd HH:mm:ss，例如：2023-05-09 12:26:26
+调整日期类序列化格式
 
-1. Request入参，支持yyyy-MM-dd HH:mm:ss，1683613823128（13位），1683613823（10位）
+1. Request入参，支持ISO 8601（2023-05-09T12:15:30.00Z），yyyy-MM-dd HH:mm:ss，1683613823128（13位），1683613823（10位）
 2. ObjectMapper转json，格式yyyy-MM-dd HH:mm:ss
 3. @Cacheable序列化和反序列化，格式yyyy-MM-dd HH:mm:ss
 
