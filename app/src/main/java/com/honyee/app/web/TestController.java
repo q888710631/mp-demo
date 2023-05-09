@@ -1,9 +1,11 @@
 package com.honyee.app.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.dto.TestDTO;
+import com.honyee.app.model.User;
 import com.honyee.app.service.CacheService;
 import com.honyee.app.service.TestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,13 +38,6 @@ public class TestController {
 
     @GetMapping
     public void testGet(HttpServletResponse response) throws IOException {
-
-        // 测试缓存
-        TestDTO testDTO = cacheService.cacheRedis("123");
-        cacheService.cacheMemory("123");
-        String sssss = objectMapper.writeValueAsString(testDTO);
-        TestDTO testDTO1 = objectMapper.readValue(sssss, TestDTO.class);
-
         // 测试输出流
         PrintWriter writer = response.getWriter();
         writer.write("close");
@@ -50,9 +47,14 @@ public class TestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> test(@RequestBody(required = false) Object obj) {
-        testService.lockTest("honyee");
-        return ResponseEntity.ok(obj == null ? new HashMap<>() : obj);
+    public ResponseEntity<?> test(TestDTO dto,  @RequestBody(required = false) Object obj) throws JsonProcessingException {
+//        testService.lockTest("honyee");
+        // 测试缓存
+        cacheService.cacheMemory("123");
+        TestDTO testDTO = cacheService.cacheRedis("123");
+        String json = objectMapper.writeValueAsString(dto);
+        TestDTO testDTO1 = objectMapper.readValue(json, TestDTO.class);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping("cache")

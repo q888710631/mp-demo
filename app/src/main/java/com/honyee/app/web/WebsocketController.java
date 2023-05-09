@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Profile("websocket")
@@ -47,7 +48,7 @@ public class WebsocketController {
         private String from;
         private String to;
         private String message;
-        private Date time;
+        private LocalDateTime time;
 
         public String getFrom() {
             return from;
@@ -73,11 +74,11 @@ public class WebsocketController {
             this.message = message;
         }
 
-        public Date getTime() {
+        public LocalDateTime getTime() {
             return time;
         }
 
-        public void setTime(Date time) {
+        public void setTime(LocalDateTime time) {
             this.time = time;
         }
     }

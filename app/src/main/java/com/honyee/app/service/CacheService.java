@@ -5,19 +5,28 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+
 @Service
 public class CacheService {
 
     @Cacheable(value = "cache-redis#60", key = "#key", cacheManager = "redisCacheManager")
     public TestDTO cacheRedis(String key) {
         System.out.println("cache-redis");
-        return new TestDTO();
+        TestDTO dto = new TestDTO();
+        dto.setLocalDateTime(LocalDateTime.now());
+        dto.setInstant(Instant.now());
+        return dto;
     }
 
     @Cacheable(value = "cache-memory", key = "#key", cacheManager = "memoryCacheManager")
     public TestDTO cacheMemory(String key) {
         System.out.println("cache-memory");
-        return new TestDTO();
+        TestDTO dto = new TestDTO();
+        dto.setLocalDateTime(LocalDateTime.now());
+        dto.setInstant(Instant.now());
+        return dto;
     }
 
     @Cacheable(value = "cache-test", key = "#prefix + '_' + #key")

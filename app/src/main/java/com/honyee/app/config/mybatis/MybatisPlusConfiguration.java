@@ -14,6 +14,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Configuration
@@ -25,8 +26,8 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
      */
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setFieldValByName(Constants.FIELD_CREATE_TIME, new Date(), metaObject);
-        this.setFieldValByName(Constants.FIELD_UPDATE_TIME, new Date(), metaObject);
+        this.setFieldValByName(Constants.FIELD_CREATE_TIME, LocalDateTime.now(), metaObject);
+        this.setFieldValByName(Constants.FIELD_UPDATE_TIME, LocalDateTime.now(), metaObject);
 
         // entity
         Object originalObject = metaObject.getOriginalObject();

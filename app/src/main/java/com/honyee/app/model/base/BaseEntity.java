@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class BaseEntity {
@@ -13,7 +14,7 @@ public class BaseEntity {
 
     @Schema(title = "创建时间")
     @TableField(value = "create_date", fill = FieldFill.INSERT)
-    protected Date createDate;
+    protected LocalDateTime createDate;
 
     @Schema(title = "更新人")
     @TableField(value = "update_by", fill = FieldFill.INSERT_UPDATE)
@@ -21,7 +22,7 @@ public class BaseEntity {
 
     @Schema(title = "更新时间")
     @TableField(value = "update_date", fill = FieldFill.INSERT_UPDATE)
-    protected Date updateDate;
+    protected LocalDateTime updateDate;
 
     public String getCreateBy() {
         return createBy;
@@ -31,11 +32,11 @@ public class BaseEntity {
         this.createBy = createBy;
     }
 
-    public Date getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
@@ -47,11 +48,11 @@ public class BaseEntity {
         this.updateBy = updateBy;
     }
 
-    public Date getUpdateDate() {
+    public LocalDateTime getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDateTime updateDate) {
         this.updateDate = updateDate;
     }
 }
