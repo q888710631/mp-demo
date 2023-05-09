@@ -12,10 +12,7 @@ CREATE TABLE honyee.`user` (
    create_date timestamp,
    update_by varchar(32),
    update_date timestamp
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
+);
 
 insert into honyee.`user` (nickname,username,password,state,create_by,create_date) values('管理员','admin', '$2a$10$9fbei2..mD4NOSZ2XyMOTeiwYK2nG6b6LS2Qt5esmOWozdg5AtiP6',1, 'init', now());
 
@@ -29,10 +26,7 @@ CREATE TABLE honyee.`role` (
    create_date timestamp,
    update_by varchar(32),
    update_time timestamp
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
+);
 
 insert into honyee.`role` (role_key,role_name,create_by,create_date) values('admin', '管理员', 'init', now(), 'init', now());
 insert into honyee.`role` (role_key,role_name,create_by,create_date) values('tenant', '租户', 'init', now(), 'init', now());
@@ -49,10 +43,7 @@ CREATE TABLE honyee.`user_role` (
         create_date timestamp,
         update_by varchar(32),
         update_time timestamp
-)
-ENGINE=InnoDB
-DEFAULT CHARSET=utf8mb4
-COLLATE=utf8mb4_0900_ai_ci;
+);
 
 alter table honyee.`user_role` add index `idx_user_id`(user_id);
 
