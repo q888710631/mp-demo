@@ -9,8 +9,6 @@ import java.util.stream.Collectors;
 
 /**
  * 上传图片到oss DTO
- *
- * @author wu.dunhong
  */
 public class UploadImageDTO {
 

@@ -45,12 +45,12 @@ public class TokenProvider {
         JwtHandler jwtHandler
     ) {
         long now = (new Date()).getTime();
-        Date validity;
-        if (rememberMe) {
-            validity = new Date(now + JwtConstants.TOKEN_VALID_MS);
-        } else {
-            validity = new Date(now + JwtConstants.TOKEN_VALID_MS_FOR_REMEMBER_ME);
-        }
+        Date validity = new Date(now + JwtConstants.TOKEN_VALID_MS_FOR_REMEMBER_ME);
+//        if (rememberMe) {
+//            validity = new Date(now + JwtConstants.TOKEN_VALID_MS_FOR_REMEMBER_ME);
+//        } else {
+//            validity = new Date(now + JwtConstants.TOKEN_VALID_MS);
+//        }
 
         JwtBuilder builder = Jwts.builder();
         Object details = authentication.getDetails();

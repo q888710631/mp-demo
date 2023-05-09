@@ -13,14 +13,11 @@ authenticate-matchers:
   - path-matchers:
     - /v3/api-docs
     authenticated: false
-  # 登录授权
-  - path-matchers:
-    - /api/authenticate
-    authenticated: false
   # 通用接口
   - path-matchers:
-    - /api/user-menu
-    - /api/all-role
+    # 登录授权
+    - /api/authenticate
+    authenticated: false
   # 管理员接口
   - path-matchers:
     - /api/admin/**
