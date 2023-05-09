@@ -21,6 +21,9 @@ authenticate-matchers:
   # 管理员接口
   - path-matchers:
     - /api/admin/**
+    # 创建文章
+    - /api/article/create
+    - /api/article/modify
     has-any-role:
     - admin
 
