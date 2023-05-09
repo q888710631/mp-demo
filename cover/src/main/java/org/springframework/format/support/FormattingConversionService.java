@@ -215,6 +215,7 @@ public class FormattingConversionService extends GenericConversionService
 			}
 			Object result;
 			try {
+				// 改动：支持时间戳
 				String textTemp = text;
 				if (text.matches("[0-9]{10}")) {
 					textTemp = textTemp + "000";
