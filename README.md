@@ -24,17 +24,38 @@ mp-demo
 ```
 
 ## 2023.5.10
-Mybatis的`AbstractJsonTypeHandler`的实现类`MybatisJsonTypeListHandler`用于处理数组字段
+Mybatis的`AbstractJsonTypeHandler`的实现类
 
-ListRoleHandler是继承了`MybatisJsonTypeListHandler`，指定了需要处理的子类型`Role`
+1. `MybatisJsonTypeEntityHandler`用于处理`对象`字段，可以直接使用
+2. `MybatisJsonTypeListHandler`用于处理`数组`字段，使用时`需要继承`后使用
 
 ```java
-public class Person extends BaseEntity {
+/**
+ * 指定处理List<Role>
+ */
+public class ListRoleHandler extends MybatisJsonTypeListHandler<Role>{
+    
+}
+
+```
+
+```java
+/**
+ * 设置autoResultMap = true
+ */
+@TableName(value = "person", autoResultMap = true)
+public class Person {
    /**
     * 字段类型为 varchar
     */
    @TableField(value = "role_list", typeHandler = ListRoleHandler.class)
    private List<Role> roleList;
+
+   /**
+    * 字段类型为 varchar
+    */
+   @TableField(value = "role", typeHandler = MybatisJsonTypeEntityHandler.class)
+   private Role role;
 }
 
 

@@ -1,10 +1,14 @@
 package com.honyee.app.web;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.dto.TestDTO;
+import com.honyee.app.mapper.PersonMapper;
+import com.honyee.app.model.Person;
+import com.honyee.app.model.Role;
 import com.honyee.app.model.User;
 import com.honyee.app.service.CacheService;
 import com.honyee.app.service.TestService;
@@ -19,7 +23,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,8 +42,23 @@ public class TestController {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private PersonMapper personMapper;
+
     @GetMapping
     public void testGet(HttpServletResponse response) throws IOException {
+//        Person person = new Person();
+//        person.setNickname(System.currentTimeMillis() + "");
+//        person.setRoleList(new ArrayList<>());
+//        Role role = new Role();
+//        role.setRoleKey(System.currentTimeMillis() + "");
+//        person.getRoleList().add(role);
+//        person.setRole(role);
+//        personMapper.insert(person);
+//
+//        List<Person> list = personMapper.selectList(new QueryWrapper<>());
+//        List<Role> roleList = list.get(0).getRoleList();
+//        Role role1 = roleList.get(0);
         // 测试输出流
         PrintWriter writer = response.getWriter();
         writer.write("close");
