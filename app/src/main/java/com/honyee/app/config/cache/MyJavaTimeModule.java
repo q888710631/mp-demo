@@ -40,7 +40,8 @@ public class MyJavaTimeModule extends SimpleModule {
         addDeserializer(Duration.class, DurationDeserializer.INSTANCE);
 //        addDeserializer(LocalDateTime.class, LocalDateTimeDeserializer.INSTANCE);
         addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(DateUtil.COMMON_DATE_TIME_FORMATTER));
-        addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
+//        addDeserializer(LocalDate.class, LocalDateDeserializer.INSTANCE);
+        addDeserializer(LocalDate.class, new LocalDateDeserializer(DateUtil.COMMON_DATE_FORMATTER));
         addDeserializer(LocalTime.class, LocalTimeDeserializer.INSTANCE);
         addDeserializer(MonthDay.class, MonthDayDeserializer.INSTANCE);
         addDeserializer(OffsetTime.class, OffsetTimeDeserializer.INSTANCE);
@@ -57,6 +58,7 @@ public class MyJavaTimeModule extends SimpleModule {
 //        addSerializer(LocalDateTime.class, LocalDateTimeSerializer.INSTANCE);
         addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateUtil.COMMON_DATE_TIME_FORMATTER));
         addSerializer(LocalDate.class, LocalDateSerializer.INSTANCE);
+        addSerializer(LocalDate.class, new LocalDateSerializer(DateUtil.COMMON_DATE_FORMATTER));
         addSerializer(LocalTime.class, LocalTimeSerializer.INSTANCE);
         addSerializer(MonthDay.class, MonthDaySerializer.INSTANCE);
         addSerializer(OffsetDateTime.class, OffsetDateTimeSerializer.INSTANCE);
