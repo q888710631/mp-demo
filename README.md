@@ -24,7 +24,9 @@ mp-demo
 ```
 
 ## 2023.5.10
-Mybatis的typeHandler实现
+Mybatis的`AbstractJsonTypeHandler`的实现类`MybatisJsonTypeListHandler`用于处理数组字段
+
+ListRoleHandler是继承了`MybatisJsonTypeListHandler`，指定了需要处理的子类型`Role`
 
 ```java
 public class Person extends BaseEntity {
