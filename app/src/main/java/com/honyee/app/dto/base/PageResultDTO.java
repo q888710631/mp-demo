@@ -6,9 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 /**
- * 链式查询结果
+ * 分页查询结果
  */
-public class ChainDTO<T> {
+public class PageResultDTO<T> {
     @Schema(title = "数据")
     private List<T> list;
 
@@ -24,14 +24,14 @@ public class ChainDTO<T> {
     @Schema(title = "页长")
     private long size;
 
-    public static <T> ChainDTO<T> build(List<T> list, IPage<?> iPage) {
-        ChainDTO<T> chainDTO = new ChainDTO<>();
-        chainDTO.total = iPage.getTotal();
-        chainDTO.pages = iPage.getPages();
-        chainDTO.current = iPage.getCurrent();
-        chainDTO.size = iPage.getSize();
-        chainDTO.list = list;
-        return chainDTO;
+    public static <T> PageResultDTO<T> build(List<T> list, IPage<?> iPage) {
+        PageResultDTO<T> pageResultDTO = new PageResultDTO<>();
+        pageResultDTO.total = iPage.getTotal();
+        pageResultDTO.pages = iPage.getPages();
+        pageResultDTO.current = iPage.getCurrent();
+        pageResultDTO.size = iPage.getSize();
+        pageResultDTO.list = list;
+        return pageResultDTO;
     }
 
     public List<T> getList() {
