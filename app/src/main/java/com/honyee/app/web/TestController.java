@@ -47,18 +47,18 @@ public class TestController {
 
     @GetMapping
     public void testGet(HttpServletResponse response) throws IOException {
-        Person person = new Person();
-        person.setNickname(System.currentTimeMillis() + "");
-        person.setRoleList(new ArrayList<>());
-        Role role = new Role();
-        role.setRoleKey(System.currentTimeMillis() + "");
-        person.getRoleList().add(role);
-        person.setRole(role);
-        personMapper.insert(person);
-
-        List<Person> list = personMapper.selectList(new QueryWrapper<>());
-        List<Role> roleList = list.get(0).getRoleList();
-        Role role1 = roleList.get(0);
+//        Person person = new Person();
+//        person.setNickname(System.currentTimeMillis() + "");
+//        person.setRoleList(new ArrayList<>());
+//        Role role = new Role();
+//        role.setRoleKey(System.currentTimeMillis() + "");
+//        person.getRoleList().add(role);
+//        person.setRole(role);
+//        personMapper.insert(person);
+//
+//        List<Person> list = personMapper.selectList(new QueryWrapper<>());
+//        List<Role> roleList = list.get(0).getRoleList();
+//        Role role1 = roleList.get(0);
         // 测试输出流
         PrintWriter writer = response.getWriter();
         writer.write("close");
