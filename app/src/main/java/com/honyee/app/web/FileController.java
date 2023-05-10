@@ -74,7 +74,7 @@ public class FileController {
             if (value.matches("^(?i)data:image/(jp(e)?g|git|png|bmp|);base64,.+")) {
                 String base64 = value.split(",")[1];
                 if (!Base64.isBase64(base64)) {
-                    LogUtil.error("上传图片出现异常：base64数据格式不正确");
+                    LogUtil.info("上传图片出现异常：base64数据格式不正确");
                     return error;
                 }
                 // 获取 contentType
@@ -117,7 +117,7 @@ public class FileController {
         } catch (IOException e) {
             LogUtil.error("上传图片出现异常", e);
         }
-        LogUtil.warn("上传图片出现异常，不支持的图片格式");
+        LogUtil.info("上传图片出现异常，不支持的图片格式：{}", file.getContentType());
         return "error";
     }
 
