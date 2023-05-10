@@ -24,9 +24,18 @@ authenticate-matchers:
     # 创建文章
     - /api/article/create
     - /api/article/modify
+    # 修改住院记录状态
+    - /api/inpatient-record/update-state
+    # 列表
+    - /api/inpatient-record/page
     has-any-role:
     - admin
-
+  # 用户接口
+  - path-matchers:
+    # 新增住院记录状态
+    - /api/inpatient-record/create
+    has-any-role:
+    - client
 # 菜单权限
 menu-matchers:
   - path-matchers:

@@ -3,8 +3,9 @@ package com.honyee.app.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.honyee.app.config.oss.OssUtil;
 import com.honyee.app.dto.ArticleDTO;
-import com.honyee.app.dto.base.ChainDTO;
+import com.honyee.app.dto.base.PageResultDTO;
 import com.honyee.app.dto.base.MyPage;
+import com.honyee.app.exp.DataNotExistsException;
 import com.honyee.app.mapper.ArticleMapper;
 import com.honyee.app.mapperstruct.ArticleMapperStruct;
 import com.honyee.app.model.Article;
@@ -34,9 +35,9 @@ public class ArticleService extends MyService<ArticleMapper, Article> {
      */
     private static final String CONTENT_SUFFIX = "...";
 
-    public ChainDTO<ArticleDTO> findChainDTO(Long chainId, MyPage myPage) {
-        IPage<Article> articleIPage = lambdaQuery().gt(Article::getId, chainId).page(toPage(myPage));
-        List<ArticleDTO> dtoList = articleMapperStruct.toDto(articleIPage.getRecords());
+    public PageResultDTO<ArticleDTO> findChainDTO(Long chainId, MyPage myPage) {
+        IPage<Article> pageResult = lambdaQuery().gt(Article::getId, chainId).page(toPage(myPage));
+        List<ArticleDTO> dtoList = articleMapperStruct.toDto(pageResult.getRecords());
         for (ArticleDTO articleDTO : dtoList) {
             String content = articleDTO.getContent();
             if (StringUtils.isNotBlank(content) && content.length() > CONTENT_LENGTH) {
@@ -44,7 +45,7 @@ public class ArticleService extends MyService<ArticleMapper, Article> {
             }
             articleDTO.setCover(ossUtil.getUrl(articleDTO.getCover()));
         }
-        return ChainDTO.build(dtoList, articleIPage);
+        return PageResultDTO.build(dtoList, pageResult);
     }
 
     public ArticleDTO findDetailDTO(Long id) {
@@ -55,17 +56,20 @@ public class ArticleService extends MyService<ArticleMapper, Article> {
     }
 
     public void create(ArticleDTO dto) {
-        Article article = articleMapperStruct.toEntity(dto);
-        article.setId(null);
-        save(article);
+        Article entity = articleMapperStruct.toEntity(dto);
+        entity.setId(null);
+        save(entity);
     }
 
     public void modify(ArticleDTO dto) {
-        Article article = lambdaQuery().eq(Article::getId, dto.getId()).one();
-        article.setTitle(dto.getTitle());
-        article.setCover(dto.getCover());
-        article.setContent(dto.getContent());
-        updateById(article);
+        Article entity = lambdaQuery().eq(Article::getId, dto.getId()).one();
+        if (entity == null) {
+            throw new DataNotExistsException(dto.getId());
+        }
+        entity.setTitle(dto.getTitle());
+        entity.setCover(dto.getCover());
+        entity.setContent(dto.getContent());
+        updateById(entity);
     }
 
 }

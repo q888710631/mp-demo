@@ -2,7 +2,7 @@ package com.honyee.app.web;
 
 import com.honyee.app.config.limit.RateLimit;
 import com.honyee.app.dto.ArticleDTO;
-import com.honyee.app.dto.base.ChainDTO;
+import com.honyee.app.dto.base.PageResultDTO;
 import com.honyee.app.dto.base.Insert;
 import com.honyee.app.dto.base.MyPage;
 import com.honyee.app.dto.base.Update;
@@ -23,7 +23,7 @@ public class ArticleController {
 
     @Operation(summary = "文章列表")
     @GetMapping("/chain")
-    public ChainDTO<ArticleDTO> findChain(@Schema(description = "链路ID") @RequestParam(required = false, defaultValue = "0") Long chainId, MyPage myPage) {
+    public PageResultDTO<ArticleDTO> findChain(@Schema(description = "链路ID") @RequestParam(required = false, defaultValue = "0") Long chainId, MyPage myPage) {
         return articleService.findChainDTO(chainId, myPage);
     }
 
