@@ -6,24 +6,23 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import com.honyee.app.config.cache.MyJavaTimeModule;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.List;
-
 /**
- * 处理List类型的字段
+ * 处理Entity类型的字段
  */
-public class MybatisJsonTypeListHandler<T> extends AbstractJsonTypeHandler<List<T>> {
+public class MybatisJsonTypeEntityHandler<T> extends AbstractJsonTypeHandler<T> {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private final CollectionType collectionType;
+    private final Class<T> clz;
+
+    public MybatisJsonTypeEntityHandler(Class<T> clz) {
+        this.clz = clz;
+    }
 
     static {
         // 日期类处理
@@ -41,27 +40,14 @@ public class MybatisJsonTypeListHandler<T> extends AbstractJsonTypeHandler<List<
 //        );
     }
 
-    public MybatisJsonTypeListHandler() {
-        Type type = getClass().getGenericSuperclass();
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
-            Type[] types = pt.getActualTypeArguments();
-            if (types != null && types.length > 0) {
-                Class<T> clz = (Class<T>) types[0];
-                collectionType = MAPPER.getTypeFactory().constructCollectionType(List.class, clz);
-                return;
-            }
-        }
-        throw new CommonException("{}没有指定泛型");
-    }
 
     @Override
-    protected List<T> parse(String json) {
+    protected T parse(String json) {
         if (StringUtils.isBlank(json)) {
             return null;
         }
         try {
-            return MAPPER.readValue(json, this.collectionType);
+            return MAPPER.readValue(json, this.clz);
         } catch (JsonProcessingException e) {
             LogUtil.error("parse failed, json={}", json, e);
             return null;
@@ -69,7 +55,7 @@ public class MybatisJsonTypeListHandler<T> extends AbstractJsonTypeHandler<List<
     }
 
     @Override
-    protected String toJson(List<T> obj) {
+    protected String toJson(T obj) {
         try {
             return MAPPER.writeValueAsString(obj);
         } catch (JsonProcessingException e) {
