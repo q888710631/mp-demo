@@ -90,30 +90,4 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
         return interceptor;
     }
 
-    /*@Bean
-    public ConfigurationCustomizer configurationCustomizer() {
-        // 指定要扫描的包名和注解类型
-
-        return configuration -> {
-
-
-            TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
-            Reflections reflections = new Reflections("com.honyee.app.model", TableName.class);
-            Set<Class<?>> clzList = reflections.getTypesAnnotatedWith(TableName.class);
-            for (Class<?> aClass : clzList) {
-                List<Field> collect = Stream.of(aClass.getDeclaredFields())
-                    .filter(field -> field.getAnnotation(TableField.class) != null)
-                    .filter(field -> field.getAnnotation(TableField.class).typeHandler() != UnknownTypeHandler.class)
-                    .collect(Collectors.toList());
-
-                for (Field field : collect) {
-                    Class<?> fieldType = field.getType();
-                    if (fieldType.isPrimitive() || fieldType.getTypeName().startsWith("java.lang")) {
-                        continue;
-                    }
-                    typeHandlerRegistry.register(field.getType(),new JsonTypeHandler(field.getGenericType()));
-                }
-            }
-        };
-    }*/
 }

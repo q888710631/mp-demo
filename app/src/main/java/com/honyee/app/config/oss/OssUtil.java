@@ -27,6 +27,11 @@ public class OssUtil {
 
     private static final String URL_HOST_SEPARATOR = ".";
 
+    public OssUtil() {
+        this.oss = null;
+        this.ossConfig = null;
+    }
+
     public OssUtil(OSS oss, OssConfig ossConfig) {
         this.oss = oss;
         this.ossConfig = ossConfig;

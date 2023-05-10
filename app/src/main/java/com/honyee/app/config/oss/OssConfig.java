@@ -2,6 +2,7 @@ package com.honyee.app.config.oss;
 
 import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSSClientBuilder;
+import com.honyee.app.utils.LogUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +50,12 @@ public class OssConfig {
 
     @Bean
     public OssUtil ossUtil() {
-        return new OssUtil(new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret, client), this);
+        try {
+            return new OssUtil(new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret, client), this);
+        } catch (Exception e) {
+            LogUtil.warn("OSS初始化失败，图片上传不可用：{}", e.getMessage());
+        }
+        return new OssUtil();
     }
 
     public String getUrlProtocol() {
