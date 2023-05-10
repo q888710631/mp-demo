@@ -4,8 +4,8 @@ CREATE TABLE `article` (
 `cover` varchar(255) DEFAULT NULL COMMENT '封面，oss的文件相对路径',
 `content` text COMMENT '内容',
 `create_by` varchar(32) DEFAULT NULL,
-`create_date` timestamp NULL DEFAULT NULL,
+`create_date` datetime NULL DEFAULT NULL,
 `update_by` varchar(32) DEFAULT NULL,
-`update_date` timestamp NULL DEFAULT NULL,
+`update_date` datetime NULL DEFAULT NULL,
 PRIMARY KEY (`id`)
 );
