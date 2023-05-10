@@ -23,6 +23,22 @@ mp-demo
 └── cover 存放覆盖源码的类
 ```
 
+## 2023.5.10
+Mybatis的typeHandler实现
+
+```java
+public class Person extends BaseEntity {
+   /**
+    * 字段类型为 varchar
+    */
+   @TableField(value = "role_list", typeHandler = ListRoleHandler.class)
+   private List<Role> roleList;
+}
+
+
+```
+
+
 ## 2023.5.9
 调整日期类序列化格式
 
