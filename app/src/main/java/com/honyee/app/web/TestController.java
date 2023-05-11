@@ -90,4 +90,13 @@ public class TestController {
         return MyResponse.ok();
     }
 
+    /**
+     * 导出excel
+     */
+    @GetMapping("/excel/download")
+    public void excelDownload(HttpServletResponse response) throws IOException {
+        testService.excelDownload(response);
+    }
+
+
 }
