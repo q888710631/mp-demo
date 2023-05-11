@@ -26,7 +26,7 @@ authenticate-matchers:
     - /api/article/modify
     # 修改住院记录状态
     - /api/inpatient-record/update-state
-    # 列表
+    # 住院记录列表
     - /api/inpatient-record/page
     has-any-role:
     - admin
