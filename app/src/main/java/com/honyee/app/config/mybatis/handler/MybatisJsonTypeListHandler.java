@@ -66,7 +66,7 @@ public class MybatisJsonTypeListHandler<T> extends AbstractJsonTypeHandler<List<
         try {
             return MAPPER.readValue(json, this.collectionType);
         } catch (JsonProcessingException e) {
-            LogUtil.error("parse failed, json={}", json, e);
+            LogUtil.error("parse failed\n{}\njson={}\n{}", getClass().getName(), json, LogUtil.filterStackToString(e));
             return null;
         }
     }

@@ -49,7 +49,7 @@ public class MybatisJsonTypeEntityHandler<T> extends AbstractJsonTypeHandler<T> 
         try {
             return MAPPER.readValue(json, this.clz);
         } catch (JsonProcessingException e) {
-            LogUtil.error("parse failed, json={}", json, LogUtil.filterStackToString(e));
+            LogUtil.error("parse failed\njson={}\n{}", json, LogUtil.filterStackToString(e));
             return null;
         }
     }
