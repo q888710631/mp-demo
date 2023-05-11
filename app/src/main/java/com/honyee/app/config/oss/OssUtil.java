@@ -29,7 +29,7 @@ public class OssUtil {
 
     public OssUtil() {
         this.oss = null;
-        this.ossConfig = null;
+        this.ossConfig = new OssConfig();
     }
 
     public OssUtil(OSS oss, OssConfig ossConfig) {
