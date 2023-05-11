@@ -15,6 +15,8 @@ CREATE TABLE honyee.`user` (
 );
 
 insert into honyee.`user` (nickname,username,password,state,create_by,create_date) values('管理员','admin', '$2a$10$9fbei2..mD4NOSZ2XyMOTeiwYK2nG6b6LS2Qt5esmOWozdg5AtiP6',1, 'init', now());
+insert into honyee.`user` (nickname,username,password,state,create_by,create_date) values('测试用户','client', '$2a$10$9fbei2..mD4NOSZ2XyMOTeiwYK2nG6b6LS2Qt5esmOWozdg5AtiP6',1, 'init', now());
+
 
 drop table if exists honyee.`role`;
 
