@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -42,17 +43,19 @@ public class MybatisJsonTypeListHandler<T> extends AbstractJsonTypeHandler<List<
     }
 
     public MybatisJsonTypeListHandler() {
-        Type type = getClass().getGenericSuperclass();
+        Class<? extends MybatisJsonTypeListHandler> aClass = getClass();
+        Type type = aClass.getGenericSuperclass();
         if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
             Type[] types = pt.getActualTypeArguments();
             if (types != null && types.length > 0) {
                 Class<T> clz = (Class<T>) types[0];
-                collectionType = MAPPER.getTypeFactory().constructCollectionType(List.class, clz);
+                this.collectionType = MAPPER.getTypeFactory().constructCollectionType(List.class, clz);
                 return;
             }
         }
-        throw new CommonException("{}没有指定泛型");
+        LogUtil.warn("{} 没有指定泛型，使用默认类型", aClass.getName());
+        this.collectionType = MAPPER.getTypeFactory().constructCollectionType(List.class, LinkedHashMap.class);
     }
 
     @Override
