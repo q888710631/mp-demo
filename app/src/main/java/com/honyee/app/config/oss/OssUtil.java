@@ -44,7 +44,7 @@ public class OssUtil {
     public String getUrl(OssFolderEnum folder, String key) {
         return (
             ossConfig.getUrlProtocol() +
-            OssBucketEnum.COMMON.getBucketName() +
+            ossConfig.getBucketName() +
             URL_HOST_SEPARATOR +
             ossConfig.getEndpoint() +
             FOLDER_SEPARATOR +
@@ -95,11 +95,11 @@ public class OssUtil {
     }
 
     public OSSObject getObjectByKey(OssFolderEnum folder, String key) {
-        return oss.getObject(OssBucketEnum.COMMON.getBucketName(), getAbsoluteKey(folder, key));
+        return oss.getObject(ossConfig.getBucketName(), getAbsoluteKey(folder, key));
     }
 
     public OSSObject getObject(OssFolderEnum folder, String key) {
-        return oss.getObject(OssBucketEnum.COMMON.getBucketName(), folder.getFolderName() + FOLDER_SEPARATOR + key);
+        return oss.getObject(ossConfig.getBucketName(), folder.getFolderName() + FOLDER_SEPARATOR + key);
     }
 
     public String putObject(OssFolderEnum folder, File file) {
@@ -108,7 +108,7 @@ public class OssUtil {
 
     public String putObject(OssFolderEnum folder, String key, File file, ObjectMetadata metadata) {
         checkPutObject(folder, key);
-        String eTag = oss.putObject(OssBucketEnum.COMMON.getBucketName(), getAbsoluteKey(folder, key), file, metadata).getETag();
+        String eTag = oss.putObject(ossConfig.getBucketName(), getAbsoluteKey(folder, key), file, metadata).getETag();
         return StringUtils.isNotBlank(eTag) ? key : "";
     }
 
@@ -124,7 +124,7 @@ public class OssUtil {
 
     public String putObject(OssFolderEnum folder, String key, InputStream input, ObjectMetadata metadata) {
         checkPutObject(folder, key);
-        String eTag = oss.putObject(OssBucketEnum.COMMON.getBucketName(), getAbsoluteKey(folder, key), input, metadata).getETag();
+        String eTag = oss.putObject(ossConfig.getBucketName(), getAbsoluteKey(folder, key), input, metadata).getETag();
         return StringUtils.isNotBlank(eTag) ? key : "";
     }
 

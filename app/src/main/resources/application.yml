@@ -88,6 +88,7 @@ application:
   oss:
     url-protocol: https://
     endpoint: oss的endpoint
+    bucket-name: xxxx
     folder-env: test
     folder-root: honyee
     url-image: oss域名，末尾不要斜杠

@@ -22,6 +22,11 @@ public class OssConfig {
     private String accessKeySecret;
 
     private String urlProtocol;
+    /**
+     * bucket名称
+     */
+    private String bucketName;
+
 
     /**
      * 目录前缀（环境），一般区分test/prod等
@@ -128,5 +133,13 @@ public class OssConfig {
 
     public void setFolderRoot(String folderRoot) {
         this.folderRoot = folderRoot;
+    }
+
+    public String getBucketName() {
+        return bucketName;
+    }
+
+    public void setBucketName(String bucketName) {
+        this.bucketName = bucketName;
     }
 }
