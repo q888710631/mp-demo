@@ -21,13 +21,13 @@ insert into honyee.`user` (nickname,username,password,state,create_by,create_dat
 drop table if exists honyee.`role`;
 
 CREATE TABLE honyee.`role` (
-                               id bigint primary key auto_increment NOT null,
-                               role_key varchar(100) unique ,
-                               role_name varchar(255),
-                               create_by varchar(32),
-                               create_date datetime,
-                               update_by varchar(32),
-                               update_time datetime
+    id bigint primary key auto_increment NOT null,
+    role_key varchar(100) unique ,
+    role_name varchar(255),
+    create_by varchar(32),
+    create_date datetime,
+    update_by varchar(32),
+    update_time datetime
 );
 
 insert into honyee.`role` (role_key,role_name,create_by,create_date,update_by,update_time) values('admin', '管理员', 'init', now(), 'init', now());
