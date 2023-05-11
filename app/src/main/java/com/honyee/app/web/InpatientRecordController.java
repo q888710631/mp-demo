@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/api/inpatient-record")
 public class InpatientRecordController {
@@ -39,6 +42,12 @@ public class InpatientRecordController {
     @GetMapping("/page")
     public PageResultDTO<InpatientRecordDTO> findPage(@RequestParam InpatientRecordUpdateQueryDTO queryDTO, MyPage myPage) {
         return inpatientRecordService.findPage(queryDTO, myPage);
+    }
+
+    @Operation(summary = "住院记录列表-导出excel")
+    @GetMapping("/page/excel")
+    public void downloadPageExcel(@RequestParam InpatientRecordUpdateQueryDTO queryDTO, HttpServletResponse response) throws IOException {
+        inpatientRecordService.downloadPageExcel(queryDTO, response);
     }
 
 }

@@ -2,10 +2,7 @@ package com.honyee.app.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.honyee.app.dto.InpatientRecordCreateDTO;
-import com.honyee.app.dto.InpatientRecordDTO;
-import com.honyee.app.dto.InpatientRecordUpdateQueryDTO;
-import com.honyee.app.dto.InpatientRecordUpdateStateDTO;
+import com.honyee.app.dto.*;
 import com.honyee.app.dto.base.MyPage;
 import com.honyee.app.dto.base.PageResultDTO;
 import com.honyee.app.enums.InPatientStateEnum;
@@ -15,9 +12,13 @@ import com.honyee.app.mapper.InpatientRecordMapper;
 import com.honyee.app.mapperstruct.InpatientRecordMapperStruct;
 import com.honyee.app.model.InpatientRecord;
 import com.honyee.app.service.base.MyService;
+import com.honyee.app.utils.DateUtil;
+import com.honyee.app.utils.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,4 +60,18 @@ public class InpatientRecordService extends MyService<InpatientRecordMapper, Inp
         List<InpatientRecordDTO> dtoList = inpatientRecordMapperStruct.toDto(pageResult.getRecords());
         return PageResultDTO.build(dtoList, pageResult);
     }
+
+     public void downloadPageExcel(InpatientRecordUpdateQueryDTO queryDTO, HttpServletResponse response) throws IOException {
+        LambdaQueryChainWrapper<InpatientRecord> query = lambdaQuery();
+        InPatientStateEnum state = queryDTO.getState();
+        if (state != null && state != InPatientStateEnum.ALL) {
+            query.eq(InpatientRecord::getState, state);
+        }
+         List<InpatientRecord> list = query.list();
+         List<InpatientRecordExcelDTO> excelDTOList = inpatientRecordMapperStruct.toExcelDto(list);
+         String fileName = "住院记录-" + DateUtil.COMMON_DATE_TIME_FORMATTER.format(LocalDateTime.now());
+         ExcelUtil.write(response, fileName, excelDTOList, InpatientRecordExcelDTO.class);
+    }
+
+
 }
