@@ -10,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
@@ -56,6 +55,6 @@ public class GenericService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        LogUtil.get().info("apifox导入地址：http://localhost:{}/v3/api-docs", port);
+        LogUtil.info("apifox导入地址：http://localhost:{}/v3/api-docs", port);
     }
 }

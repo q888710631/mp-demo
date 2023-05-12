@@ -16,7 +16,6 @@ import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.common.TemplateParserContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -50,7 +49,7 @@ public class RedisLockAspect {
         String key = parseSpel(context, annotation, annotation.key());
         String value = annotation.valueSpel() ? parseSpel(context, annotation, annotation.value()) : annotation.value();
 
-        LogUtil.get().info("@RedisLock => value={}, key={}", value, key);
+        LogUtil.info("@RedisLock => value={}, key={}", value, key);
         String lockKey = String.format("lock_%s_%s", value, key);
         RLock lock = redissonClient.getLock(lockKey);
         try {

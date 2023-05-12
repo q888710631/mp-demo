@@ -1,13 +1,11 @@
 package com.honyee.app.config.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.honyee.app.config.http.MyHttpRequestWrapper;
 import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.config.jwt.JwtConstants;
 import com.honyee.app.config.jwt.LoginTypeEnum;
 import com.honyee.app.config.jwt.TokenProvider;
 import com.honyee.app.config.jwt.my.MyAuthenticationToken;
-import com.honyee.app.config.mybatis.MybatisPlusTenantHandler;
 import com.honyee.app.utils.LogUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -20,7 +18,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
-
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -107,7 +104,7 @@ public class JwtFilter extends GenericFilter {
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
             response.getWriter().print(objectMapper.writeValueAsString(new MyResponse<>(HttpStatus.UNAUTHORIZED.value(), message, null)));
         } catch (IOException e) {
-            LogUtil.get().error("### resolvePermissionFailException 处理权限异常返回失败", e);
+            LogUtil.error("### resolvePermissionFailException 处理权限异常返回失败", e);
         }
     }
 }

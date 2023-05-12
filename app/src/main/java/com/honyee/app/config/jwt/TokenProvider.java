@@ -4,36 +4,33 @@ import com.honyee.app.utils.LogUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.core.io.ClassPathResource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.yaml.snakeyaml.Yaml;
-
-import java.io.FileInputStream;
-import java.io.InputStream;
+import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
-import java.util.Map;
 
+@Component
 public class TokenProvider {
 
-    private static final TokenProvider INSTANT = new TokenProvider();
+    private static final String BASE_SECRET = "Y2M3MTZmNTllMTMyMGQzNmQ5MjNhZTNjYWY2MmFmMDFiMWFkYjMwMWE0MjhiMDI3MWZhY2JiZGFkZDlhNDcwZTI3M2M0Mjg5MDdjY2E2YWMzMDEwMzkwYTQ0MzczN2NjODVhZmJmNDUzODdmNDBmODFiZDU4M2I1YjQwNjBlMTA=";
 
-    private Key key;
+    private static Key KEY;
 
-    private JwtParser jwtParser = null;
+    private static JwtParser JWT_PARSER = null;
 
-    private TokenProvider() {
+    public TokenProvider(@Value("${application.token-secret:}") String baseSecret) {
         try {
-            ClassPathResource application = new ClassPathResource("application.yml");
-            InputStream inputStream = new FileInputStream(application.getFile());
-            Yaml yaml = new Yaml();
-            Map<String, Object> map = yaml.load(inputStream);
-            String baseSecret = map.getOrDefault("token-secret", "undefined token-secret").toString();
+            if (StringUtils.isBlank(baseSecret)) {
+                baseSecret = BASE_SECRET;
+                LogUtil.info("未配置application.token-secret，使用默认值");
+            }
             byte[] keyBytes = Decoders.BASE64.decode(baseSecret);
-            key = Keys.hmacShaKeyFor(keyBytes);
-            jwtParser = Jwts.parserBuilder().setSigningKey(key).build();
+            KEY = Keys.hmacShaKeyFor(keyBytes);
+            JWT_PARSER = Jwts.parserBuilder().setSigningKey(KEY).build();
         } catch (Exception e) {
-            LogUtil.get().error("{0}", e);
+            LogUtil.warn("TokenProvider初始化失败，{}", e.getMessage());
         }
     }
 
@@ -61,7 +58,7 @@ public class TokenProvider {
             .setSubject(authentication.getName())
             .claim(JwtConstants.LOGIN_TYPE, loginType)
             .claim(JwtConstants.LOGIN_KEY, loginKey)
-            .signWith(INSTANT.key, SignatureAlgorithm.HS512)
+            .signWith(KEY, SignatureAlgorithm.HS512)
             .setExpiration(validity);
 
         jwtHandler.handleJwt(claim);
@@ -74,7 +71,7 @@ public class TokenProvider {
     }
 
     public static Claims getClaims(String authToken) {
-        return INSTANT.jwtParser.parseClaimsJws(authToken).getBody();
+        return JWT_PARSER.parseClaimsJws(authToken).getBody();
     }
 
 }
