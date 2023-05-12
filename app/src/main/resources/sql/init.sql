@@ -22,17 +22,19 @@ drop table if exists honyee.`role`;
 
 CREATE TABLE honyee.`role` (
     id bigint primary key auto_increment NOT null,
+    role_level tinyint ,
     role_key varchar(100) unique ,
     role_name varchar(255),
     create_by varchar(32),
     create_date datetime,
     update_by varchar(32),
-    update_time datetime
+    update_date datetime
 );
 
-insert into honyee.`role` (role_key,role_name,create_by,create_date,update_by,update_time) values('admin', '管理员', 'init', now(), 'init', now());
-insert into honyee.`role` (role_key,role_name,create_by,create_date,update_by,update_time) values('tenant', '租户', 'init', now(), 'init', now());
-INSERT INTO honyee.`role` (role_key,role_name,create_by,create_date,update_by,update_time) VALUES ('client', '普通用户', 'init', now(), 'init', now());
+insert into honyee.`role` (role_level,role_key,role_name,create_by,create_date,update_by,update_date) values(0,'root', '超管', 'init', now(), 'init', now());
+insert into honyee.`role` (role_level,role_key,role_name,create_by,create_date,update_by,update_date) values(1,'admin', '管理员', 'init', now(), 'init', now());
+insert into honyee.`role` (role_level,role_key,role_name,create_by,create_date,update_by,update_date) values(2,'tenant', '租户', 'init', now(), 'init', now());
+INSERT INTO honyee.`role` (role_level,role_key,role_name,create_by,create_date,update_by,update_date) VALUES (3,'client', '普通用户', 'init', now(), 'init', now());
 
 
 drop table if exists honyee.`user_role`;
@@ -44,7 +46,7 @@ CREATE TABLE honyee.`user_role` (
     create_by varchar(32),
     create_date datetime,
     update_by varchar(32),
-    update_time datetime
+    update_date datetime
 );
 
 alter table honyee.`user_role` add index `idx_user_id`(user_id);
@@ -60,6 +62,18 @@ insert into honyee.user_role (user_id, role_id,create_by,create_date)
             now() as create_date
         from dual
     );
+
+
+insert into honyee.user_role (user_id, role_id,create_by,create_date)
+    (
+        select
+            (select id from honyee.`user` where username = 'client') as user_id,
+            (select id from honyee.`role` where role_key = 'client') as role_id,
+            'init' as create_by,
+            now() as create_date
+        from dual
+    );
+
 
 # 测试用
 CREATE TABLE honyee.`person` (

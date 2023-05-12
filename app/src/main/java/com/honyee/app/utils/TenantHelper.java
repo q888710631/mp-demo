@@ -6,7 +6,7 @@ import com.honyee.app.config.mybatis.MybatisPlusTenantHandler;
  * 获取租户ID
  */
 public class TenantHelper {
-    public static Long getTenantId() {
+    public static Long getCurrentUserId() {
         return MybatisPlusTenantHandler.getTenantValue();
     }
 }

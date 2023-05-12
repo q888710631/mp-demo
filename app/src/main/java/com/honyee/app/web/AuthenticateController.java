@@ -54,6 +54,6 @@ public class AuthenticateController {
     @Operation(summary = "用户角色")
     @GetMapping("/my-roles")
     public ResponseEntity<List<Role>> myRoles() {
-        return ResponseEntity.ok(userDetailService.findRolesByUserId(TenantHelper.getTenantId()));
+        return ResponseEntity.ok(userDetailService.findRolesByUserId(TenantHelper.getCurrentUserId()));
     }
 }

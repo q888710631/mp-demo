@@ -24,7 +24,7 @@ public class MyAuthenticationProvider implements AuthenticationProvider {
         // token 验证
         MyAuthenticationToken auth = (MyAuthenticationToken) authentication;
         Long userId = auth.getUserId();
-        List<GrantedAuthority> authorities = myUserDetailService.findGrantedAuthroityByUserId(userId);
+        List<GrantedAuthority> authorities = myUserDetailService.findGrantedAuthorityByUserId(userId);
         MybatisPlusTenantHandler.setTenantValue(userId);
         return new MyAuthenticationToken(userId, authorities);
     }

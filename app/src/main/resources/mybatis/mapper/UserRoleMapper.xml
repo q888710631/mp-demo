@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.honyee.app.mapper.UserRoleMapper">
+    <select id="findUserTopRoleLevel" resultType="java.lang.Integer">
+        select min(r.role_level) as min_role_level
+        from honyee.user_role t
+                 inner join honyee.role r on r.id  = t .role_id
+        where t.user_id  = #{userId}
+    </select>
+</mapper>
