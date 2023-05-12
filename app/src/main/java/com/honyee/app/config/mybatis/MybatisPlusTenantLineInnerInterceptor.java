@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.honyee.app.config.Constants;
+import com.honyee.app.utils.ClassUtil;
+import com.honyee.app.utils.LogUtil;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
-import org.reflections.Reflections;
-
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,14 +27,14 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
         initIgnoreAnnTableName();
         // 手动添加
         IGNORE_TABLE_NAME.add("user");
+        LogUtil.info("忽略租户注入的表：{}", String.join("、", IGNORE_TABLE_NAME));
     }
 
     /**
      * 初始化带有InterceptorIgnore的实体类
      */
     private void initIgnoreAnnTableName() {
-        Reflections reflections = new Reflections(Constants.MODEL_PACKAGE);
-        Set<Class<?>> annClassList = reflections.getTypesAnnotatedWith(InterceptorIgnore.class);
+        Set<Class<?>> annClassList = ClassUtil.getTypesAnnotatedWith(Constants.MODEL_PACKAGE, InterceptorIgnore.class);
         for (Class<?> aClass : annClassList) {
             TableName tableNameAnn = aClass.getAnnotation(TableName.class);
             if (tableNameAnn != null) {
