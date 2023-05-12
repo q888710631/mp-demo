@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper
 public interface RoleMapper extends BaseMapper<Role> {
 
-    @Select("select * from user_role t " +
+    @Select("select r.* from user_role t " +
         "inner join role r on r.id = t.role_id " +
         "where user_id = #{user_id}")
     List<Role> findRolesByUserId(@Param("user_id") Long userId);

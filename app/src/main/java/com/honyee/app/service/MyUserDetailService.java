@@ -1,11 +1,8 @@
 package com.honyee.app.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.honyee.app.config.seurity.SecurityConstants;
-import com.honyee.app.dto.RoleDTO;
-import com.honyee.app.dto.UpdateUserStateOrLockDTO;
-import com.honyee.app.dto.UserDTO;
+import com.honyee.app.dto.*;
 import com.honyee.app.enums.UserStateEnum;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.exp.DataNotExistsException;
@@ -17,6 +14,7 @@ import com.honyee.app.mapperstruct.UserMapperStruct;
 import com.honyee.app.model.Role;
 import com.honyee.app.model.User;
 import com.honyee.app.model.UserRole;
+import com.honyee.app.utils.TenantHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,10 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -84,7 +79,7 @@ public class MyUserDetailService implements UserDetailsService {
      * 解析token时查询角色，内存中短时间缓存减少数据库查询
      */
     @Cacheable(value = "user-role", key = "#userId", cacheManager = "memoryCacheManager")
-    public List<GrantedAuthority> findGrantedAuthroityByUserId(Long userId) {
+    public List<GrantedAuthority> findGrantedAuthorityByUserId(Long userId) {
         return roleMapper.findRolesByUserId(userId).stream()
                 .map(Role::getRoleKey)
                 .map(SecurityConstants::roleFormat)
@@ -95,26 +90,25 @@ public class MyUserDetailService implements UserDetailsService {
      * 创建用户
      */
     @Transactional
-    public UserDTO createUser(UserDTO dto) {
-        Long userId = dto.getId();
+    public UserDTO createUser(UserCreateDTO dto) {
         String nickname = dto.getNickname();
         String username = dto.getUsername();
         String password = dto.getPassword();
-        User user = userMapper.selectById(userId);
-        if (user == null) {
-            throw new DataNotExistsException(userId);
-        }
         Long countNickname = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getNickname, nickname));
         if (countNickname != null && countNickname > 0) {
             throw new CommonException("昵称已经存在");
         }
-        user.setNickname(username);
         Long countUsername = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, username));
         if (countUsername != null && countUsername > 0) {
             throw new CommonException("用户名已经存在");
         }
+        UserStateEnum state = dto.getState();
+        state = state == null ? UserStateEnum.ENABLE : UserStateEnum.DISABLE;
+        User user = new User();
+        user.setNickname(username);
         user.setUsername(username);
         user.setPassword(bc.encode(password));
+        user.setState(state);
         userMapper.insert(user);
         return userMapperStruct.toDto(user);
     }
@@ -123,17 +117,17 @@ public class MyUserDetailService implements UserDetailsService {
      * 更新用户信息
      */
     @Transactional
-    public UserDTO updateUser(UserDTO dto) {
-        Long id = dto.getId();
+    public UserDTO updateUser(UserUpdateDTO dto) {
+        Long userId = dto.getId();
         String nickname = dto.getNickname();
         String username = dto.getUsername();
         String password = dto.getPassword();
-        User user = userMapper.selectById(id);
+        User user = userMapper.selectById(userId);
         if (user == null) {
-            throw new DataNotExistsException(id);
+            throw new DataNotExistsException(userId);
         }
         if (StringUtils.isNotBlank(nickname)) {
-            Long countNickname = userMapper.selectCount(new LambdaQueryWrapper<User>().ne(User::getId, id).eq(User::getNickname, nickname));
+            Long countNickname = userMapper.selectCount(new LambdaQueryWrapper<User>().ne(User::getId, userId).eq(User::getNickname, nickname));
             if (countNickname != null && countNickname > 0) {
                 throw new CommonException("昵称已经存在");
             }
@@ -141,15 +135,20 @@ public class MyUserDetailService implements UserDetailsService {
         }
 
         if (StringUtils.isNotBlank(nickname)) {
-            Long countUsername = userMapper.selectCount(new LambdaQueryWrapper<User>().ne(User::getId, id).eq(User::getUsername, username));
+            Long countUsername = userMapper.selectCount(new LambdaQueryWrapper<User>().ne(User::getId, userId).eq(User::getUsername, username));
             if (countUsername != null && countUsername > 0) {
                 throw new CommonException("用户名已经存在");
             }
             user.setUsername(username);
         }
-        if (StringUtils.isNotBlank(nickname)) {
+        if (StringUtils.isNotBlank(password)) {
             user.setPassword(bc.encode(password));
         }
+        UserStateEnum state = dto.getState();
+        if (state != null && Set.of(UserStateEnum.ENABLE, UserStateEnum.DISABLE).contains(state)) {
+            user.setState(state);
+        }
+
         userMapper.updateById(user);
         return userMapperStruct.toDto(user);
     }
@@ -158,15 +157,31 @@ public class MyUserDetailService implements UserDetailsService {
      * 更新用户角色
      */
     @Transactional
-    public Collection<RoleDTO> updateUserRole(UserDTO dto) {
+    public Collection<RoleDTO> updateUserRole(UserRoleUpdateDTO dto) {
         Long userId = dto.getId();
         User user = userMapper.selectById(userId);
         if (user == null) {
             throw new DataNotExistsException(userId);
         }
-        Collection<String> roleKeyList = dto.getRoles();
+
+        Long currentUserId = TenantHelper.getCurrentUserId();
+        if (Objects.equals(currentUserId, userId)) {
+            throw new CommonException("不能修改自身角色");
+        }
+        // 当前用户的最大角色级别
+        Integer userTopRoleLevel = userRoleMapper.findUserTopRoleLevel(currentUserId);
+        if (userTopRoleLevel == null) {
+            userTopRoleLevel = Integer.MAX_VALUE;
+        }
+        final int level = userTopRoleLevel;
+        List<Role> roles = roleMapper.selectList(new LambdaQueryWrapper<Role>().in(Role::getRoleKey, dto.getRoleKeyList()));
+        // 过滤不大于自身级别的角色
+        List<String> roleKeyList = roles.stream()
+            .filter(role -> role.getRoleLevel() > level)
+            .map(Role::getRoleKey)
+            .collect(Collectors.toList());
+
         if (roleKeyList.isEmpty()) {
-            userRoleMapper.delete(new LambdaUpdateWrapper<UserRole>().eq(UserRole::getUserId, userId));
             return List.of();
         }
 
@@ -174,7 +189,8 @@ public class MyUserDetailService implements UserDetailsService {
         Map<String, Role> hasRoleKeyMap = roleMapper.findRolesByUserId(userId).stream().collect(Collectors.toMap(Role::getRoleKey, Function.identity()));
         // 需要新增的
         for (Role role : resultRoleKeyMap.values()) {
-            if (hasRoleKeyMap.get(role.getRoleKey()) == null) {
+            String roleKey = role.getRoleKey();
+            if (hasRoleKeyMap.get(roleKey) == null) {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(userId);
                 userRole.setRoleId(role.getId());
@@ -183,8 +199,9 @@ public class MyUserDetailService implements UserDetailsService {
         }
         // 需要删除的
         for (Role role : hasRoleKeyMap.values()) {
-            if (resultRoleKeyMap.get(role.getRoleKey()) == null) {
-                userRoleMapper.deleteByUserIdAndRoleId(userId, role.getId());
+            String roleKey = role.getRoleKey();
+            if (resultRoleKeyMap.get(roleKey) == null) {
+                userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId).eq(UserRole::getRoleId, role.getId()));
             }
         }
 
@@ -205,7 +222,10 @@ public class MyUserDetailService implements UserDetailsService {
         if (user == null) {
             throw new DataNotExistsException(userId);
         }
-
+        Long currentUserId = TenantHelper.getCurrentUserId();
+        if (Objects.equals(currentUserId, userId) && state == UserStateEnum.DISABLE) {
+            throw new CommonException("不能操作自身");
+        }
         if (state != null) {
             user.setState(state);
         }

@@ -11,6 +11,10 @@ public class Role extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    @Schema(title = "角色级别")
+    @TableField("role_level")
+    private Integer roleLevel;
+
     @Schema(title = "角色名称")
     @TableField("role_name")
     private String roleName;
@@ -25,6 +29,14 @@ public class Role extends BaseEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getRoleLevel() {
+        return roleLevel;
+    }
+
+    public void setRoleLevel(Integer roleLevel) {
+        this.roleLevel = roleLevel;
     }
 
     public String getRoleName() {

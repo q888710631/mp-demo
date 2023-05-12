@@ -20,7 +20,7 @@ public class GenericController {
     @Operation(summary = "当前用户可用菜单")
     @GetMapping("/user-menu")
     public List<String> userMenu() {
-        return genericService.userMenu(TenantHelper.getTenantId());
+        return genericService.userMenu(TenantHelper.getCurrentUserId());
     }
 
 }

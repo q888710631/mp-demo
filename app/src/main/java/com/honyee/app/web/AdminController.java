@@ -4,10 +4,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.honyee.app.AppApplication;
 import com.honyee.app.config.http.MyResponse;
-import com.honyee.app.dto.RoleDTO;
-import com.honyee.app.dto.UpdateUserStateOrLockDTO;
-import com.honyee.app.dto.UserDTO;
-import com.honyee.app.dto.UserRoleDTO;
+import com.honyee.app.dto.*;
 import com.honyee.app.mapper.RoleMapper;
 import com.honyee.app.mapper.UserMapper;
 import com.honyee.app.service.MyUserDetailService;
@@ -61,19 +58,19 @@ public class AdminController {
 
     @Operation(summary = "创建用户")
     @PostMapping("create-user")
-    public UserDTO createUser(@Validated @RequestBody UserDTO dto) {
+    public UserDTO createUser(@Validated @RequestBody UserCreateDTO dto) {
         return myUserDetailService.createUser(dto);
     }
 
     @Operation(summary = "更新用户信息")
     @PostMapping("update-user")
-    public UserDTO updateUser(@Validated @RequestBody UserDTO dto) {
+    public UserDTO updateUser(@Validated @RequestBody UserUpdateDTO dto) {
         return myUserDetailService.updateUser(dto);
     }
 
     @Operation(summary = "更新用户角色")
     @PostMapping("update-role")
-    public Collection<RoleDTO> updateUserRole(@Validated @RequestBody UserDTO dto) {
+    public Collection<RoleDTO> updateUserRole(@Validated @RequestBody UserRoleUpdateDTO dto) {
         return myUserDetailService.updateUserRole(dto);
     }
 

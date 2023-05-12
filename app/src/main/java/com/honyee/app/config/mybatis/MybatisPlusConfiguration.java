@@ -32,7 +32,7 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
         // entity
         Object originalObject = metaObject.getOriginalObject();
 
-        Long tenantId = TenantHelper.getTenantId();
+        Long tenantId = TenantHelper.getCurrentUserId();
         if (tenantId != null) {
             if (originalObject instanceof BaseTenantEntity) {
                 BaseTenantEntity baseTenantEntity = (BaseTenantEntity) originalObject;
@@ -70,7 +70,7 @@ public class MybatisPlusConfiguration implements MetaObjectHandler {
         // entity
         Object originalObject = metaObject.getOriginalObject();
 
-        Long tenantId = TenantHelper.getTenantId();
+        Long tenantId = TenantHelper.getCurrentUserId();
         if (tenantId != null) {
             if (originalObject instanceof BaseEntity) {
                 BaseEntity baseEntity = (BaseEntity) originalObject;
