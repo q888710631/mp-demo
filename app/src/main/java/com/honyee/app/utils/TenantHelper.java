@@ -9,4 +9,20 @@ public class TenantHelper {
     public static Long getCurrentUserId() {
         return MybatisPlusTenantHandler.getTenantValue();
     }
+
+    /**
+     * 关闭租户注入
+     */
+    public static void disableTenant() {
+        MybatisPlusTenantHandler.setTenantEnable(Boolean.FALSE);
+    }
+
+    /**
+     * 开启租户注入
+     */
+    public static void enableTenant() {
+        MybatisPlusTenantHandler.setTenantEnable(Boolean.TRUE);
+    }
+
+
 }

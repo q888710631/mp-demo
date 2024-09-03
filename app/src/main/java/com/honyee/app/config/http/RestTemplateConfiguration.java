@@ -1,7 +1,7 @@
 package com.honyee.app.config.http;
 
 import com.honyee.app.config.Constants;
-import com.honyee.app.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 @Configuration
 public class RestTemplateConfiguration {
 
@@ -59,7 +60,7 @@ public class RestTemplateConfiguration {
                 String.format("\n\tMethod：%s", request.getMethod()) +
                 String.format("\n\tHeaders：%s", request.getHeaders()) +
                 String.format("\n\tRequest body：%s", new String(body, StandardCharsets.UTF_8));
-            LogUtil.info(info);
+            log.info(info);
         }
 
         private void traceResponse(ClientHttpResponse response) throws IOException {
@@ -76,7 +77,7 @@ public class RestTemplateConfiguration {
                 String.format("\n\tStatus Text：%s", response.getStatusText()) +
                 String.format("\n\tHeaders：%s", response.getHeaders()) +
                 String.format("\n\tResponse body：%s", inputStringBuilder);
-            LogUtil.info(info);
+            log.info(info);
         }
     }
 }

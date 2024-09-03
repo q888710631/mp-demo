@@ -1,7 +1,7 @@
 package com.honyee.app.service;
 
 import com.honyee.app.proxy.feishu.*;
-import com.honyee.app.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +13,7 @@ import java.net.URI;
  * <p>
  * 参考文档 https://open.feishu.cn/document/uAjLw4CM/ukTMukTMukTM/im-v1/message/create_json#45e0953e
  */
+@Slf4j
 @Service
 public class FeishuService {
 
@@ -56,7 +57,7 @@ public class FeishuService {
         try {
             feishuProxy.send(uri(group), FeishuSendRequest.build(feishuMessage));
         } catch (Exception e) {
-            LogUtil.warn("1、飞书消息通知失败:{0}", e);
+            log.warn("1、飞书消息通知失败:{0}", e);
         }
     }
 
@@ -69,7 +70,7 @@ public class FeishuService {
         try {
             feishuProxy.send(uri(group), FeishuSendRequest.build(feishuCard));
         } catch (Exception e) {
-            LogUtil.warn("2、飞书消息通知失败:{0}", e);
+            log.warn("2、飞书消息通知失败:{0}", e);
         }
     }
 

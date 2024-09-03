@@ -13,18 +13,25 @@ server:
       worker: 256
 spring:
   profiles:
+    default: dev
     active: @spring.profiles.active@
+    group:
+      dev:
+        - dev
+        - exclude
+        - no-verify-token
+
   application:
     name: honyee
   servlet:
     multipart:
       # 上传文件大小（单个）
-      max-file-size: 2MB
+      max-file-size: 10MB
       # 上传文件大小（总量）
-      max-request-size: 10MB
+      #max-request-size: 10MB
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://127.0.0.1/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://127.0.0.1:3306/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
     username: root
     password: root
     hikari:
@@ -95,13 +102,31 @@ application:
       common: 飞书机器人的hook
       log-notify: 飞书机器人的hook
   oss:
-    url-protocol: https://
-    endpoint: oss的endpoint
-    bucket-name: xxxx
-    folder-env: test
-    folder-root: honyee
-    url-image: oss域名，末尾不要斜杠
-    access-key-id: xxxx
-    access-key-secret: xxxx
-    client:
-      protocol: https
+    enable: alipay
+    alipay:
+      url-protocol: https://
+      endpoint: oss-cn-hangzhou.aliyuncs.com
+      bucket-name: bk-honyee
+      folder-env: test
+      folder-root: honyee
+      url-image:
+      # 临时授权-区域
+      sts-region-id: cn-hangzhou
+      # 临时授权-domain
+      sts-domain: sts.cn-hangzhou.aliyuncs.com
+      # 临时授权-roleArn
+      sts-role-arn: # todo
+      # 使用临时授权时必须使用子用户的密钥
+      access-key-id: # todo
+      access-key-secret: # todo
+      client:
+        protocol: https
+    tencent:
+      domain: # todo
+      folder-env: test
+      folder-root: honyee
+      bucket: # todo
+      region: ap-shanghai
+      appid: # todo
+      secret-id: # todo
+      secret-key: # todo

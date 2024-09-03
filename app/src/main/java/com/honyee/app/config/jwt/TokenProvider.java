@@ -1,16 +1,18 @@
 package com.honyee.app.config.jwt;
 
-import com.honyee.app.utils.LogUtil;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class TokenProvider {
 
@@ -24,13 +26,13 @@ public class TokenProvider {
         try {
             if (StringUtils.isBlank(baseSecret)) {
                 baseSecret = BASE_SECRET;
-                LogUtil.info("未配置application.token-secret，使用默认值");
+                log.info("未配置application.token-secret，使用默认值");
             }
             byte[] keyBytes = Decoders.BASE64.decode(baseSecret);
             KEY = Keys.hmacShaKeyFor(keyBytes);
             JWT_PARSER = Jwts.parserBuilder().setSigningKey(KEY).build();
         } catch (Exception e) {
-            LogUtil.warn("TokenProvider初始化失败，{}", e.getMessage());
+            log.warn("TokenProvider初始化失败，{}", e.getMessage());
         }
     }
 

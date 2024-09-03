@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Schema(title = "用户（租户）")
 @TableName("user")
-@InterceptorIgnore(tenantLine = "true")
 public class User extends BaseEntity implements UserDetails {
     @TableId(type = IdType.AUTO)
     private Long id;

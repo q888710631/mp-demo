@@ -7,8 +7,8 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.client.naming.utils.NetUtils;
 import com.alibaba.nacos.common.notify.NotifyCenter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.honyee.app.utils.LogUtil;
 import com.honyee.app.utils.YamlUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,11 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
-import org.yaml.snakeyaml.Yaml;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @EnableDiscoveryClient
 @Configuration
 public class NacosConfiguration implements InitializingBean, DisposableBean {
@@ -91,13 +88,13 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
         if (loadConfig(getDataId())) {
             try {
                 nacosConfigManager.getConfigService().addListener(getDataId(), nacosConfigProperties.getGroup(), new NacosListener(this));
-                LogUtil.info("### nacos add listener 执行成功");
+                log.info("### nacos add listener 执行成功");
             } catch (NacosException e) {
-                LogUtil.error("### nacos add listener 执行失败：{}", e.getMessage());
+                log.error("### nacos add listener 执行失败：{}", e.getMessage());
             }
         } else {
             // 执行失败，延迟重试
-            LogUtil.error("### nacos load config 执行失败，稍后重试");
+            log.error("### nacos load config 执行失败，稍后重试");
             executor.schedule(this::init, 5L, TimeUnit.SECONDS);
         }
     }
@@ -105,10 +102,10 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
     public boolean loadConfig(String dataId) {
         try {
             String configInfo = nacosConfigManager.getConfigService().getConfig(dataId, nacosConfigProperties.getGroup(), nacosConfigProperties.getTimeout());
-            LogUtil.info("nacos配置获取：{}", configInfo);
+            log.info("nacos配置获取：{}", configInfo);
             return analysisConfig(configInfo);
         } catch (NacosException e) {
-            LogUtil.error("nacos配置获取失败：{}", e.getMessage());
+            log.error("nacos配置获取失败：{}", e.getMessage());
             return false;
         }
     }
@@ -119,13 +116,13 @@ public class NacosConfiguration implements InitializingBean, DisposableBean {
      */
     public boolean analysisConfig(String configInfo) {
         if (configInfo == null) {
-            LogUtil.warn("nacos 没有读取到配置文件，可能未连接成功或没有该配置文件");
+            log.warn("nacos 没有读取到配置文件，可能未连接成功或没有该配置文件");
             return false;
         }
         try {
             this.customProperties = YamlUtil.loadAs(configInfo, NacosCustomProperties.class);
         } catch (Exception e) {
-            LogUtil.error("加载nacos配置文件失败：" + e.getMessage());
+            log.error("加载nacos配置文件失败：" + e.getMessage());
             return false;
         }
         return true;

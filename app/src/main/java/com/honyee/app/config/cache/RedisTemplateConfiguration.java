@@ -23,7 +23,7 @@ public class RedisTemplateConfiguration {
         // Key序列化
         redisTemplate.setKeySerializer(stringRedisSerializer);
         redisTemplate.setHashKeySerializer(stringRedisSerializer);
-        ObjectMapper objectMapper = ObjectMapperConfiguration.createObjectMapper(builder);
+        ObjectMapper objectMapper = ObjectMapperConfiguration.createObjectMapper(builder, false);
         // 解决 LinkedHashMap cannot be cast to
         objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL);
         GenericJackson2JsonRedisSerializer genericJackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer(objectMapper);

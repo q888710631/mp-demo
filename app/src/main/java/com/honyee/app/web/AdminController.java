@@ -2,15 +2,14 @@ package com.honyee.app.web;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.honyee.app.AppApplication;
 import com.honyee.app.config.http.MyResponse;
 import com.honyee.app.dto.*;
 import com.honyee.app.mapper.RoleMapper;
 import com.honyee.app.mapper.UserMapper;
 import com.honyee.app.service.MyUserDetailService;
-import com.honyee.app.utils.LogUtil;
 import com.honyee.app.utils.SpringUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +22,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {
@@ -84,7 +84,7 @@ public class AdminController {
     //@PostMapping("close-server")
     public MyResponse<Void> closeServer() {
         new Thread(() -> {
-            LogUtil.info("准备关闭服务");
+            log.info("准备关闭服务");
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {

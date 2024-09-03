@@ -1,10 +1,10 @@
 package com.honyee.app.config.feign;
 
-import com.honyee.app.utils.LogUtil;
 import feign.Logger;
 import feign.Request;
 import feign.Response;
 import feign.Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -20,9 +20,8 @@ import java.util.stream.Collectors;
 
 import static feign.Util.*;
 
+@Slf4j
 public class FeignLogger extends Logger {
-
-    private final org.slf4j.Logger logger = LogUtil.get();
 
     // 无需日志的Class -> Method，不考虑类名相同且方法完全一致的情况
     private static final MultiValueMap<String, String> DISABLE_FEIGN_LOG_METHOD = new LinkedMultiValueMap<>();
@@ -33,7 +32,7 @@ public class FeignLogger extends Logger {
             try {
                 init(pack);
             } catch (IOException | ClassNotFoundException e) {
-                logger.error("初始化DISABLE_FEIGN_LOG_METHOD错误，pack={}，error={}", pack, e.getMessage());
+                log.error("初始化DISABLE_FEIGN_LOG_METHOD错误，pack={}，error={}", pack, e.getMessage());
             }
         }
     }
@@ -41,7 +40,7 @@ public class FeignLogger extends Logger {
     private void init(String pack) throws IOException, ClassNotFoundException {
         String packFormat = pack.replace(".", "/");
         // 支持查找子包
-        String path = packFormat + "/**/*.class";
+        String path = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +  pack.replace(".", "/") + "/**/*.class";
         ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
         Resource[] resources = resourcePatternResolver.getResources(path);
         for (Resource resource : resources) {
@@ -96,7 +95,7 @@ public class FeignLogger extends Logger {
                 logBuilder.append(String.format("\n\t---> END HTTP (%s-byte body)", bodyLength));
             }
         } finally {
-            logger.info(logBuilder.toString());
+            log.info(logBuilder.toString());
         }
 
     }
@@ -142,7 +141,7 @@ public class FeignLogger extends Logger {
             }
             return response;
         } finally {
-            logger.info(logBuilder.toString());
+            log.info(logBuilder.toString());
         }
     }
 

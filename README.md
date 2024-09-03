@@ -1,7 +1,7 @@
 # mp-demo
 spring boot + mybatis plus 多租户 以及各种框架整合。
 
-主要框架：
+**主要框架：**
 
 1. spring boot 2.7.8 + undertow
 2. mybatis plus + pagehelper
@@ -14,20 +14,146 @@ spring boot + mybatis plus 多租户 以及各种框架整合。
 9. redisson
 10. websocket
 
-初始化sql： `resource/sql/init.sql`
+**初始化sql：** `resource/sql/init.sql`
 
-目录：
+**目录：**
 ```text
 mp-demo
 ├── app 主体
 └── cover 存放覆盖源码的类
 ```
 
+**启动项目时错误：** 
+
+java.nio.charset.MalformedInputException: Input length = 1
+
+解决：IDEA -> Settings -> Editor -> File Encodings -> 编码改UTF-8 ，并Rebuild Project
+
+
+
+## 2024.6.20
+增加依赖Tika
+
+Apache Tika是一个基于Java的内容检测和分析工具包，主要用于从各种类型的文档中提取内容和元数据。它的主要功能包括：
+
+- 文档类型检测：Tika能够自动识别文件的类型，例如Word、Excel、PDF、PPT等。
+- 内容提取：它可以从支持的文件类型中提取结构化的文本内容。
+- 元数据提取：Tika可以提取文件的元数据信息，如作者、标题、创建日期等。
+- 语言检测：Tika能够检测文件中的语言
+
+```java
+import org.apache.tika.Tika;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class TestService{
+   public static void main(String[] args) {
+      File file = new File("图片路径");
+      try (FileInputStream fis = new FileInputStream(file)) {
+         Tika tika = new Tika();
+         String detectedType = tika.detect(fis);
+         System.out.println("图片类型： " + detectedType);
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+   }
+}
+```
+## 2023.10.30
+日志工具类`LogUtil`增加方法`日志存储到redis`
+
+```java
+public class TestService{
+   public void test(HttpServletResponse response){
+      LogUtil.logToRedis("key", "日志内容:{}", "占位内容填充");
+   }
+}
+```
+
+## 2023.8.8
+OSS：支持阿里云OSS和腾讯COS
+
+通过`application.oss.enable`控制，值为`alipay`或者`tencent`
+
+对应controller： `FileController`
+
+## 2023.5.12
+使用Easy-Excel封装工具类
+
+`com.honyee.app.utils.ExcelUtil`
+
+- 针对常用的情况（仅需要输出一个sheet的情况）
+```java
+public class TestService{
+    public void test(HttpServletResponse response){
+       // 省略list的数据填充 
+       List<MyDataDTO> excelDTOList = new ArrayList<>();
+       String fileName = ExcelUtil.buildFileName("我新建的Excel");
+       // 输出excel
+       ExcelUtil.write(response, fileName, excelDTOList, MyDataDTO.class);
+    }
+}
+```
+
+- 针对分页查询
+
+```java
+import java.util.ArrayList;
+
+public class TestService {
+   public void test(HttpServletResponse response) {
+      // 省略list的数据填充 
+      List<MyDataDTO> excelDTOList = new ArrayList<>();
+      String fileName = ExcelUtil.buildFileName("我新建的Excel");
+      // 输出excel
+      ExcelUtil.write(response, fileName, MyDataDTO.class,
+              (page, pageSize) -> {
+                 // 根据分页参数返回数据List，数据为空则终止
+                 // 如果DTO实现ExcelUtil.ColumnIndex接口，会自动填充index
+                 return new ArrayList<>();
+              });
+   }
+}
+```
+
+
 ## 2023.5.10
 Mybatis的`AbstractJsonTypeHandler`的实现类
 
 1. `MybatisJsonTypeEntityHandler`用于处理`对象`字段，可以直接使用
-2. `MybatisJsonTypeListHandler`用于处理`数组`字段，使用时`需要继承`后使用
+2. 如需处理List之类的结构，需要继承`MybatisJsonTypeEntityHandler`并传入泛型
+```java
+public class ListRoleHandler extends MybatisJsonTypeEntityHandler<List<Role>> {
+
+    public ListRoleHandler(Class<List<Role>> type) {
+        super(type, new TypeReference<>() {});
+    }
+}
+```
+3. 输出的json默认携带@class标注对象类型，也可以如下自定义子类
+```java
+/**
+ * 父类
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = RoleChild.class, name = "role-child"),
+})
+public class Role{
+    
+}
+
+```
+
+```java
+/**
+ * 子类
+ */
+public class RoleChild extends Role{
+}
+```
+
 
 ```java
 /**
@@ -501,19 +627,16 @@ springdoc:
 
 2. 补充`@InterceptorIgnore`的支持范围
 
+3.  开关租户注入`TenantHelper.disableTenant()`、`TenantHelper.enableTenant()`
+
 ```java
 /**
  * 支持Entity
  */
-@TableName("tenant")
+@TableName("city")
 @InterceptorIgnore(tenantLine = "true")
-public class Tenant extends BaseEntity{
-    @TableId(type = IdType.AUTO)
-    private Long id;
-
-    @TableField("nick_name")
-    private String nickName;
-    // get & set ...
+public class City {
+    
 }
 ```
 

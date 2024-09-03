@@ -6,10 +6,9 @@ import com.honyee.app.config.jwt.JwtConstants;
 import com.honyee.app.config.jwt.LoginTypeEnum;
 import com.honyee.app.config.jwt.TokenProvider;
 import com.honyee.app.config.jwt.my.MyAuthenticationToken;
-import com.honyee.app.utils.LogUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -18,6 +17,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.StringUtils;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+@Slf4j
 public class JwtFilter extends GenericFilter {
 
     private final ObjectMapper objectMapper;
@@ -38,13 +39,12 @@ public class JwtFilter extends GenericFilter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        Logger logger = LogUtil.get();
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String jwt = resolveToken(httpServletRequest);
         // 存储authentication
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         SecurityContextHolder.setContext(securityContext);
-        if (StringUtils.hasText(jwt)) {
+        if (!"/api/authenticate".equals(httpServletRequest.getRequestURI()) && StringUtils.hasText(jwt)) {
             try {
                 // getClaims 不报错表示jwt格式正确
                 Authentication authentication = null;
@@ -53,30 +53,19 @@ public class JwtFilter extends GenericFilter {
                 Object loginKey = claims.get(JwtConstants.LOGIN_KEY);
                 if (Objects.equals(loginType, LoginTypeEnum.COMMON.name())) {
                     authentication = new MyAuthenticationToken(Long.valueOf(loginKey.toString()));
+                    authentication = authenticationManager.authenticate(authentication);
+                    if (null == authentication) {
+                        log.info("token invalid [2]: authenticate target not find");
+                    } else if (Boolean.FALSE.equals(authentication.isAuthenticated())) {
+                        log.info("token invalid [2]: authenticate is failure");
+                    } else {
+                        securityContext.setAuthentication(authentication);
+                    }
                 } else {
-                    resolveAuthenticationFailure("token无效-1", response);
-                    return;
+                    log.info("token invalid [3]:unsupported login type");
                 }
-                authentication = authenticationManager.authenticate(authentication);
-
-                if (null == authentication) {
-                    resolveAuthenticationFailure("token无效-2", response);
-                    return;
-                }
-                if (Boolean.FALSE.equals(authentication.isAuthenticated())) {
-                    resolveAuthenticationFailure("token无效-3", response);
-                    return;
-                }
-                securityContext.setAuthentication(authentication);
-
-            } catch (JwtException | IllegalArgumentException e) {
-                LogUtil.info("Invalid JWT token.");
-                resolveAuthenticationFailure("token无效-4", response);
-                return;
-            } catch (AuthenticationException e) {
-                logger.warn("", e);
-                resolveAuthenticationFailure(e.getMessage(), response);
-                return;
+            } catch (JwtException | IllegalArgumentException | AuthenticationException e) {
+                log.info("token invalid [4]: {}", e.getMessage());
             }
         }
         chain.doFilter(request, response);
@@ -96,7 +85,7 @@ public class JwtFilter extends GenericFilter {
     }
 
     private void resolveAuthenticationFailure(String message, ServletResponse servletResponse) {
-
+        log.info(message);
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -104,7 +93,7 @@ public class JwtFilter extends GenericFilter {
             response.setContentType(MimeTypeUtils.APPLICATION_JSON_VALUE);
             response.getWriter().print(objectMapper.writeValueAsString(new MyResponse<>(HttpStatus.UNAUTHORIZED.value(), message, null)));
         } catch (IOException e) {
-            LogUtil.error("### resolvePermissionFailException 处理权限异常返回失败", e);
+            log.error("### resolvePermissionFailException 处理权限异常返回失败", e);
         }
     }
 }

@@ -7,8 +7,13 @@ public class FileResDTO {
     private String key;
 
     private String url;
+    private String message;
 
     public FileResDTO() {}
+
+    public FileResDTO(String message) {
+        this.message = message;
+    }
 
     public FileResDTO(String key, String url) {
         this.url = url;
@@ -31,8 +36,20 @@ public class FileResDTO {
         this.key = key;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public String toString() {
-        return "FileResDTO{" + "key='" + key + '\'' + ", url='" + url + '\'' + '}';
+        return "FileResDTO{" +
+            "key='" + key + '\'' +
+            ", url='" + url + '\'' +
+            ", message='" + message + '\'' +
+            '}';
     }
 }

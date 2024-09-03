@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(title = "角色")
 @TableName("role")
-@InterceptorIgnore(tenantLine = "true")
 public class Role extends BaseEntity {
     @TableId(type = IdType.AUTO)
     private Long id;

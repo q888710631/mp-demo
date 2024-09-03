@@ -1,11 +1,13 @@
 package com.honyee.app.utils;
 
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import lombok.extern.slf4j.Slf4j;
+
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 public class DateUtil {
 
     private static final String DEFAULT_ZONE_OFFSET = "+8";
@@ -46,5 +48,53 @@ public class DateUtil {
 
     public static final DateTimeFormatter COMMON_HOUR_COLON_MINUTES_FORMATTER = DateTimeFormatter.ofPattern(COMMON_HOUR_COLON_MINUTES_PATTERN);
 
+    /**
+     * 日期字符串 -> LocalDate
+     * @param dateStr 2023-08-21
+     * @return 2023-08-21 00:00:00
+     */
+    public static LocalDate strLocalDateToLocalDate(String dateStr) {
+        if (dateStr == null) {
+            return null;
+        }
+        if (!dateStr.matches("\\d{4}-\\d{1,2}-\\d{1,2}")) {
+            log.error("日期格式不正确");
+            return null;
+        }
+
+        // 兼容下月、日为单个数字的情况
+        dateStr = dateStr.replaceAll("-(\\d)(?=-|$)", "-0$1");
+        return LocalDate.parse(dateStr, COMMON_DATE_FORMATTER);
+    }
+
+    /**
+     * 日期字符串 -> 秒
+     * @param dateStr 2023-08-21
+     * @return 2023-08-21 00:00:00 的秒时间戳
+     */
+    public static Long strLocalDateToSecondMin(String dateStr) {
+        LocalDate localDate = strLocalDateToLocalDate(dateStr);
+        if (localDate == null) {
+            return null;
+        }
+        return localDate.toEpochSecond(LocalTime.MIN, DateUtil.DEF_ZONE_OFFSET);
+    }
+
+    /**
+     * 日期字符串 -> 秒
+     * @param dateStr 2023-08-21
+     * @return 2023-08-21 23:59:59.999999999 的秒时间戳
+     */
+    public static Long strLocalDateToSecondMax(String dateStr) {
+        LocalDate localDate = strLocalDateToLocalDate(dateStr);
+        if (localDate == null) {
+            return null;
+        }
+        return localDate.toEpochSecond(LocalTime.MAX, DateUtil.DEF_ZONE_OFFSET);
+    }
+
+    public static String instantToString(Instant instant) {
+        return COMMON_DATE_TIME_FORMATTER.format(instant.atZone(ZoneOffset.of(DEFAULT_ZONE_OFFSET)).toLocalDateTime());
+    }
 
 }

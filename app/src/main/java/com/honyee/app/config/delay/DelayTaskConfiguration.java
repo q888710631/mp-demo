@@ -2,15 +2,16 @@ package com.honyee.app.config.delay;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.honyee.app.AppApplication;
 import com.honyee.app.delay.MyDelayParam;
 import com.honyee.app.exp.CommonException;
 import com.honyee.app.utils.LogUtil;
 import com.honyee.app.utils.SpringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.RedissonShutdownException;
 import org.redisson.api.RBlockingQueue;
 import org.redisson.api.RDelayedQueue;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectProvider;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
+@Slf4j
 @Configuration
 public class DelayTaskConfiguration implements DisposableBean {
 
@@ -133,9 +135,9 @@ public class DelayTaskConfiguration implements DisposableBean {
                         executor.execute(() -> delayTaskListener.run(param));
                     }
                 } catch (RedissonShutdownException e) {
-                    LogUtil.error("延时任务-异常：{}", e.getMessage());
+                    log.error("延时任务-异常：{}", e.getMessage());
                 } catch (Exception e) {
-                    LogUtil.error("延时任务-异常：{}", e);
+                    log.error("延时任务-异常：{}", e.getMessage(), e);
                 }
             }
         });

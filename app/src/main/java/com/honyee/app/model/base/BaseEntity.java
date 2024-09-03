@@ -1,12 +1,13 @@
 package com.honyee.app.model.base;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
+@InterceptorIgnore(tenantLine = "true")
 public class BaseEntity {
     @Schema(title = "创建人")
     @TableField(value = "create_by", fill = FieldFill.INSERT)

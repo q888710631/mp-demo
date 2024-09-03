@@ -4,24 +4,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public class MyPage {
     @Schema(description = "页码，默认1，链式查询时无需传")
-    private long page = 1;
+    private Long page;
 
     @Schema(description = "页长，默认10")
-    private long size = 10;
+    private Long size;
 
-    public long getPage() {
-        return page;
+    public Long getPage() {
+        return page == null ? 1 : page;
     }
 
-    public void setPage(long page) {
+    public void setPage(Long page) {
         this.page = page;
     }
 
-    public long getSize() {
-        return size;
+    public Long getSize() {
+        return size == null ? 10 : size;
     }
 
-    public void setSize(long size) {
+    public void setSize(Long size) {
         this.size = size;
     }
 }

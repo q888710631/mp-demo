@@ -14,6 +14,8 @@ import com.honyee.app.mapperstruct.UserMapperStruct;
 import com.honyee.app.model.Role;
 import com.honyee.app.model.User;
 import com.honyee.app.model.UserRole;
+import com.honyee.app.model.base.BaseEntity;
+import com.honyee.app.service.base.MyService;
 import com.honyee.app.utils.TenantHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,7 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class MyUserDetailService implements UserDetailsService {
+public class MyUserDetailService extends MyService<UserMapper, User> implements UserDetailsService {
 
     @Resource
     UserMapper userMapper;
@@ -242,6 +244,30 @@ public class MyUserDetailService implements UserDetailsService {
         }
         userMapper.updateById(user);
         return userMapperStruct.toDto(user);
+    }
+
+    /**
+     * 填充createBy字段
+     */
+    public <T extends BaseEntity> List<T> fillCreateByToUsername(List<T> baseEntityList) {
+        for (T baseEntity : baseEntityList) {
+            fillCreateByToUsername(baseEntity);
+        }
+        return baseEntityList;
+    }
+
+    /**
+     * 填充createBy字段
+     */
+    public <T extends BaseEntity> T fillCreateByToUsername(T baseEntity) {
+        String createBy = baseEntity.getCreateBy();
+        if (createBy != null) {
+            User user = getById(createBy);
+            if (user != null) {
+                baseEntity.setCreateBy(user.getUsername());
+            }
+        }
+        return baseEntity;
     }
 
 }

@@ -6,11 +6,16 @@ import com.honyee.app.config.filter.JwtFilter;
 import com.honyee.app.config.filter.RequestWrapperFilter;
 import com.honyee.app.config.limit.RateLimitAspect;
 import com.honyee.app.config.lock.RedisLockAspect;
-import com.honyee.app.config.log.FeiShuAlertAppender;
+import com.honyee.app.config.log.FeishuAlertAppender;
 import com.honyee.app.config.log.LoggingAspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+import org.springframework.data.redis.core.RedisKeyValueTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -19,6 +24,10 @@ public class LogUtil {
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(LogUtil.class);
 
     private static final Map<String, Logger> LOGGER_MAP = new ConcurrentHashMap<>();
+
+    public static <T> Logger getLogger(Class<T> t) {
+        return LoggerFactory.getLogger(t);
+    }
 
     /**
      * 根据className获取Logger
@@ -94,7 +103,7 @@ public class LogUtil {
 
     private static final Set<String> excludeClassName = Set.of(
         LogUtil.class.getName(),
-        FeiShuAlertAppender.class.getName(),
+        FeishuAlertAppender.class.getName(),
         LoggingAspect.class.getName(),
         RedisLockAspect.class.getName(),
         JwtFilter.class.getName(),
@@ -161,5 +170,19 @@ public class LogUtil {
             }
         }
         info(String.join("\n", logList));
+    }
+
+    /**
+     * 日志存储到redis
+     */
+    public static void logToRedis(String key, String template, Object... args) {
+        String date = String.format("[%s] ", DateUtil.instantToString(Instant.now()));
+        String message = MessageFormatter.arrayFormat(template, args).getMessage();
+
+        SpringUtil.getBean(StringRedisTemplate.class)
+                .opsForList()
+                .leftPush(key, date + template);
+
+
     }
 }

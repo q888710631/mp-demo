@@ -23,7 +23,6 @@ import java.util.Map;
 @Profile("kafka-mul")
 @Configuration
 public class KafkaMulConfiguration {
-
     @Bean
     @ConfigurationProperties(prefix = "spring.kafka.one")
     public KafkaProperties kafkaPropertiesOne() {
@@ -33,25 +32,37 @@ public class KafkaMulConfiguration {
     @Bean
     public ConsumerFactory<Integer, String> consumerFactoryOne(@Autowired @Qualifier("kafkaPropertiesOne") KafkaProperties kafkaProperties) {
         Map<String, Object> props = new HashMap<>();
+        // kafka地址
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        // 设置是否自动提交
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, kafkaProperties.getConsumer().getEnableAutoCommit());
+        // 设置groupId
         props.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaProperties.getConsumer().getGroupId());
+        // 一次拉取消息数量
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 50);
+        // 反序列化
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Integer, String> listenerContainerFactory(@Autowired @Qualifier("consumerFactoryOne") ConsumerFactory<Integer, String> consumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<Integer, String> listenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
-        listenerContainerFactory.setConsumerFactory(consumerFactory);
-        ContainerProperties containerProperties = listenerContainerFactory.getContainerProperties();
-        containerProperties.setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        return listenerContainerFactory;
+        ConcurrentKafkaListenerContainerFactory<Integer, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory);
+        // 设置并发量，小于或等于Topic的分区数
+        factory.setConcurrency(1);
+        // 设置为批量监听
+        factory.setBatchListener(true);
+        ContainerProperties properties = factory.getContainerProperties();
+        properties.setPollTimeout(3000L);
+        properties.setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
+        return factory;
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkaTwoTemplateOne(@Autowired @Qualifier("kafkaPropertiesOne") KafkaProperties kafkaProperties) {
+    public KafkaTemplate<String, String> kafkaTemplateOne(@Autowired @Qualifier("kafkaPropertiesOne") KafkaProperties kafkaProperties) {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);

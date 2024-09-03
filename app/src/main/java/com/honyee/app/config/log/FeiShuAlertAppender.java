@@ -4,15 +4,13 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.honyee.app.AppApplication;
 import com.honyee.app.config.Constants;
 import com.honyee.app.config.nacos.NacosConfiguration;
 import com.honyee.app.config.nacos.NacosCustomProperties;
 import com.honyee.app.proxy.feishu.FeishuMessageRequest;
 import com.honyee.app.service.FeishuService;
 import com.honyee.app.utils.DateUtil;
-import com.honyee.app.utils.LogUtil;
-import com.honyee.app.utils.SpringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.cloud.sleuth.instrument.async.LazyTraceExecutor;
@@ -20,7 +18,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -35,7 +32,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
-public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
+@Slf4j
+public class FeishuAlertAppender extends AppenderBase<ILoggingEvent> {
 
     private final ObjectMapper objectMapper;
 
@@ -53,7 +51,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
     private final NacosConfiguration nacosConfiguration;
 
 
-    public FeiShuAlertAppender(BeanFactory beanFactory,
+    public FeishuAlertAppender(BeanFactory beanFactory,
                                ObjectMapper objectMapper,
                                FeishuService feishuService,
                                NacosConfiguration nacosConfiguration,
@@ -141,7 +139,7 @@ public class FeiShuAlertAppender extends AppenderBase<ILoggingEvent> {
                     .lines().collect(Collectors.joining(System.lineSeparator()));
                 feishuMessageRequest.addMsg("Request Body", body);
             } catch (IOException e) {
-                LogUtil.info("FeiShuAlertAppender异常", e);
+                log.info("FeiShuAlertAppender异常", e);
             }
         }
 

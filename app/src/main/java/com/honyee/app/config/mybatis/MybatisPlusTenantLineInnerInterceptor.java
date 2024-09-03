@@ -8,15 +8,20 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.honyee.app.config.Constants;
 import com.honyee.app.utils.ClassUtil;
-import com.honyee.app.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
+import org.reflections.ReflectionUtils;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+@Slf4j
 public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterceptor {
+
     // 忽略租户注入的表名
     public static final Set<String> IGNORE_TABLE_NAME = new HashSet<>();
 
@@ -27,7 +32,7 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
         initIgnoreAnnTableName();
         // 手动添加
         IGNORE_TABLE_NAME.add("user");
-        LogUtil.info("忽略租户注入的表：{}", String.join("、", IGNORE_TABLE_NAME));
+        log.info("忽略租户注入的表：{}", String.join("、", IGNORE_TABLE_NAME));
     }
 
     /**
@@ -37,10 +42,14 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
         Set<Class<?>> annClassList = ClassUtil.getTypesAnnotatedWith(Constants.MODEL_PACKAGE, InterceptorIgnore.class);
         for (Class<?> aClass : annClassList) {
             TableName tableNameAnn = aClass.getAnnotation(TableName.class);
-            if (tableNameAnn != null) {
-                String tableName = tableNameAnn.value();
-                if (StringUtils.isNotBlank(tableName)) {
-                    IGNORE_TABLE_NAME.add(tableName);
+            if (tableNameAnn != null && StringUtils.isNotBlank(tableNameAnn.value())) {
+                Annotation ann = ReflectionUtils.getAllAnnotations(aClass, annotation -> annotation.annotationType() == InterceptorIgnore.class)
+                    .stream()
+                    .findFirst()
+                    .orElseThrow();
+                boolean match = "true".equals(((InterceptorIgnore) ann).tenantLine());
+                if (match) {
+                    IGNORE_TABLE_NAME.add(tableNameAnn.value());
                 }
             }
         }
@@ -73,6 +82,7 @@ public class MybatisPlusTenantLineInnerInterceptor extends TenantLineInnerInterc
 
     /**
      * 检查注解是否忽略租户注入
+     *
      * @return true 忽略
      */
     private boolean checkIgnore(InterceptorIgnore ann) {

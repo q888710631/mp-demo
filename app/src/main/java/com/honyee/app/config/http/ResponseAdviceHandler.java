@@ -1,8 +1,7 @@
 package com.honyee.app.config.http;
 
 import com.honyee.app.config.Constants;
-import com.honyee.app.exp.CommonException;
-import com.honyee.app.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.sleuth.Span;
 import org.springframework.cloud.sleuth.Tracer;
@@ -12,14 +11,22 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 import org.zalando.problem.Problem;
 
+import javax.validation.ConstraintViolationException;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
 
@@ -36,6 +43,7 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
         Class<?> kls = returnType.getDeclaringClass();
+        // 返回值不用MyResponse包装
         if (null != returnType.getMethodAnnotation(NotBodyAdvice.class)) {
             return false;
         }
@@ -78,21 +86,28 @@ public class ResponseAdviceHandler implements ResponseBodyAdvice<Object> {
         return new MyResponse<>(statusCode, message, body);
     }
 
-    @ExceptionHandler(value = CommonException.class)
     @ResponseBody
-    public MyResponse<?> handler(CommonException e) {
-        String logContext = LogUtil.filterStackToString(e);
-        LogUtil.info(logContext);
-        return new MyResponse<>(e.getCode(), e.getCommonMessage());
+    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class, ConstraintViolationException.class})
+    public MyResponse<?> argumentValidationHandler(Exception ex) {
+        String errorMsg = MyResponseCodeEnums.PARAM_VALID_FAILURE.getMessage();
+        BindingResult bindingResult = null;
+        if (ex instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException methodArgumentNotValidException = (MethodArgumentNotValidException) ex;
+            bindingResult = methodArgumentNotValidException.getBindingResult();
+        }
+        if (ex instanceof BindException) {
+            BindException bindException = (BindException) ex;
+            bindingResult = bindException.getBindingResult();
+        }
+        if (ex instanceof ConstraintViolationException) {
+            ConstraintViolationException constraintViolationException = (ConstraintViolationException) ex;
+            errorMsg = constraintViolationException.getMessage();
+        }
+        if (bindingResult != null) {
+            errorMsg= bindingResult.getFieldErrors().stream().sorted(Comparator.comparing(FieldError::getField))
+                    .map(fieldError -> String.format("%s:%s", fieldError.getField(), fieldError.getDefaultMessage()))
+                    .collect(Collectors.joining(";"));
+        }
+        return new MyResponse<>(MyResponseCodeEnums.PARAM_VALID_FAILURE.getCode(), errorMsg, null);
     }
-
-    @ExceptionHandler(value = Exception.class)
-    @ResponseBody
-    public MyResponse<?> handler(Exception e) {
-        String logContext = LogUtil.filterStackToString(e);
-        LogUtil.error(logContext);
-        return new MyResponse<>(MyResponseCodeEnums.COMMON_EXCEPTION.getCode(), e.getMessage());
-    }
-
-
 }

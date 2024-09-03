@@ -4,18 +4,20 @@ import com.honyee.app.config.seurity.AuthenticateMatcher;
 import com.honyee.app.config.seurity.SecurityConfiguration;
 import com.honyee.app.config.seurity.SecurityConstants;
 import com.honyee.app.model.Role;
-import com.honyee.app.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class GenericService implements InitializingBean {
     @Value("${server.port:8080}")
@@ -55,6 +57,6 @@ public class GenericService implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        LogUtil.info("apifox导入地址：http://localhost:{}/v3/api-docs", port);
+        log.info("apifox导入地址：http://localhost:{}/v3/api-docs", port);
     }
 }

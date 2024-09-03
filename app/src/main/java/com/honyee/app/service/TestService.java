@@ -12,7 +12,7 @@ import com.honyee.app.dto.TestDTO;
 import com.honyee.app.dto.excel.TestExcelDTO;
 import com.honyee.app.utils.DateUtil;
 import com.honyee.app.utils.ExcelUtil;
-import com.honyee.app.utils.LogUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 public class TestService {
     @Resource
@@ -33,7 +34,7 @@ public class TestService {
 
     @RedisLock(value = "test", key = "#query")
     public String lockTest(String query) {
-        LogUtil.info("TestService.test()............");
+        log.info("TestService.test()............");
         MyDelayParam myDelayParam = new MyDelayParam();
         myDelayParam.setId(System.currentTimeMillis());
         myDelayParam.setTitle("myDelayParam");

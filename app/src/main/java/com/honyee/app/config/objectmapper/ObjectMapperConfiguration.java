@@ -24,7 +24,7 @@ public class ObjectMapperConfiguration {
     @Bean
     @Primary
     public ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
-        return createObjectMapper(builder);
+        return createObjectMapper(builder, false);
     }
 
     //@Bean
@@ -35,8 +35,12 @@ public class ObjectMapperConfiguration {
         };
     }
 
-    public static ObjectMapper createObjectMapper(Jackson2ObjectMapperBuilder builder) {
-        JsonFactory jsonFactory = new JsonFactoryBuilder().enable(JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS).build();
+    public static ObjectMapper createObjectMapper(Jackson2ObjectMapperBuilder builder, boolean writeNumberAsStrings) {
+        JsonFactoryBuilder jsonFactoryBuilder = new JsonFactoryBuilder();
+        if (writeNumberAsStrings) {
+            jsonFactoryBuilder.enable(JsonWriteFeature.WRITE_NUMBERS_AS_STRINGS);
+        }
+        JsonFactory jsonFactory = jsonFactoryBuilder.build();
         ObjectMapper objectMapper = builder.createXmlMapper(false).factory(jsonFactory).build();
         objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
         objectMapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);

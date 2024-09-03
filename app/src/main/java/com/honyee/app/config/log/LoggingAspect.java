@@ -3,6 +3,7 @@ package com.honyee.app.config.log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.honyee.app.utils.HttpUtil;
+import com.honyee.app.utils.LogUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.aspectj.lang.JoinPoint;
@@ -22,6 +23,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -154,10 +156,28 @@ public class LoggingAspect implements Ordered {
             .filter(i -> args[i] != null && !(args[i] instanceof HttpServletResponseWrapper))
             .mapToObj(i -> {
                 try {
-                    if (args[i] instanceof SecurityContextHolderAwareRequestWrapper) {
+                    Object arg = args[i];
+                    if (arg instanceof SecurityContextHolderAwareRequestWrapper) {
                         return "";
                     }
-                    return parameterNames[i] + "=" + objectMapper.writeValueAsString(args[i]);
+                    if (arg instanceof MultipartFile) {
+                        return String.format("file[%s byte]", ((MultipartFile) arg).getSize());
+                    } else if (arg instanceof MultipartFile[]) {
+                        return parameterNames[i] + "=文件数组";
+                    } else if (arg instanceof Collection) {
+                        boolean containFile = false;
+                        for (Object a : (Collection) arg) {
+                            if (a instanceof MultipartFile) {
+                                containFile = true;
+                                break;
+                            }
+                        }
+                        if (containFile) {
+                            return parameterNames[i] + "=包含文件";
+                        }
+                    }
+                    String value = arg == null ? "null" : objectMapper.writeValueAsString(arg);
+                    return parameterNames[i] + "=" + (value);
                 } catch (JsonProcessingException e) {
                     return parameterNames[i] + "解析异常：" + e.getMessage();
                 }

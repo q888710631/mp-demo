@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -35,7 +36,7 @@ public class AuthenticateController {
 
     @Operation(summary = "登录")
     @PostMapping("/authenticate")
-    public MyResponse<LoginResponseDTO> login(@Validated @RequestBody LoginRequestDTO dto) {
+    public MyResponse<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO dto) {
         AuthenticationManager authenticationManager = securityConfiguration.getAuthenticationManager();
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
         Authentication authenticate = authenticationManager.authenticate(token);

@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * @description: 文件处理类型，包括文件操作和判断
- * @author: lizhijun@12301.cc
- * @date: 2021/8/3 17:35
+ * 文件处理类型，包括文件操作和判断
  */
 public class MultipartFileUtils {
 

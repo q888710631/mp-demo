@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class LogConfiguration implements ApplicationListener<ApplicationReadyEvent> {
     private LoggerContext context;
-    private FeiShuAlertAppender appender;
+    private FeishuAlertAppender appender;
 
     public LogConfiguration(
         @Value("${spring.application.name}") String appName,
@@ -28,7 +28,7 @@ public class LogConfiguration implements ApplicationListener<ApplicationReadyEve
     ) {
         if (Boolean.TRUE.equals(enableLogNotify)) {
             this.context = (LoggerContext) LoggerFactory.getILoggerFactory();
-            this.appender = new FeiShuAlertAppender(beanFactory, objectMapper, feishuService, nacosConfiguration, appName, env);
+            this.appender = new FeishuAlertAppender(beanFactory, objectMapper, feishuService, nacosConfiguration, appName, env);
             this.appender.setContext(context);
             this.appender.setName(appName);
             this.appender.start();

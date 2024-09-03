@@ -10,7 +10,7 @@ spring:
   redis:
     host: 127.0.0.1
     port: 6379
-    password:
+    password: root
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://127.0.0.1:3306/honyee?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
@@ -21,13 +21,26 @@ spring:
 
 application:
   oss:
-    url-protocol: https://
-    endpoint: oss的endpoint
-    bucket-name: xxxx
-    folder-env: prod
-    folder-root: honyee
-    url-image: oss域名，末尾不要斜杠
-    access-key-id: xxxx
-    access-key-secret: xxxx
-    client:
-      protocol: https
+    enable: alipay
+    alipay:
+      url-protocol: https://
+      endpoint: oss的endpoint
+      bucket-name: xxxx
+      folder-env: test
+      folder-root: honyee
+      url-image: oss域名，末尾不要斜杠
+      access-key-id: xxxx
+      access-key-secret: xxxx
+      client:
+        protocol: https
+    tencent:
+      domain: http://oss.honyee.com/
+      folder-env: test
+      folder-root: honyee
+      bucket: my-bucket
+      region: ap-shanghai
+      appid: appid
+      secret-id: secret-id
+      secret-key: secret-key
+
+

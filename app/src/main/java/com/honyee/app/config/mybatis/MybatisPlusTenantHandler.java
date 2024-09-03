@@ -9,17 +9,35 @@ public class MybatisPlusTenantHandler implements TenantLineHandler {
 
     private static final ThreadLocal<Long> TENANT_LOCAL = new ThreadLocal<>();
 
+    private static final ThreadLocal<Boolean> TENANT_ENABLE = new ThreadLocal<>();
+
     public static void setTenantValue(Long tenantId) {
         TENANT_LOCAL.set(tenantId);
     }
 
+    public static void setTenantEnable(Boolean enable) {
+        TENANT_ENABLE.set(enable);
+    }
+
+    /**
+     * 租户ID
+     */
     public static Long getTenantValue() {
         return TENANT_LOCAL.get();
     }
 
-    public static void removeTenantValue() {
-        TENANT_LOCAL.remove();
+    /**
+     * 是否开启租户注入，默认true
+     */
+    public static boolean getTenantEnable() {
+        return !Boolean.FALSE.equals(TENANT_ENABLE.get());
     }
+
+    public static void removeAll() {
+        TENANT_LOCAL.remove();
+        TENANT_ENABLE.remove();
+    }
+
     /**
      * 获取租户ID 实际应该从用户信息中获取
      */
@@ -47,6 +65,6 @@ public class MybatisPlusTenantHandler implements TenantLineHandler {
      */
     @Override
     public boolean ignoreTable(String tableName) {
-        return MybatisPlusTenantLineInnerInterceptor.IGNORE_TABLE_NAME.contains(tableName.toLowerCase());
+        return !getTenantEnable() || MybatisPlusTenantLineInnerInterceptor.IGNORE_TABLE_NAME.contains(tableName.toLowerCase());
     }
 }

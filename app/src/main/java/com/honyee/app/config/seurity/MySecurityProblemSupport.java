@@ -44,6 +44,7 @@ public class MySecurityProblemSupport implements AuthenticationEntryPoint {
         } else {
             myResponse.setMessage(exception.getMessage());
         }
+        response.setStatus(myResponse.getCode());
         objectMapper.writeValue(response.getOutputStream(), myResponse);
     }
 

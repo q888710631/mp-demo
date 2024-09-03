@@ -21,6 +21,8 @@ public class DelayTaskKafkaService {
     private static final Map<String, Class<?>> CLASS_MAP = new HashMap<>();
 
     @KafkaListener(topics = {"delay_task"})
+    // 多kafka实例时，需要指定containerFactory
+    // @KafkaListener(topics = {"delay_task"}, containerFactory = "listenerContainerFactory")
     public void myDelayKafka(String result, Acknowledgment acknowledgment) throws ClassNotFoundException {
         // {"@class":"com.honyee.app.delay.MyDelayParam","id":1680168771748,"title":"myDelayParam"}
         String className = ONode.loadStr(result).get("@class").getString();

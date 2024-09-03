@@ -10,6 +10,9 @@ public class Constants {
     // proxy包路径
     public static final String PROXY_PACKAGE = BASE_PACKAGE + ".proxy";
 
+    // 逻辑删除标识，0：未删除，1：已删除
+    public static final int DELETED = 0;
+
     // 实体属性名
     public static final String FIELD_CREATE_DATE = "createDate";
     public static final String FIELD_UPDATE_DATE = "updateDate";
@@ -26,6 +29,7 @@ public class Constants {
     // 正则 手机号
     public static final String REGEXP_PHONE_NUMBER = "^[1-9][0-9]{10}$";
 
+    public static final long MB_TO_BYTE = 1024 * 1024;
 
 
 }

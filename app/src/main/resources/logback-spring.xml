@@ -2,11 +2,11 @@
 <!--<!DOCTYPE configuration>-->
 
 <configuration scan="true">
-
+    <conversionRule conversionWord="myColor"  converterClass="com.honyee.app.config.log.LevelColorClassicConverter" />
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <Pattern>
-                %d %highlight(${LOG_LEVEL_PATTERN:-%5p}) %cyan([%thread]) %green(%logger{0}[%line]) %msg%n</Pattern>
+                %d %myColor(${LOG_LEVEL_PATTERN:-%5p}) %cyan([%thread]) %green(%logger{0}[%line]) %msg%n</Pattern>
         </encoder>
     </appender>
 
@@ -37,7 +37,8 @@
         <appender-ref ref="CONSOLE"/>
     </root>
     <!--  # 打印SQL  -->
-    <logger name="com.honyee.app.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
+    <logger name="org.apache.ibatis.builder.StaticSqlSource" level="DEBUG"/>
+    <logger name="com.honyee.app.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="INFO"/>
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 

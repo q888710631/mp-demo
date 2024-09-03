@@ -1,8 +1,8 @@
 package com.honyee.app.config.lock;
 
 import com.honyee.app.exp.LockOutOfTimeException;
-import com.honyee.app.utils.LogUtil;
 import com.honyee.app.utils.SpelUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
 
+@Slf4j
 @Component
 @Aspect
 public class RedisLockAspect {
@@ -49,12 +50,12 @@ public class RedisLockAspect {
         String key = parseSpel(context, annotation, annotation.key());
         String value = annotation.valueSpel() ? parseSpel(context, annotation, annotation.value()) : annotation.value();
 
-        LogUtil.info("@RedisLock => value={}, key={}", value, key);
+        log.info("@RedisLock => value={}, key={}", value, key);
         String lockKey = String.format("lock_%s_%s", value, key);
         RLock lock = redissonClient.getLock(lockKey);
         try {
             if (enableLog) {
-                LogUtil.info("锁定：{}", lockKey);
+                log.info("锁定：{}", lockKey);
             }
             if (annotation.tryLock()) {
                 if (lock.tryLock(annotation.timeLong(), annotation.timeUnit())) {
@@ -69,7 +70,7 @@ public class RedisLockAspect {
             if (lock.isLocked() && lock.isHeldByCurrentThread()) {
                 lock.unlock();
                 if (enableLog) {
-                    LogUtil.info("解锁：{}", lockKey);
+                    log.info("解锁：{}", lockKey);
                 }
             }
         }

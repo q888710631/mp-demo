@@ -11,7 +11,7 @@ public class FinallyFilter extends GenericFilter {
         try {
             chain.doFilter(request, response);
         } finally {
-            MybatisPlusTenantHandler.removeTenantValue();
+            MybatisPlusTenantHandler.removeAll();
         }
     }
 }

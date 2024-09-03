@@ -69,4 +69,20 @@ public class SubUtil {
         return str.substring(fromIndex, toIndex);
     }
 
+    public static final String CONTENT_SUFFIX = "...";
+
+    /**
+     * 摘要&后缀
+     */
+    public static String subStringWithSuffix(String str, int length) {
+        if (str == null) {
+            return null;
+        }
+        String tmp = str;
+        if (str.length() > length) {
+            tmp = subString(str, 0, length) + CONTENT_SUFFIX;
+        }
+        return tmp;
+    }
+
 }

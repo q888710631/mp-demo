@@ -37,7 +37,8 @@
         <appender-ref ref="CONSOLE"/>
     </root>
     <!--  # 打印SQL  -->
-    <logger name="com.honyee.app.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="DEBUG"/>
+    <logger name="org.apache.ibatis.builder.StaticSqlSource" level="DEBUG"/>
+    <logger name="com.honyee.app.config.mybatis.MybatisPlusTenantLineInnerInterceptor" level="INFO"/>
 
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 
