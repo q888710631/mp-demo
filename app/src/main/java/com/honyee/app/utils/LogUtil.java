@@ -181,7 +181,7 @@ public class LogUtil {
 
         SpringUtil.getBean(StringRedisTemplate.class)
                 .opsForList()
-                .leftPush(key, date + template);
+                .leftPush(key, date + message);
 
 
     }
