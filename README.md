@@ -103,8 +103,6 @@ import java.util.ArrayList;
 
 public class TestService {
    public void test(HttpServletResponse response) {
-      // 省略list的数据填充 
-      List<MyDataDTO> excelDTOList = new ArrayList<>();
       String fileName = ExcelUtil.buildFileName("我新建的Excel");
       // 输出excel
       ExcelUtil.write(response, fileName, MyDataDTO.class,
