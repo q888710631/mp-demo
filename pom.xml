@@ -354,6 +354,19 @@
                 <artifactId>hutool-all</artifactId>
                 <version>5.8.27</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>2.9.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.burukeyou</groupId>
+                <artifactId>jdframe</artifactId>
+                <version>0.1.6</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

@@ -29,7 +29,34 @@ java.nio.charset.MalformedInputException: Input length = 1
 
 解决：IDEA -> Settings -> Editor -> File Encodings -> 编码改UTF-8 ，并Rebuild Project
 
+## 2024.9.5
+增加依赖JDFrame，支持像处理SQL一样处理数组
 
+[参考文档](https://burukeyou.github.io/JDFrame/#/)
+
+```java
+// 待处理数据
+List<Student> studentList = new ArrayList<>(); 
+
+// 数据处理
+List<FI2<String, BigDecimal>> sdf2 = SDFrame.read(studentList) // 转换成DataFrame模型
+                .whereNotNull(Student::getAge)    // 过滤年龄不为null的
+                .whereBetween(Student::getAge,9,16)   // 获取年龄在9到16岁之间的
+                .groupBySum(Student::getSchool, Student::getScore) // 按照学校分组求和计算合计分数
+                .whereGe(FI2::getC2,new BigDecimal(1000)) // 过滤合计分数大于等于1000的数据
+                .sortDesc(FI2::getC2) // 按照分组后的合计分数降序排序
+                .cutFirst(10)    // 截取前10名
+                .toLists();     // 转换成List拿到结果
+
+```
+
+**SDFrame**
+
+SDFrame就是我们的DataFrame模型了， 可通过read方法将集合、Map等数据转换为该模型进行复杂的数据处理. 具体有哪些可使用的API见下文.
+
+**FI是什么**
+
+FI类就是用于描述动态表格的列头类， 其实在各种API的结果列表我们可以经常看到FI2、FI3、FI4等对象. 这些对象就是我们的FI类。 区别就是如果矩阵有两列就会用FI2存储, 有三列就用FI3存储，FI4类比同理。 FI类里面有c1、c2、c3等字段分别表示第几列的结果, c1就表示第一列的结果, c2就表示第2列的结果, c3，c4同理
 
 ## 2024.6.20
 增加依赖Tika
