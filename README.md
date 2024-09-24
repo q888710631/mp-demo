@@ -29,6 +29,93 @@ java.nio.charset.MalformedInputException: Input length = 1
 
 解决：IDEA -> Settings -> Editor -> File Encodings -> 编码改UTF-8 ，并Rebuild Project
 
+
+## 2024.9.24
+1. 引入Grovvy执行器，封装工具类`GroovyEngineUtils`
+
+```java
+package com.honyee.app.utils.grovvy;
+
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.script.CompiledScript;
+import java.util.HashMap;
+
+@Slf4j
+public class GroovyScriptTest {
+
+    @SneakyThrows
+    public static void main(String[] args) {
+        String script = "def a = 123\n" +
+                "def list = [1,2,3,4,5] \n" +
+                "list.add(a)\n" +
+                "println(list)";
+
+        {
+            // 方式1
+            CompiledScript compile = GroovyEngineUtils.compile(script);
+            Object result = GroovyEngineUtils.eval(compile, new HashMap<>());
+            log.info("/// 脚本执行结果1：{}", result);
+        }
+        {
+            // 方式2
+            CompiledScript compile = GroovyEngineUtils.compile(script);
+            Object result = compile.eval();
+            log.info("/// 脚本执行结果2：{}", result);
+        }
+        {
+            // 方式3
+            Object result = GroovyEngineUtils.eval(script, new HashMap<>());
+            log.info("/// 脚本执行结果3：{}", result);
+        }
+    }
+}
+
+```
+
+2. `RequestWrapperFilter`的body重复读取包装类更换为`ContentCachingRequestWrapper`
+
+3. Mybatis处理字段示例`ListStringTypeHandler`
+
+实现`org.apache.ibatis.type.BaseTypeHandler`对字段处理
+
+```java
+@Data
+@TableName(value = "person")
+public class Person{
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    // db中roleIds是varchar类型
+    @TableField("roleIds")
+    List<String> roleIds;
+}
+```
+
+```xml
+<resultMap id="test_map" type="com.honyee.app.model.test.Person">
+  <id property="id" column="id"/>
+  <result property="roleIds" column="roleIds" typeHandler="com.honyee.app.config.mybatis.handler.ListStringTypeHandler"/>
+</resultMap>
+```
+
+4. Mybatis处理字段示例`bind`
+
+bind能定义变量，对参数进行加工
+
+```java
+// Mapper接口
+List<Person> findLike(@Param("name") String name);
+```
+
+```xml
+ <select id="findLike" resultType="com.honyee.app.model.test.Person">
+     <bind name="nameLike" value="'%' + name + '%'"/>
+     select * from person where nickname like #{nameLike}
+ </select>
+```
+
 ## 2024.9.5
 增加依赖JDFrame，支持像处理SQL一样处理数组
 
@@ -211,6 +298,18 @@ public class Person {
 
 
 ```
+
+
+role示例：
+```json
+{"@type":"human-child","name":"ccc"}
+```
+
+role_list示例：
+```json
+["java.util.ArrayList",[{"@type":"human-child","name":"ccc"}]]
+```
+
 
 
 ## 2023.5.9

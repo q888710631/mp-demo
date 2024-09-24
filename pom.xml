@@ -339,7 +339,7 @@
             <dependency>
                 <groupId>com.qcloud</groupId>
                 <artifactId>cos-sts_api</artifactId>
-                <version>3.1.0</version>
+                <version>[3.1.0,]</version>
             </dependency>
 
             <!--XML解析包-->
@@ -352,7 +352,7 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>5.8.27</version>
+                <version>5.8.32</version>
             </dependency>
 
             <dependency>
@@ -366,6 +366,13 @@
                 <artifactId>jdframe</artifactId>
                 <version>0.1.6</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.codehaus.groovy</groupId>
+                <artifactId>groovy-all</artifactId>
+                <version>[2.4.5,]</version>
+            </dependency>
+
 
         </dependencies>
     </dependencyManagement>

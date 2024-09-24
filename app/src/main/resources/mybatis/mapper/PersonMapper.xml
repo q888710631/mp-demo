@@ -5,4 +5,10 @@
     <select id="findAll" resultMap="com.honyee.app.mapper.PersonMapper.mybatis-plus_Person">
         select * from person
     </select>
+
+    <select id="findLike" resultType="com.honyee.app.model.test.Person">
+        <bind name="nameLike" value="'%' + name + '%'"/>
+        select * from person where nickname like #{nameLike}
+    </select>
+
 </mapper>
